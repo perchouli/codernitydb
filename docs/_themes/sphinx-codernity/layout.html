@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
+{%- set url_root = pathto('', 1) %}
+{%- if url_root == '#' %}{% set url_root = '' %}{% endif %}
+
+{%- macro relbar(bottom=False) %}
+<div class="related{% if bottom %} related-bottom{% endif %}">
+    <ul class="nav">
+        {%- block rootrellink %}
+        <li class=""><a class="brand" href="{{ pathto(master_doc) }}">{{ project|e }}</a></li>
+        {%- endblock %}
+        {%- for rellink in rellinks %}
+        <li>
+            <a href="{{ pathto(rellink[0]) }}" title="{{ rellink[1]|striptags|e }}" {{ accesskey(rellink[2]) }}>{{ rellink[3] }}</a>
+            {%- if not loop.first %}{% endif %}
+        </li>
+        {%- endfor %}
+        {%- for parent in parents %}
+        <li><a href="{{ parent.link|e }}"
+               {% if loop.last %}{{ accesskey("U") }}{% endif %}>{{ parent.title }}</a>
+        </li>
+        {%- endfor %}
+        {%- block relbaritems %} {% endblock %}
+    </ul>
+</div>
+{%- endmacro %}
+
+{%- macro sidebar() %}
+    {%- if render_sidebar %}
+            {%- if sidebars != None %}
+                {#- new style sidebar: explicitly include/exclude templates #}
+                {%- for sidebartemplate in sidebars %}
+                    {%- include sidebartemplate %}
+                {%- endfor %}
+            {%- else %}
+                {#- old style sidebars: using blocks -- should be deprecated #}
+                {%- block sidebartoc %}
+                    {%- include "localtoc.html" %}
+                {%- endblock %}
+                {%- block sidebarrel %}
+                    {%- include "relations.html" %}
+                {%- endblock %}
+                {%- block sidebarsourcelink %}
+                    {%- include "sourcelink.html" %}
+                {%- endblock %}
+                {%- if customsidebar %}
+                    {%- include customsidebar %}
+                {%- endif %}
+            {%- endif %}
+    {%- endif %}
+{%- endmacro -%}
+
+{%- macro seachbox() %}
+    {%- if pagename != "search" %}
+        <form class="navbar-search" action="{{ pathto('search') }}"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>
+    {%- endif %}
+{%- endmacro -%}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        {{ metatags }}
+        {%- if not embedded and docstitle %}
+            {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+        {%- else %}
+            {%- set titlesuffix = "" %}
+        {%- endif %}
+        {%- block htmltitle %}
+        <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+        {%- endblock %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="{{ pathto('_static/favicon.ico', 1) }}">
+        <!-- Le styles -->
+        <link href="{{ pathto('_static/bootstrap.css', 1) }}" rel="stylesheet">
+        <link href="{{ pathto('_static/bootstrap-responsive.css', 1) }}" rel="stylesheet">
+        <link href="{{ pathto('_static/labs.css', 1) }}" rel="stylesheet">
+        <link href="{{ pathto('_static/docs.css', 1) }}" rel="stylesheet">
+        <link href="{{ pathto('_static/pygments.css', 1) }}" rel="stylesheet">
+        {%- for cssfile in css_files %}
+            <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css"/>
+        {%- endfor %}
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        {%- if not embedded %}
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'{{ url_root }}',
+                    VERSION:'{{ release|e }}',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
+                    HAS_SOURCE:  {{ has_source|lower }}
+                };
+            </script>
+            {%- set script_files = ["_static/jquery.js", "_static/underscore.js", "_static/bootstrap-dropdown.js"] %}
+            {%- for scriptfile in script_files %}
+                <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+            {%- endfor %}
+
+            {%- if use_opensearch %}
+                <link rel="search" type="application/opensearchdescription+xml"
+                      title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
+                      href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+            {%- endif %}
+            {%- if favicon %}
+                <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+            {%- endif %}
+        {%- endif %}
+        {%- block linktags %}
+            {%- if hasdoc('about') %}
+                <link rel="author" title="{{ _('About these documents') }}"
+                      href="{{ pathto('about') }}"/>
+            {%- endif %}
+            {%- if hasdoc('genindex') %}
+                <link rel="index" title="{{ _('Index') }}"
+                      href="{{ pathto('genindex') }}"/>
+            {%- endif %}
+            {%- if hasdoc('search') %}
+                <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}"/>
+            {%- endif %}
+            {%- if hasdoc('copyright') %}
+                <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}"/>
+            {%- endif %}
+            <link rel="top" title="{{ docstitle|e }}" href="{{ pathto('index') }}"/>
+            {%- if parents %}
+                <link rel="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}"/>
+            {%- endif %}
+            {%- if next %}
+                <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}"/>
+            {%- endif %}
+            {%- if prev %}
+                <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}"/>
+            {%- endif %}
+        {%- endblock %}
+        {%- block extrahead %} {% endblock %}
+    </head>
+<body>
+
+
+{%- block header %}
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="{{ pathto('_static/logo_subpage.png', 1) }}"></a>
+                <h1><img src="{{ pathto('_static/erlenmeyer-flask-small.png', 1) }}"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1><a href="index.html">{{ shorttitle|e }}</a></h1>
+            </div>
+        </div>
+        <!--{{ seachbox() }}-->
+{% endblock %}
+
+{%- block content %}
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3">
+            {%- block sidebar %}{{ sidebar() }}{% endblock %}
+        </div>
+        <div class="docs-content span9">
+            {%- block document %}
+                {% block body %} {% endblock %}
+            {%- endblock %}
+        </div>
+    </div>
+</div>
+{%- endblock %}
+
+{%- block footer %}
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+                {%- if last_updated %}
+                {% trans last_updated=last_updated|e %}Last updated
+                on {{ last_updated }}.{% endtrans %}
+                {%- endif %}
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endblock %}
+
+{% if theme_disqus_shortname %}
+{% endif %}
+
+<script src="{{ pathto('_static/bootstrap-scrollspy.js', 1) }}"></script>
+<script src="{{ pathto('_static/bootstrap-affix.js', 1) }}"></script>
+<script src="{{ pathto('_static/labs.js', 1) }}"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>
