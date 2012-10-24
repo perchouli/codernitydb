@@ -31,12 +31,19 @@ Key features
 Install
 ~~~~~~~
 
-CodernityDB is pure Python. So you just need to::
+Because CodernityDB is pure Python you need to perform standard installation for Python applications::
 
-     hg clone ssh://hg@bitbucket.org/codernity/codernitydb
-     python setup.py install
+   pip install CodernityDB
 
-In near future we will publish packages on PyPi.
+or using easy_install::
+
+   easy_install CodernityDB
+
+or from sources::
+
+   hg clone ssh://hg@bitbucket.org/codernity/codernitydb
+   cd codernitydb
+   python setup.py install
 
 
 Contribute & Bugs & Requests
