@@ -252,8 +252,10 @@ rst_prolog = """
 .. |CodernityDB-PyClient-link| replace:: CodernityDB-PyClient_
 .. |cdb_repo| replace:: https://bitbucket.org/codernity/codernitydb
 .. |CodernityDB-demos| replace:: `CodernityDB Demos`_
+.. |bitbucket_link| replace:: `CodernityDB @ Bitbucket`_
 
-.. _CodernityDB Demos: http://bitbucket.org/Codernity/codernitydb-demos
+.. _CodernityDB @ Bitbucket: http://bitbucket.org/codernity/codernitydb
+.. _CodernityDB Demos: http://bitbucket.org/codernity/codernitydb-demos
 .. _CodernityDB-HTTP: http://labs.codernity.com/codernitydb-http
 .. _CodernityDB-PyClient: http://labs.codernity.com/codernitydb-pyclient
 """

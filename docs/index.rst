@@ -1,7 +1,7 @@
 CodernityDB pure python, NoSQL, fast database
 =============================================
 
-CodernityDB is opensource, pure python (no 3rd party dependency), fast (really fast check :ref:`speed` if you don't believe in words), multiplatform, schema-less, NoSQL_ database. It has optional support for HTTP server version (|CodernityDB-HTTP-link|), and also Python client library (|CodernityDB-PyClient-link|) that aims to be 100% compatible with embeded version.
+CodernityDB is opensource, pure Python (no 3rd party dependency), fast (really fast check :ref:`speed` if you don't believe in words), multiplatform, schema-less, NoSQL_ database. It has optional support for HTTP server version (|CodernityDB-HTTP-link|), and also Python client library (|CodernityDB-PyClient-link|) that aims to be 100% compatible with embeded version.
 
 .. image:: CodernityDB.png
     :align: center
@@ -13,7 +13,7 @@ You can call it a more advanced key-value database. With multiple key-values ind
 Key features
 ~~~~~~~~~~~~
 
-* Native python database
+* Native Python database
 * Multiple indexes
 * Fast (more than 50 000 insert operations per second see :ref:`speed` for details)
 * Embeded mode (default) and :ref:`Server<server>`, with client library that aims to be 100% compatible with embeded one.
@@ -23,25 +23,19 @@ Key features
 Install
 ~~~~~~~
 
-.. Because CodernityDB is pure Python you need to perform standard installation for Python applications ::
-..
-..     pip install CodernityDB
-..
-.. or using easy_install::
-..
-..     easy_install CodernityDB
-..
-.. or from sourcess::
-..
-..     hg clone ssh://hg@bitbucket.org/codernity/codernitydb
-..     python setup.py install
+Because CodernityDB is pure Python you need to perform standard installation for Python applications::
 
-CodernityDB is pure Python. So you just need to::
+   pip install CodernityDB
 
-     hg clone ssh://hg@bitbucket.org/codernity/codernitydb
-     python setup.py install
+or using easy_install::
 
-In near future we will publish packages on PyPi.
+   easy_install CodernityDB
+
+or from sources::
+
+   hg clone ssh://hg@bitbucket.org/codernity/codernitydb
+   cd codernitydb
+   python setup.py install
 
 
 Contribute & Bugs & Requests
@@ -72,10 +66,11 @@ Documentation index
     :maxdepth: 2
 
     design
+    database_indexes
 
     how_its_tested
     speed
-    database_indexes
+
     server
     deployment
 

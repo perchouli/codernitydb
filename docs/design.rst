@@ -16,7 +16,7 @@ Design
 How it's build
 --------------
 
-CodernityDB is build from 3 important parts
+CodernityDB is build from 3 important parts. Please read also :ref:`database_operations_description` to understand how CodernityDB works.
 
 
 Database
@@ -197,15 +197,15 @@ there. To optimize the disk usage run
 
 .. _database_operations_description:
 
-Database operations
--------------------
+Database operations flow
+------------------------
 
-
-During insert into database, incomming data are passed to
+During insert into database, incomming data is passed to
 ``make_key_value`` functions in *all* indexes in order of adding or
 changing them in database.
-On query operations function ``make_key`` is called in order to get
+On query operations function ``make_key`` is called to get
 valid key for the given index.
+So having more indexes affects write speed, but does not affect read speed at all.
 
 .. note::
 

@@ -19,7 +19,7 @@ The platform used for that tests was:
 
 .. note::
 
-    Please note that Operatig system and/or python will optimize disk
+    Please note that Operatig system and/or Python will optimize disk
     read calls, in "same ``_id`` get" test there were much less system calls to
     ``read`` function than 100 000.
 
@@ -206,7 +206,7 @@ There you will find statistics for that tests:
      - 1836.0719955
 
 
-CodernityDB slow downs on when there is a lot of records in database, but as you can see it performs pretty stable. And remember, Kyoto Cabinet is C++ database while CodernityDB is pure python.
+CodernityDB slow downs on when there is a lot of records in database, but as you can see it performs pretty stable. And remember, Kyoto Cabinet is C++ database while CodernityDB is pure Python.
 
 
 

@@ -20,11 +20,14 @@ How fast is CodernityDB ?
 Can I add index to existing DB ?
     Yes you can, but you will need to reindex that index to have in it data that were in database already before you add that index. (see :ref:`database_indexes` for details)
 
+Why Python 3 is not supported ?
+    Python 3 introduced many incompatible changes. In case of CodernityDB having working version for 2.x and 3.x series in the same codebase without ugly hacks (big monkey-patching etc) is almost impossible. If you're interested Python 3 version of CodernityDB contact us. Porting CodernityDB to Python 3.x is not hard. Python 3.x support in fact was never needed. That's why there is no support for it (yet?).
+
 I want to contribute, what can I do?
-    Just fork and create pull request on bitbucket.
+    Just fork and create pull request |bitbucket_link|.
 
 I found a bug, where can I report it?
-    Please report it on Bitbucket bugtracker in our repo|cdb_repo|.
+    Please report it on Bitbucket bugtracker in our repo |bitbucket_link|.
 
 I want to have a bit customized CodernityDB
     No problem, just contact us to get more details about that.
