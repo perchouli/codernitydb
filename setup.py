@@ -31,13 +31,19 @@ __version__ = get_meta(_init_d, '__version__')
 __license__ = get_meta(_init_d, '__license__')
 
 
+with open('README') as f:
+    L_DESCR = f.read()
+
+
 setup(name='CodernityDB',
       version=__version__,
-      description='CodernityDB is opensource, pure python (no 3rd party dependency), fast (really fast check Speed if you don’t believe in words), multiplatform, schema-less, NoSQL database.',
+      description="Pure python, fast, schema-less, NoSQL database",
+      long_description=L_DESCR,
       author='Codernity',
       author_email='contact@codernity.com',
-      url='http://codernity.com',
+      url='http://labs.codernity.com/codernitydb',
       packages=['CodernityDB'],
+      platforms='any',
       license=__license__,
       classifiers=[
       "License :: OSI Approved :: Apache Software License",
@@ -46,7 +52,7 @@ setup(name='CodernityDB',
       "Operating System :: MacOS :: MacOS X",
       "Operating System :: POSIX",
       "Operating System :: Microsoft :: Windows",
-      "OPerating System :: OS Independent"
+      "Operating System :: OS Independent",
       "Topic :: Internet",
       "Topic :: Database",
       "Topic :: Software Development",
