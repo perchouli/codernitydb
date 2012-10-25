@@ -1,0 +1,6 @@
+[xml]
+output=coverage_thread_safe.xml
+
+
+[html]
+directory=htmlcov_ts

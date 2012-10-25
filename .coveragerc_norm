@@ -1,0 +1,5 @@
+[xml]
+output=coverage_norm.xml
+
+[html]
+directory=htmlcov_norm
