@@ -5,7 +5,7 @@
 Server version
 ==============
 
-CodernityDB can be used in *embeded* mode or in server mode.
+CodernityDB can be used in *embedded* mode or in server mode.
 
 
 HTTP
@@ -14,7 +14,7 @@ HTTP
 Currently there is **HTTP** server released. Visit |CodernityDB-HTTP-link| for more information and documentation.
 
 There exists also CodernityDBPyClient which is an HTTP server
-CodernityDB client that behaves in the same way as *embeded*
+CodernityDB client that behaves in the same way as *embedded*
 database. **You will need to add just 2 lines in your code to make use of it!** Visit |CodernityDB-PyClient-link| for more information and documentation.
 
 

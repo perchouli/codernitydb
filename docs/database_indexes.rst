@@ -381,7 +381,7 @@ Function should start it's name from ``run_`` then you can call it:
 
 
 
-As mentioned before, while you work in embeded mode it makes no big difference, but when using |CodernityDB-HTTP-link| it makes huge.
+As mentioned before, while you work in embedded mode it makes no big difference, but when using |CodernityDB-HTTP-link| it makes huge.
 
 
 .. note::
