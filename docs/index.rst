@@ -16,7 +16,7 @@ Key features
 * Native Python database
 * Multiple indexes
 * Fast (more than 50 000 insert operations per second see :ref:`speed` for details)
-* Embeded mode (default) and :ref:`Server<server>`, with client library that aims to be 100% compatible with embedded one.
+* Embedded mode (default) and :ref:`Server<server>`, with client library that aims to be 100% compatible with embedded one.
 * Easy way to implement custom Storage (see :ref:`example_storage`)
 
 

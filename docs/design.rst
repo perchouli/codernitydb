@@ -49,6 +49,8 @@ Currently there are implemented 4 different databases
 
 
 
+.. _database_design_index:
+
 Index
 ^^^^^
 
@@ -56,12 +58,12 @@ Index
 
     If you want to search / query database for given parameters /
     values etc., you have to specify the index that will return
-    key/value from it. Please see :ref:`examples` and :ref:`database_indexes`
+    key/value from it. Please see :ref:`examples` and :ref:`database_indexes`.
 
 By index we call the class in Python language that was added to the
-Database. It can be compared to SQL table (but read only), to update
+Database. It can be compared to SQL table (read only), to update
 you always need to pass full object to database, our Indexes can be
-compared also with CouchDB views mechanizm.
+compared also with CouchDB views mechanizm. (you would like probably to see :ref:`simple_index`). You can have as much indexes as you want and single record in database can "exists" in more than one index.
 
 Index itself does not store any information except it's
 *metadata*. You don't have to copy full data everytime in indexes,

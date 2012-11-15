@@ -3,6 +3,10 @@
 Database indexes
 ================
 
+.. note::
+
+    At first you should read :ref:`what's index in design section<database_design_index>`. 
+
 
 Currently there are two main Index implementations.
 You need to know the difference between them before you will choose the base for your Index.
@@ -26,7 +30,7 @@ To see how to write index see below
 
 .. seealso::
 
-    :ref:`internal_index_functions` for description of powerfull mechanizm of inside index (database) functions.
+    :ref:`internal_index_functions` for description of powerful mechanism of inside index (database) functions.
 
 Using custom index is quite simple. You need to decide if your index needs to be Hash based (:ref:`details <internal_hash_index>`) or Tree based (:ref:`details <internal_tree_index>` for
 pros and cons)
@@ -41,7 +45,7 @@ in DB.
 
 custom_header
     It's string that will be inserted to final index file. It's
-    usefull to pass the custom imports there. You will find an example
+    useful to pass the custom imports there. You will find an example
     in :ref:`Examples - secure storage <secure_storage_example>`
 
 storage_class
@@ -91,7 +95,7 @@ conflict resolution
     into list, then traversed when needed.
 
 duplicate keys
-   For duplicate keys the same mechanizm is used as for
+   For duplicate keys the same mechanism is used as for
    :ref:`conflict resolution <conflict_resolution>`. All indexes different than *id* one can
    accept more than one record with the same key
    (:py:meth:`~CodernityDB.database.Database.get_many`).
@@ -129,7 +133,7 @@ key_format
     An example code for Md5 based index can be found :ref:`design`,
     more examples in :ref:`examples`
 
-    .. note:: For format specification and explaination please visit
+    .. note:: For format specification and explanation please visit
         `Python struct documentation`_
 
 
@@ -139,9 +143,9 @@ hash_lim
     Current default is ``0xfffff`` which means ``1048575`` different
     hash function results.
 
-    .. hint:: In perfect conditions you will be abble to store those
+    .. hint:: In perfect conditions you will be able to store those
         number of unique records without conflicts, in practice you
-        will be abble to store like ``1200`` records without conflict
+        will be able to store like ``1200`` records without conflict
         with 50% probability (for example `birthday problem`_). Lookup
         when conflict occurs is slower because linked list is
         traversed. More informations about conflicts :ref:`Hash Index
@@ -159,7 +163,7 @@ make_key_value
     That function is called by database when inserting new or updating
     objects in database.  It **has** to return ``None`` if index is
     not matched (not required to operate on it) and 2 values if index
-    is mached. That 2 values are in order: *key* and *value*. Please
+    is matched. That 2 values are in order: *key* and *value*. Please
     remember that key must fit your :py:attr:`entry_line_format`.
 
 
@@ -351,10 +355,10 @@ Index functions
 ---------------
 
 
-Quite important thing in CodernityDB are index functions. You can do with them anything you want they have access to database object, so they can perform operations on multiple indexes. If you want join like operation, you should write function. Then you will be abble to run that function database side when using |CodernityDB-HTTP-link|. The only mandatory argument for that kind of function is ``db``, the rest are function arguments.
+Quite important thing in CodernityDB are index functions. You can do with them anything you want they have access to database object, so they can perform operations on multiple indexes. If you want join like operation, you should write function. Then you will be able to run that function database side when using |CodernityDB-HTTP-link|. The only mandatory argument for that kind of function is ``db``, the rest are function arguments.
 
 
-Writting function is easy see an example there:
+Writing function is easy see an example there:
 
 .. code-block:: python
 
@@ -396,3 +400,216 @@ As mentioned before, while you work in embedded mode it makes no big difference,
 
 
 .. _BPlus tree: http://en.wikipedia.org/wiki/B%2B_tree
+
+
+
+.. _simple_index:
+
+Easier way of creating indexes
+------------------------------
+
+    Do I really need to code indexes in Python, is there an easier way to create indexes?
+
+You bet there is! We prepared special, simplified mode for creating indexes. That code will be translated to Python code, and then used exactly in the same way as the rest indexes (so that simple indexes are exactly the same fast as pure Python ones). They are just simple by name not by possibilities.
+
+.. note:: 
+    Don't be surprised, if we will name it SimpleIndex in several places there.
+
+Usage of this mode is really basic, you just need to provide 2 (or optionally 3) things: 
+
+* properties of the index like this:
+    
+::
+    
+    name = MyTestIndex
+    type = HashIndex
+    key_format = I
+    etc. etc. ...
+
+* body for *make_key_value* containing our simplified syntax:
+   
+::
+ 
+    make_key_value:
+    a > 1: 1, None
+    a, None
+
+* and optionally body for *make_key* (if you don't provide it, it will be generated automaticlly and set to return key value as it is):
+    
+::
+
+    make_key:
+    key > 1: 1
+    key
+
+Syntax of function body is really basic, every line preceded by a statement with colon at the end means that 
+if conditions before colon are met, function will return everything that follows colon. If there is no colon, 
+value will be always returned. Of course the order of lines actually matters, so if you provide body like that:
+
+::
+
+    a > 1: 1, None
+    a > 2: 2, None
+
+The second value will be never returned (because if *a* is less then 1 it's for sure less than 2).
+Every name will be look for in dictionaries given to functions, so body like:
+
+::
+    
+    a > 1: a, None
+
+will generate python code like that:
+
+.. code-block:: python
+    
+    if data["a"] > 1:
+        return data["a"], None
+
+That's everything you need to know to work with our simplified index creator, you just need to alway provide *name* and *type* in index properties
+and provide body for make_key_value, which has to return always two values (the 2nd has to be a dictionary or None). 
+Here you have some examples and their equivalents in python. Remember that this simplified creator doesn't provide python power,
+so if you want to write more sophisticated index, you will have to learn python.
+
+
+::
+
+    name = Test
+    type = HashIndex
+    key_format = 16s
+
+    make_key_value:
+    md5(a),None
+
+    make_key:
+    md5(key)
+
+is an equivalent to: 
+
+.. code-block:: python
+
+    class Test( HashIndex ):
+        def __init__(self,*args,**kwargs):         
+            kwargs["key_format"] = '16s' 
+            super( Test ,self).__init__(*args,**kwargs)
+        def make_key_value(self,data):         
+            return md5 ( data["a"] ) .digest() , None 
+        def make_key(self,key): 
+            return md5 ( key ) .digest()
+
+
+Keywords & Helpers in simple index
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Please note that Python ``None`` value can be written as: ``none``, ``None``, ``null``.
+
+Supported logic operators:
+
+* ``and``
+* ``&&``
+* ``or``
+* ``||``
+
+Functions that you can use in ``make_key`` and ``make_key_value``:
+
+.. method:: str(value)
+
+    it will convert value to string
+
+    :param value: value to convert to string
+    :returns: string value of ``value``
+    :rtype: string
+
+.. method:: len(value) 
+
+    it will return length of a value
+
+    :param value: a value to check length
+    :returns: length of value
+    :rtype: integer
+
+.. method:: md5(value)
+
+    it will return md5 value of a string
+    
+    :param string value: string value to get md5 from it
+    :returns: md5 sum of value
+    :rtype: string
+
+.. method::  fix_r(value, length)
+
+    it will return fixed string length. ``Value`` shorter than ``length``
+    will be right filled with ``_``.
+
+    :param string value: value to adjust string length
+    :param integer length: how long should be output string
+    :returns: fixed size string
+    :rtype: string
+
+.. note::
+    Obviously you can use that simple indexes in |CodernityDB-HTTP-link| without any problem.
+
+.. note::
+    Error reporting / handling system in that mode will tell you exactly what's wrong with your code.
+
+
+.. _tables_colections_q:
+
+Tables, collections...?
+-------------------------
+
+    Ok, I got it, but can I store more than one data type in Database. Is there something like table or collection ?
+
+.. note::
+
+   In |CodernityDB-demos| you can find minitwit example which is rewrite from Sqlite application.
+
+Sure! You can use Index mechanism do to it. As it has been mentioned before, Index mechanism in CodernityDB is like read only Table in SQL databases (see :ref:`index design <database_design_index>`). So all you need is to define how your records will differ each other.
+
+Let's assume that you want to users and users and some data that belongs to user. You will probably want to be able to get all users, and all things that belongs to him, right? So.
+
+.. literalinclude:: codes/tables_like_indexes.py
+   :linenos:
+
+
+Having that indexes in your database will allow you to query for single user and for items of that user. Isn't it simple?
+As you can see, index in CodernityDB is not an index that you probably get used to. It's much more.
+
+How an index code is processed by CodernityDB?
+-----------------------------------------------
+
+    When you provide CodernityDB with an index, it uses `getsource <http://docs.python.org/2/library/inspect.html#inspect.getsource>`_ function from `inspect module <http://docs.python.org/2/library/inspect.html>`_ to get index code. This means, that after you call add_index function, it will look for the index class in current scope, take the whole class code as it is (including intends) and place it inside it's own code. Hence there are few cons you have to bear in mind:
+
+* You can not generate class code on the fly inside, let's say, a function, like that:
+    
+.. code-block:: python
+
+    def create_index(self,a):
+        class MyIndex(HashIndex):
+            def __init__(self, *args, **kwargs):
+                kwargs['key_format'] = 'I'
+                super(WithXIndex, self).__init__(*args, **kwargs)
+            def make_key_value(self,data):
+                if data['a'] == a:
+                    return data['b'], None
+            def make_key(self,key):
+                return key
+        return MyIndex
+
+Despite of code being correct in python terms, it will produce an error in CodernityDB, since class isn't defined in proper scope. 
+
+    * You can not provide index class code with a variable defined outside this class:
+
+.. code-block:: python
+    
+    a = 5
+    class MyIndex(HashIndex):
+        def __init__(self, *args, **kwargs):
+            kwargs['key_format'] = 'I'
+            super(WithXIndex, self).__init__(*args, **kwargs)
+        def make_key_value(self,data):
+            if data['a'] == a:
+                return data['b'], None
+        def make_key(self,key):
+                return key
+
+Even if now class is in proper scope, the example won't work, because variable *a* isn't known to CodernityDB.

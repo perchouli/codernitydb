@@ -15,7 +15,7 @@ dist/
 .settings/
 .*\.swp
 htmlcov_.*
-docs/_build/*
 coverage.*\.xml
+docs/_build/*
 junit-.*\.xml
 .*\.orig
