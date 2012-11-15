@@ -318,12 +318,12 @@ td.linenos {
     width: 36px;
 }
 
-ul.current > li > a.reference.internal {
+div.docs-sidebar > ul > li > a.reference.internal {
     background-image: url('chevron_right.png');
     background-repeat: no-repeat;
-    background-position: right 13px;
+    background-position: right 10px;
 }
 
-ul.current > li > a.current.reference.internal {
+div.docs-sidebar > ul > li > a.current.reference.internal {
     background-image: url('chevron_right_white.png');
 }

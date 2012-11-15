@@ -22,6 +22,10 @@
 
   "use strict"; // jshint ;_;
 
+  //temporary workaround
+  $(window).scroll(function () {
+    $('div.docs-sidebar > ul').css('width', $('div.docs-sidebar').css('width'))
+  });
 
  /* AFFIX CLASS DEFINITION
   * ====================== */
@@ -53,9 +57,6 @@
       false    : offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ?
       'bottom' : offsetTop != null && scrollTop <= offsetTop ?
       'top'    : false
-
-    //temporary workaround
-    this.$element.css('width', $('div.docs-sidebar').css('width'))
 
     if (this.affixed === affix) return
 

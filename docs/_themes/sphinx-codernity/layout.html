@@ -50,7 +50,6 @@
             {%- endif %}
     {%- endif %}
 {%- endmacro -%}
-
 {%- macro seachbox() %}
     {%- if pagename != "search" %}
         <form class="navbar-search" action="{{ pathto('search') }}"
@@ -157,7 +156,10 @@
         </div>
         <div class="horizontal-bar">
             <div class="container">
-                <h1><a href="index.html">{{ shorttitle|e }}</a></h1>
+                <h1>
+                    <a href="index.html">{{ shorttitle|e }}</a>
+                    <a class="btn btn-primary" href="{{ theme_download_url }}"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
             </div>
         </div>
         <!--{{ seachbox() }}-->

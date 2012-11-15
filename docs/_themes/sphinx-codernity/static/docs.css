@@ -19,6 +19,10 @@
   list-style-type: none;
 }
 
+.docs-sidebar > ul li {
+  line-height: 14px;
+}
+
 .docs-sidebar > ul > li > a {
   display: block;
   *width: 190px;
@@ -138,6 +142,7 @@ p.first.admonition-title {
 a.headerlink {
     color: white;
     text-decoration: none;
+    margin-left: 5px;
 }
 
 a.headerlink:hover {
@@ -207,4 +212,12 @@ img.align-center {
         position: static;
         width: auto;
     }
+}
+
+div.horizontal-bar h1 a.btn {
+  float: right;
+  color: white;
+  margin-right: 10px;
+  margin-top: 7px;
+  font-weight: normal;
 }
