@@ -90,7 +90,7 @@ class IU_HashIndex(Index):
         self._find_key = cache(self._find_key)
         self._locate_doc_id = cache(self._locate_doc_id)
         self.bucket_struct = struct.Struct(self.bucket_line_format)
-        self.entry_struct = struct.Struct(entry_line_format)
+        self.entry_struct = struct.Struct(self.entry_line_format)
         self.data_start = (
             self.hash_lim + 1) * self.bucket_line_size + self._start_ind + 2
 
@@ -98,6 +98,8 @@ class IU_HashIndex(Index):
         super(IU_HashIndex, self)._fix_params()
         self.bucket_line_size = struct.calcsize(self.bucket_line_format)
         self.entry_line_size = struct.calcsize(self.entry_line_format)
+        self.bucket_struct = struct.Struct(self.bucket_line_format)
+        self.entry_struct = struct.Struct(self.entry_line_format)
         self.data_start = (
             self.hash_lim + 1) * self.bucket_line_size + self._start_ind + 2
 
@@ -523,7 +525,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
     That design is because main index logic should be always in database not in custom user indexes.
     """
 
-    def __init__(self, db_path, name, entry_line_format="<32s4sIIcI", *args, **kwargs):
+    def __init__(self, db_path, name, entry_line_format="<32s8sIIcI", *args, **kwargs):
         if 'key' in kwargs:
             raise IndexPreconditionsException(
                 "UniqueHashIndex doesn't accept key parameter'")

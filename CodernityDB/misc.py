@@ -31,5 +31,5 @@ def random_hex_32():
     return uuid.UUID(int=getrandbits(128), version=4).hex
 
 
-def random_hex_4():
+def random_hex_4(*args, **kwargs):
     return '%04x' % randrange(256 ** 2)

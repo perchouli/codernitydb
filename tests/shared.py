@@ -214,7 +214,7 @@ class DB_Tests:
         doc = dict(a=1)
         db.insert(doc)
         doc2 = doc.copy()
-        doc2['_rev'] = '0000'
+        doc2['_rev'] = '00000000'
         with pytest.raises(RevConflict):
             db.update(doc2)
 

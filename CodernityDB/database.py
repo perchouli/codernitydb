@@ -37,9 +37,11 @@ from CodernityDB.index import (ElemNotFound,
                                IndexNotFoundException,
                                IndexConflict)
 
-from CodernityDB.misc import NONE, random_hex_4
+from CodernityDB.misc import NONE
 
 from CodernityDB.env import cdb_environment
+
+from random import randrange
 
 
 def header_for_indexes(index_name, index_class, db_custom="", ind_custom="", classes_code=""):
@@ -119,6 +121,23 @@ class Database(object):
         self.indexes_names = {}
         self.opened = False
 
+    def create_new_rev(self, old_rev=None):
+        if old_rev:
+            try:
+                rev_num = int(old_rev[:4], 16)
+            except:
+                raise RevConflict()
+            rev_num += 1
+            if rev_num > 65025:
+            # starting the counter from 0 again
+                rev_num = 0
+            rnd = randrange(65536)
+            return "%04x%04x" % (rev_num, rnd)
+        else:
+            # new rev
+            rnd = randrange(256 ** 2)
+            return '0001%04x' % rnd
+
     def __not_opened(self):
         if not self.opened:
             raise DatabaseIsNotOpened("Database is not opened")
@@ -157,7 +176,8 @@ class Database(object):
 
     def _read_index_single(self, p, ind, ind_kwargs={}):
         """
-        It will read single index from index file (ie. generated in :py:meth:`._add_single_index`). Then it will perform ``exec`` on that code
+        It will read single index from index file (ie. generated in :py:meth:`._add_single_index`).
+        Then it will perform ``exec`` on that code
 
         :param p: path
         :param ind: index name (will be joined with *p*)
@@ -291,6 +311,7 @@ class Database(object):
                 ind_obj.create_index()
         if name == 'id':
             self.__set_main_storage()
+            self.__compat_things()
         return name
 
     def edit_index(self, index, reindex=False, ind_kwargs=None):
@@ -410,6 +431,19 @@ class Database(object):
             if ind.endswith('.py'):
                 self.add_index('path:' + ind, create=False)
 
+    def __compat_things(self):
+        # patch for rev size change
+        if not self.id_ind:
+            return
+        if self.id_ind.entry_line_format[4:6] == '4s':
+            # rev compatibility...
+            import warnings
+            warnings.warn("Your database is using old rev mechanizm \
+for ID index. You should update that index \
+(CodernityDB.migrate.migrate).")
+            from misc import random_hex_4
+            self.create_new_rev = random_hex_4
+
     def create(self, path=None, **kwargs):
         """
         Create database
@@ -426,6 +460,7 @@ class Database(object):
             raise DatabaseConflict("Already opened")
         self.__open_new(**kwargs)
         self.__set_main_storage()
+        self.__compat_things()
         self.opened = True
         return self.path
 
@@ -468,6 +503,7 @@ class Database(object):
             index.open_index()
         self.indexes.sort(key=lambda ind: ind._order)
         self.__set_main_storage()
+        self.__compat_things()
         self.opened = True
         return True
 
@@ -568,7 +604,7 @@ class Database(object):
         db_data = self.get('id', _id)
         if db_data['_rev'] != _rev:
             raise RevConflict()
-        new_rev = random_hex_4()
+        new_rev = self.create_new_rev(_rev)
         storage = self.storage
         start, size = storage.update(value)
         self.id_ind.update(_id, new_rev, start, size)
@@ -777,7 +813,7 @@ class Database(object):
             self.__not_opened()
             raise PreconditionsException(
                 "Can't add record with forbidden fields")
-        _rev = random_hex_4()
+        _rev = self.create_new_rev()
         if not '_id' in data:
             try:
                 _id = self.id_ind.create_key()
