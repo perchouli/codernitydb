@@ -16,5 +16,5 @@
 # limitations under the License.
 
 
-__version__ = '0.3.60'
+__version__ = '0.3.61'
 __license__ = "Apache 2.0"
