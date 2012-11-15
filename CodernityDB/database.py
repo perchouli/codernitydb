@@ -18,7 +18,7 @@
 import os
 import io
 from inspect import getsource
-
+from indexcreator import Parser
 
 # for custom indexes
 from CodernityDB.storage import Storage, IU_Storage
@@ -137,7 +137,7 @@ class Database(object):
     def _add_single_index(self, p, i, index):
         """
         Adds single index to a database.
-        It will use :py:meth:`inspect.getsource` to get class surce.
+        It will use :py:meth:`inspect.getsource` to get class source.
         Then it will build real index file, save it in ``_indexes`` directory.
         """
         code = getsource(index.__class__)
@@ -167,19 +167,39 @@ class Database(object):
             name = f.readline()[2:].strip()
             _class = f.readline()[2:].strip()
             code = f.read()
-        obj = compile(code, '<Index: %s' % os.path.join(p, ind), 'exec')
-        exec obj in globals()
-        ind_obj = globals()[_class](self.path, name, **ind_kwargs)
-        ind_obj._order = int(ind[:2])
-        return ind_obj
+        try:
+            obj = compile(code, '<Index: %s' % os.path.join(p, ind), 'exec')
+            exec obj in globals()
+            ind_obj = globals()[_class](self.path, name, **ind_kwargs)
+            ind_obj._order = int(ind[:2])
+        except:
+            os.unlink(os.path.join(p, ind))
+            raise
+        else:
+            return ind_obj
 
     def __write_index(self, new_index, number=0, edit=False, ind_kwargs=None):
+        #print new_index
         if ind_kwargs is None:
             ind_kwargs = {}
         p = os.path.join(self.path, '_indexes')
         if isinstance(new_index, basestring) and not new_index.startswith("path:"):
-            name = new_index.splitlines()[0][2:]
-            name = name.strip()
+            if len(new_index.splitlines()) < 4 or new_index.splitlines()[3] != '# inserted automatically':
+                par = Parser()
+                s = par.parse(new_index).splitlines()
+                name = s[0][2:]
+                c = s[1][2:]
+                comented = ['\n\n#SIMPLIFIED CODE']
+                map(lambda x: comented.append("#" + x), new_index.splitlines())
+                comented.append('#SIMPLIFIED CODE END\n\n')
+
+                s = header_for_indexes(
+                    name, c) + "\n".join(s[2:]) + "\n".join(comented)
+                new_index = s
+
+            else:
+                name = new_index.splitlines()[0][2:]
+                name = name.strip()
 
             if name in self.indexes_names and not edit:
                 raise IndexConflict("Already exists")
@@ -194,10 +214,12 @@ class Database(object):
                 raise PreconditionsException(
                     "Id index must be the first added")
             ind_path = "%.2d%s" % (number, name)
+
             with io.FileIO(os.path.join(p, ind_path + '.py'), 'w') as f:
                 f.write(new_index)
 
             ind_obj = self._read_index_single(p, ind_path + '.py')
+
         elif isinstance(new_index, basestring) and new_index.startswith("path:"):
             path = new_index[5:]
             if not path.endswith('.py'):
@@ -248,6 +270,7 @@ class Database(object):
 
         :returns: new index name
         """
+
         if ind_kwargs is None:
             ind_kwargs = {}
         p = os.path.join(self.path, '_indexes')
@@ -283,7 +306,7 @@ class Database(object):
             self.reindex_index(name)
         return name
 
-    def get_index_code(self, index_name):
+    def get_index_code(self, index_name, code_switch='All'):
         """
         It will return full index code from index file.
 
@@ -297,7 +320,28 @@ class Database(object):
         name = "%.2d%s" % (ind._order, index_name)
         name += '.py'
         with io.FileIO(os.path.join(self.path, '_indexes', name), 'r') as f:
-            return f.read()
+            co = f.read()
+            if code_switch == 'All':
+                return co
+
+            if code_switch == 'S':
+                try:
+                    ind = co.index('#SIMPLIFIED CODE')
+                except ValueError:
+                    return " "
+                else:
+                    s = co[ind:]
+                    l = s.splitlines()[1:-2]
+                    ll = map(lambda x: x[1:], l)
+                    return '\n'.join(ll)
+            if code_switch == 'P':
+                try:
+                    ind = co.index('#SIMPLIFIED CODE')
+                except ValueError:
+                    return co
+                else:
+                    return co[:ind]
+
         return ""  # shouldn't happen
 
     def __set_main_storage(self):
@@ -314,14 +358,14 @@ class Database(object):
 
     def initialize(self, path=None, makedir=True):
         """
-        Initialize new database (have to be called before open_new)
+        Initialize new database
 
         :param path: Path to a database (allows delayed path configuration), if not provided self.path will be used
         :param makedir: Make the ``_indexes`` directory or not
 
         :returns: the database path
         """
-        if self.opened == True:
+        if self.opened is True:
             raise DatabaseConflict("Already opened")
         if not path:
             path = self.path
@@ -378,7 +422,7 @@ class Database(object):
             self.initialize(path)
         if not self.path:
             raise PreconditionsException("No path specified")
-        if self.opened == True:
+        if self.opened is True:
             raise DatabaseConflict("Already opened")
         self.__open_new(**kwargs)
         self.__set_main_storage()
@@ -405,7 +449,7 @@ class Database(object):
 
         :param path: path with database to open
         """
-        if self.opened == True:
+        if self.opened is True:
             raise DatabaseConflict("Already opened")
 #        else:
         if path:
@@ -645,7 +689,8 @@ class Database(object):
     def compact_index(self, index):
         """
         Compacts index
-        Used for better utilization of index metadata. The deleted documents will be not more in structure.
+        Used for better utilization of index metadata.
+        The deleted documents will be not more in structure.
 
         :param index: the index to destroy
         :type index: :py:class:`CodernityDB.index.Index`` instance, or string
@@ -723,7 +768,8 @@ class Database(object):
         It's using **reference** on the given data dict object,
         to avoid it copy it before inserting!
 
-        If data **will not** have ``_id`` field, it will be generated (random 32 chars string)
+        If data **will not** have ``_id`` field,
+        it will be generated (random 32 chars string)
 
         :param data: data to insert
         """
@@ -801,6 +847,7 @@ class Database(object):
         if with_storage and size:
             data = storage.get(start, size, status)
         else:
+
             data = {}
         if with_doc and index_name != 'id':
             doc = self.get('id', l_key, False)
@@ -817,7 +864,8 @@ class Database(object):
 
     def get_many(self, index_name, key=None, limit=1, offset=0, with_doc=False, with_storage=True, start=None, end=None, **kwargs):
         """
-        Allows to get **multiple** data for given ``key`` for *Hash based indexes*. Also allows get **range** queries for *Tree based indexes* with ``start`` and ``end`` arguments.
+        Allows to get **multiple** data for given ``key`` for *Hash based indexes*.
+        Also allows get **range** queries for *Tree based indexes* with ``start`` and ``end`` arguments.
 
         :param index_name: Index to perform the operation
         :param key: key to look for (has to be ``None`` to use range queries)
@@ -911,7 +959,8 @@ class Database(object):
 
     def run(self, index_name, target_funct, *args, **kwargs):
         """
-        Allows to execute given function on Database side (important for server mode)
+        Allows to execute given function on Database side
+        (important for server mode)
 
         If ``target_funct==sum`` then given index must have ``run_sum`` method.
 
@@ -1046,6 +1095,7 @@ class Database(object):
         for key, value in db_index.__dict__.iteritems():
             if not callable(value):  # not using inspect etc...
                 props[key] = value
+
         return props
 
     def get_db_details(self):

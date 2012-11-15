@@ -28,6 +28,8 @@ from database import Database
 from functools import wraps
 from types import FunctionType, MethodType
 
+from CodernityDB.database_safe_shared import th_safe_gen
+
 
 class SuperLock(type):
 
@@ -37,9 +39,11 @@ class SuperLock(type):
         def _inner(*args, **kwargs):
             db = args[0]
             with db.super_lock:
+#                print '=>', f.__name__, repr(args[1:])
                 res = f(*args, **kwargs)
-                if db.opened:
-                    db.flush()
+#                if db.opened:
+#                    db.flush()
+#                print '<=', f.__name__, repr(args[1:])
                 return res
         return _inner
 
@@ -63,7 +67,45 @@ class SuperLock(type):
 
 
 class SuperThreadSafeDatabase(Database):
+    """
+    Thread safe version that always allows single thread to use db.
+    It adds the same lock for all methods, so only one operation can be
+    performed in given time. Completely different implementation
+    than ThreadSafe version (without super word)
+    """
 
+
+    def __patch_index_gens(self, name):
+        ind = self.indexes_names[name]
+        for c in ('all', 'get_many'):
+            m = getattr(ind, c)
+            if getattr(ind, c + "_orig", None):
+                return
+            m_fixed = th_safe_gen.wrapper(m, name, c, self.super_lock)
+            setattr(ind, c, m_fixed)
+            setattr(ind, c + '_orig', m)
+
+    def open(self, *args, **kwargs):
+        res = super(SuperThreadSafeDatabase, self).open(*args, **kwargs)
+        for name in self.indexes_names.iterkeys():
+            self.__patch_index_gens(name)
+        return res
+
+    def create(self, *args, **kwargs):
+        res = super(SuperThreadSafeDatabase, self).create(*args, **kwargs)
+        for name in self.indexes_names.iterkeys():
+            self.__patch_index_gens(name)
+            return res
+
+    def add_index(self, *args, **kwargs):
+        res = super(SuperThreadSafeDatabase, self).add_index(*args, **kwargs)
+        self.__patch_index_gens(res)
+        return res
+
+    def edit_index(self, *args, **kwargs):
+        res = super(SuperThreadSafeDatabase, self).edit_index(*args, **kwargs)
+        self.__patch_index_gens(res)
+        return res
     __metaclass__ = SuperLock
 
     def __init__(self, *args, **kwargs):

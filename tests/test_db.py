@@ -15,6 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from shared import DB_Tests
+from CodernityDB.database import Database
+from hash_tests import HashIndexTests
+from tree_tests import TreeIndexTests
 
-__version__ = '0.3.50'
-__license__ = "Apache 2.0"
+
+class Test_Database(DB_Tests):
+
+    _db = Database
+
+
+class Test_HashIndex(HashIndexTests):
+
+    _db = Database
+
+
+class Test_TreeIndex(TreeIndexTests):
+
+    _db = Database

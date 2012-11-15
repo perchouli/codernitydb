@@ -67,22 +67,22 @@ class Md5Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
         #kwargs['entry_line_format'] = '<32s32sIIcI'
-        kwargs['key_format'] = '32s'
+        kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(Md5Index, self).__init__(*args, **kwargs)
 
     def make_key_value(self, data):
-        return md5(data['name']).hexdigest(), None
+        return md5(data['name']).digest(), None
 
     def make_key(self, key):
-        return md5(key).hexdigest()
+        return md5(key).digest()
 
 
-class WithAIndex(HashIndex):
+class WithAIndex2(HashIndex):
 
     def __init__(self, *args, **kwargs):
         #kwargs['entry_line_format'] = '<32s32sIIcI'
-        kwargs['key_format'] = '32s'
+        kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
 
@@ -91,13 +91,35 @@ class WithAIndex(HashIndex):
         if a_val is not None:
             if not isinstance(a_val, basestring):
                 a_val = str(a_val)
-            return md5(a_val).hexdigest(), None
+                return md5(a_val).digest(), None
+                return None
+
+    def make_key(self, key):
+        if not isinstance(key, basestring):
+            key = str(key)
+            return md5(key).digest()
+
+
+class WithAIndex(HashIndex):
+
+    def __init__(self, *args, **kwargs):
+        #kwargs['entry_line_format'] = '<32s32sIIcI'
+        kwargs['key_format'] = '16s'
+        kwargs['hash_lim'] = 4 * 1024
+        super(WithAIndex, self).__init__(*args, **kwargs)
+
+    def make_key_value(self, data):
+        a_val = data.get("a")
+        if a_val is not None:
+            if not isinstance(a_val, basestring):
+                a_val = str(a_val)
+            return md5(a_val).digest(), None
         return None
 
     def make_key(self, key):
         if not isinstance(key, basestring):
             key = str(key)
-        return md5(key).hexdigest()
+        return md5(key).digest()
 
 
 class Simple_TreeIndex(TreeBasedIndex):
@@ -185,9 +207,6 @@ class DB_Tests:
 
     def setup_method(self, method):
         self.counter = Counter()
-
-        def setup_method(self, method):
-            self.counter = Counter()
 
     def test_update_conflict(self, tmpdir):
         db = self._db(os.path.join(str(tmpdir), 'db'))

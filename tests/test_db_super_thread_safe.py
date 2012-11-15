@@ -16,5 +16,29 @@
 # limitations under the License.
 
 
-__version__ = '0.3.50'
-__license__ = "Apache 2.0"
+from CodernityDB.database_super_thread_safe import SuperThreadSafeDatabase
+
+from shared import DB_Tests
+from hash_tests import HashIndexTests
+from tree_tests import TreeIndexTests
+from test_db_thread_safe import Test_Threads
+
+
+class Test_Database(DB_Tests):
+
+    _db = SuperThreadSafeDatabase
+
+
+class Test_HashIndex(HashIndexTests):
+
+    _db = SuperThreadSafeDatabase
+
+
+class Test_TreeIndex(TreeIndexTests):
+
+    _db = SuperThreadSafeDatabase
+
+
+class Test_Threads2(Test_Threads):
+
+    _db = SuperThreadSafeDatabase

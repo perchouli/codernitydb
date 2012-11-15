@@ -705,7 +705,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
                 break
             else:
                 if status != 'd':
-                        offset -= 1
+                    offset -= 1
 
         while limit:
             curr_data = self.buckets.read(self.entry_line_size)
@@ -717,8 +717,8 @@ class IU_UniqueHashIndex(IU_HashIndex):
                 break
             else:
                 if status != 'd':
-                        yield doc_id, rev, start, size, status
-                        limit -= 1
+                    yield doc_id, rev, start, size, status
+                    limit -= 1
 
     def get_many(self, *args, **kwargs):
         raise NotImplemented

@@ -1045,18 +1045,18 @@ class IU_TreeBasedIndex(Index):
                 new_leaf += struct.pack(
                     '<' + self.single_leaf_record_format *
                     (nr_of_records_to_rewrite + 1),
-                                      new_key,
-                                      new_doc_id,
-                                      new_start,
-                                      new_size,
-                                      'o',
-                                      *records_after)
+                    new_key,
+                    new_doc_id,
+                    new_start,
+                    new_size,
+                    'o',
+                    *records_after)
                 new_leaf += blanks
                 self.buckets.write(new_leaf)
                 self._update_leaf_size_and_pointers(leaf_start,
-                                                   old_leaf_size,
-                                                   prev_l,
-                                                   new_leaf_start)
+                                                    old_leaf_size,
+                                                    prev_l,
+                                                    new_leaf_start)
                 if next_l:  # pren next_l is 0 there is no next leaf to update, avoids writing data at 0 position of file
                     self._update_leaf_prev_pointer(
                         next_l, new_leaf_start)
@@ -1088,12 +1088,12 @@ class IU_TreeBasedIndex(Index):
                 else:
                     data_split_index += 1
             records_to_rewrite = records_to_rewrite[:data_split_index * 5]\
-                    + new_record_data\
-                    + records_to_rewrite[data_split_index * 5:]
+                + new_record_data\
+                + records_to_rewrite[data_split_index * 5:]
             self._update_leaf_ready_data(leaf_start,
-                                        start_position,
-                                        nr_of_elements + 1,
-                                        records_to_rewrite),
+                                         start_position,
+                                         nr_of_elements + 1,
+                                         records_to_rewrite),
             return True
         else:  # did not found any deleted records in leaf
             return False
@@ -1101,13 +1101,13 @@ class IU_TreeBasedIndex(Index):
     def _prepare_new_root_data(self, root_key, left_pointer, right_pointer, children_flag='n'):
         new_root = struct.pack(
             '<' + self.node_heading_format + self.single_node_record_format,
-                             1,
-                             children_flag,
-                             left_pointer,
-                             root_key,
-                             right_pointer)
+            1,
+            children_flag,
+            left_pointer,
+            root_key,
+            right_pointer)
         new_root += (self.key_size + self.pointer_size) * (self.
-            node_capacity - 1) * '\x00'
+                                                           node_capacity - 1) * '\x00'
         return new_root
 
     def _create_new_root_from_node(self, node_start, children_flag, nr_of_keys_to_rewrite, new_node_size, old_node_size, new_key, new_pointer):
@@ -1115,7 +1115,7 @@ class IU_TreeBasedIndex(Index):
             self.buckets.seek(self.data_start + self.node_heading_size)
             #read all keys with key>new_key
             data = self.buckets.read(self.pointer_size + self.
-                node_capacity * (self.key_size + self.pointer_size))
+                                     node_capacity * (self.key_size + self.pointer_size))
             old_node_data = struct.unpack('<' + self.pointer_format + self.node_capacity *
                                           (self.key_format + self.pointer_format), data)
             self.buckets.seek(0, 2)  # end of file
@@ -1124,19 +1124,19 @@ class IU_TreeBasedIndex(Index):
                 key_moved_to_root = new_key
                 #prepare new nodes data
                 left_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      old_node_size * (self.
-                                          key_format + self.pointer_format),
-                                      old_node_size,
-                                      children_flag,
-                                      *old_node_data[:old_node_size * 2 + 1])
+                                        old_node_size * (self.
+                                                         key_format + self.pointer_format),
+                                        old_node_size,
+                                        children_flag,
+                                        *old_node_data[:old_node_size * 2 + 1])
 
                 right_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      new_node_size * (self.
-                                          key_format + self.pointer_format),
-                                      new_node_size,
-                                      children_flag,
-                                      new_pointer,
-                                      *old_node_data[old_node_size * 2 + 1:])
+                                         new_node_size * (self.
+                                                          key_format + self.pointer_format),
+                                         new_node_size,
+                                         children_flag,
+                                         new_pointer,
+                                         *old_node_data[old_node_size * 2 + 1:])
             elif nr_of_keys_to_rewrite > new_node_size:
                 key_moved_to_root = old_node_data[old_node_size * 2 - 1]
                 #prepare new nodes data
@@ -1148,56 +1148,56 @@ class IU_TreeBasedIndex(Index):
                     keys_after = old_node_data[-(
                         nr_of_keys_to_rewrite) * 2:old_node_size * 2 - 1]
                 left_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      (self.node_capacity - nr_of_keys_to_rewrite) * (self.
-                                          key_format + self.pointer_format),
-                                      old_node_size,
-                                      children_flag,
-                                      *keys_before)
+                                        (self.node_capacity - nr_of_keys_to_rewrite) * (self.
+                                                                                        key_format + self.pointer_format),
+                                        old_node_size,
+                                        children_flag,
+                                        *keys_before)
                 left_node += struct.pack(
                     '<' + (self.key_format + self.pointer_format) *
-                           (nr_of_keys_to_rewrite - new_node_size),
-                                       new_key,
-                                       new_pointer,
-                                       *keys_after)
+                    (nr_of_keys_to_rewrite - new_node_size),
+                    new_key,
+                    new_pointer,
+                    *keys_after)
 
                 right_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      new_node_size * (self.
-                                          key_format + self.pointer_format),
-                                      new_node_size,
-                                      children_flag,
-                                      *old_node_data[old_node_size * 2:])
+                                         new_node_size * (self.
+                                                          key_format + self.pointer_format),
+                                         new_node_size,
+                                         children_flag,
+                                         *old_node_data[old_node_size * 2:])
             else:
 #               'inserting key into second half of node and creating new root'
                 key_moved_to_root = old_node_data[old_node_size * 2 + 1]
                 #prepare new nodes data
                 left_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      old_node_size * (self.
-                                          key_format + self.pointer_format),
-                                      old_node_size,
-                                      children_flag,
-                                      *old_node_data[:old_node_size * 2 + 1])
+                                        old_node_size * (self.
+                                                         key_format + self.pointer_format),
+                                        old_node_size,
+                                        children_flag,
+                                        *old_node_data[:old_node_size * 2 + 1])
                 if nr_of_keys_to_rewrite:
                     keys_before = old_node_data[(old_node_size +
-                        1) * 2:-nr_of_keys_to_rewrite * 2]
+                                                 1) * 2:-nr_of_keys_to_rewrite * 2]
                     keys_after = old_node_data[-nr_of_keys_to_rewrite * 2:]
                 else:
                     keys_before = old_node_data[(old_node_size + 1) * 2:]
                     keys_after = []
                 right_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                      (new_node_size - nr_of_keys_to_rewrite - 1) * (self.
-                                          key_format + self.pointer_format),
-                                        new_node_size,
-                                        children_flag,
-                                        *keys_before)
+                                         (new_node_size - nr_of_keys_to_rewrite - 1) * (self.
+                                                                                        key_format + self.pointer_format),
+                                         new_node_size,
+                                         children_flag,
+                                         *keys_before)
                 right_node += struct.pack(
                     '<' + (nr_of_keys_to_rewrite + 1) *
-                           (self.key_format + self.pointer_format),
-                                        new_key,
-                                        new_pointer,
-                                        *keys_after)
+                    (self.key_format + self.pointer_format),
+                    new_key,
+                    new_pointer,
+                    *keys_after)
             new_root = self._prepare_new_root_data(key_moved_to_root,
-                                                    new_node_start,
-                                                    new_node_start + self.node_size)
+                                                   new_node_start,
+                                                   new_node_start + self.node_size)
             left_node += (self.node_capacity - old_node_size) * \
                 (self.key_size + self.pointer_size) * '\x00'
             #adding blanks after new node
@@ -1231,24 +1231,24 @@ class IU_TreeBasedIndex(Index):
             if nr_of_keys_to_rewrite == new_node_size:  # insert key into first half of node
                 #reading second half of node
                 self.buckets.seek(self._calculate_key_position(node_start,
-                                                              old_node_size,
-                                                              'n') + self.pointer_size)
+                                                               old_node_size,
+                                                               'n') + self.pointer_size)
                 #read all keys with key>new_key
                 data = self.buckets.read(nr_of_keys_to_rewrite *
-                    (self.key_size + self.pointer_size))
+                                         (self.key_size + self.pointer_size))
                 old_node_data = struct.unpack('<' + nr_of_keys_to_rewrite *
-                                                (self.key_format + self.pointer_format), data)
+                                              (self.key_format + self.pointer_format), data)
                 #write new node at end of file
                 self.buckets.seek(0, 2)
                 new_node_start = self.buckets.tell()
                 #prepare new node_data
                 new_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                     (self.key_format +
-                                         self.pointer_format) * new_node_size,
-                                        new_node_size,
-                                        children_flag,
-                                        new_pointer,
-                                        *old_node_data)
+                                       (self.key_format +
+                                        self.pointer_format) * new_node_size,
+                                       new_node_size,
+                                       children_flag,
+                                       new_pointer,
+                                       *old_node_data)
                 new_node += blanks
                 #write new node
                 self.buckets.write(new_node)
@@ -1276,12 +1276,12 @@ class IU_TreeBasedIndex(Index):
                 new_node_start = self.buckets.tell()
                 #prepare new node_data
                 new_node = struct.pack('<' + self.node_heading_format +
-                                     self.pointer_format + (self.key_format +
-                                         self.pointer_format) * new_node_size,
-                                        new_node_size,
-                                        children_flag,
-                                        old_node_data[-new_node_size * 2 - 1],
-                                        *old_node_data[-new_node_size * 2:])
+                                       self.pointer_format + (self.key_format +
+                                                              self.pointer_format) * new_node_size,
+                                       new_node_size,
+                                       children_flag,
+                                       old_node_data[-new_node_size * 2 - 1],
+                                       *old_node_data[-new_node_size * 2:])
                 new_node += blanks
                 #write new node
                 self.buckets.write(new_node)
@@ -1294,10 +1294,10 @@ class IU_TreeBasedIndex(Index):
                 self.buckets.write(
                     struct.pack(
                         '<' + (self.key_format + self.pointer_format) *
-                               (nr_of_keys_to_rewrite - new_node_size),
-                                               new_key,
-                                               new_pointer,
-                                               *old_node_data[:-(new_node_size + 1) * 2]))
+                        (nr_of_keys_to_rewrite - new_node_size),
+                        new_key,
+                        new_pointer,
+                        *old_node_data[:-(new_node_size + 1) * 2]))
 
                 self._read_single_node_key.delete(node_start)
                 self._read_node_nr_of_elements_and_children_flag.delete(
@@ -1307,13 +1307,13 @@ class IU_TreeBasedIndex(Index):
             else:  # key goes into second half
                 #reading second half of node
                 self.buckets.seek(self._calculate_key_position(node_start,
-                                                              old_node_size,
-                                                              'n')
+                                                               old_node_size,
+                                                               'n')
                                   + self.pointer_size)
                 data = self.buckets.read(
                     new_node_size * (self.key_size + self.pointer_size))
                 old_node_data = struct.unpack('<' + new_node_size *
-                                                (self.key_format + self.pointer_format), data)
+                                              (self.key_format + self.pointer_format), data)
                 #find key which goes to parent node
                 key_moved_to_parent_node = old_node_data[0]
                 self.buckets.seek(0, 2)  # end of file
@@ -1329,18 +1329,18 @@ class IU_TreeBasedIndex(Index):
                     keys_before = old_node_data
                     keys_after = []
                 new_node = struct.pack('<' + self.node_heading_format + self.pointer_format +
-                                     (self.key_format + self.pointer_format) *
-                                     (new_node_size -
-                                         nr_of_keys_to_rewrite - 1),
-                                     new_node_size,
-                                     children_flag,
-                                     first_leaf_pointer,
-                                     *keys_before)
+                                       (self.key_format + self.pointer_format) *
+                                       (new_node_size -
+                                        nr_of_keys_to_rewrite - 1),
+                                       new_node_size,
+                                       children_flag,
+                                       first_leaf_pointer,
+                                       *keys_before)
                 new_node += struct.pack('<' + (self.key_format + self.pointer_format) *
-                                      (nr_of_keys_to_rewrite + 1),
-                                      new_key,
-                                      new_pointer,
-                                      *keys_after)
+                                        (nr_of_keys_to_rewrite + 1),
+                                        new_key,
+                                        new_pointer,
+                                        *keys_after)
                 new_node += blanks
                 #write new node
                 self.buckets.write(new_node)
@@ -1376,56 +1376,56 @@ class IU_TreeBasedIndex(Index):
                 leaf_start, key, doc_id, start, size, status)
             return
         leaf_start, new_record_position, nr_of_records_to_rewrite, full_leaf, on_deleted\
-        = self._find_place_in_leaf(key, leaf_start, nr_of_elements)
+            = self._find_place_in_leaf(key, leaf_start, nr_of_elements)
         if full_leaf:
             try:  # check if leaf has parent node
                 leaf_parent_pointer = nodes_stack.pop()
             except IndexError:  # leaf is a root
                 leaf_parent_pointer = 0
             split_data = self._split_leaf(leaf_start,
-                                     nr_of_records_to_rewrite,
-                                     key,
-                                     doc_id,
-                                     start,
-                                     size,
-                                     status,
-                                     create_new_root=(False if leaf_parent_pointer else True))
+                                          nr_of_records_to_rewrite,
+                                          key,
+                                          doc_id,
+                                          start,
+                                          size,
+                                          status,
+                                          create_new_root=(False if leaf_parent_pointer else True))
             if split_data is not None:  # means that split created new root or replaced split with update_if_has_deleted
                 new_leaf_start_position, key_moved_to_parent_node = split_data
                 self._insert_new_key_into_node(leaf_parent_pointer,
-                                              key_moved_to_parent_node,
-                                              leaf_start,
-                                              new_leaf_start_position,
-                                              nodes_stack,
-                                              indexes)
+                                               key_moved_to_parent_node,
+                                               leaf_start,
+                                               new_leaf_start_position,
+                                               nodes_stack,
+                                               indexes)
         else:  # there is a place for record in leaf
             self.buckets.seek(leaf_start)
             self._update_leaf(
                 leaf_start, new_record_position, nr_of_elements, nr_of_records_to_rewrite,
-                             on_deleted, key, doc_id, start, size, status)
+                on_deleted, key, doc_id, start, size, status)
 
     def _update_node(self, new_key_position, nr_of_keys_to_rewrite, new_key, new_pointer):
         if nr_of_keys_to_rewrite == 0:
             self.buckets.seek(new_key_position)
             self.buckets.write(
                 struct.pack('<' + self.key_format + self.pointer_format,
-                                           new_key,
-                                           new_pointer))
+                            new_key,
+                            new_pointer))
             self.flush()
         else:
             self.buckets.seek(new_key_position)
             data = self.buckets.read(nr_of_keys_to_rewrite * (
-                 self.key_size + self.pointer_size))
+                                     self.key_size + self.pointer_size))
             keys_to_rewrite = struct.unpack(
                 '<' + nr_of_keys_to_rewrite * (self.key_format + self.pointer_format), data)
             self.buckets.seek(new_key_position)
             self.buckets.write(
                 struct.pack(
                     '<' + (nr_of_keys_to_rewrite + 1) *
-                           (self.key_format + self.pointer_format),
-                                           new_key,
-                                           new_pointer,
-                                           *keys_to_rewrite))
+                    (self.key_format + self.pointer_format),
+                    new_key,
+                    new_pointer,
+                    *keys_to_rewrite))
             self.flush()
 
     def _insert_new_key_into_node(self, node_start, new_key, old_half_start, new_half_start, nodes_stack, indexes):
@@ -1453,20 +1453,20 @@ class IU_TreeBasedIndex(Index):
             if new_data:  # if not new_data, new root has been created
                 new_node_start_position, key_moved_to_parent_node = new_data
                 self._insert_new_key_into_node(node_parent_pointer,
-                                              key_moved_to_parent_node,
-                                              node_start,
-                                              new_node_start_position,
-                                              nodes_stack,
-                                              indexes)
+                                               key_moved_to_parent_node,
+                                               node_start,
+                                               new_node_start_position,
+                                               nodes_stack,
+                                               indexes)
 
             self._find_first_key_occurence_in_node.delete(node_start)
             self._find_last_key_occurence_in_node.delete(node_start)
         else:  # there is a empty slot for new key in node
             self._update_size(node_start, nr_of_elements + 1)
             self._update_node(new_key_position,
-                             nr_of_keys_to_rewrite,
-                             new_key,
-                             new_half_start)
+                              nr_of_keys_to_rewrite,
+                              new_key,
+                              new_half_start)
 
             self._find_first_key_occurence_in_node.delete(node_start)
             self._find_last_key_occurence_in_node.delete(node_start)
@@ -1952,9 +1952,9 @@ class IU_TreeBasedIndex(Index):
         # os.unlink(os.path.join(self.db_path, self.name + "_buck"))
         self.close_index()
         shutil.move(os.path.join(compact_ind.db_path, compact_ind.
-            name + "_buck"), os.path.join(self.db_path, self.name + "_buck"))
+                                 name + "_buck"), os.path.join(self.db_path, self.name + "_buck"))
         shutil.move(os.path.join(compact_ind.db_path, compact_ind.
-            name + "_stor"), os.path.join(self.db_path, self.name + "_stor"))
+                                 name + "_stor"), os.path.join(self.db_path, self.name + "_stor"))
         # self.name = original_name
         self.open_index()  # reload...
         self.name = original_name
