@@ -1,93 +1,235 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=640" />
 
-    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
-    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>CodernityDB pure python, NoSQL, fast database &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="#"/>
+                <link rel="next" title="Design" href="design.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
 
-    <script type="text/javascript" src="javascripts/modernizr.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function () {
-        $('#main_content').headsmart()
-      })
-    </script>
-    <title>Codernitydb by perchouli</title>
-  </head>
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
 
-  <body>
-    <a id="forkme_banner" href="https://github.com/perchouli/codernitydb">View on GitHub</a>
-    <div class="shell">
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="codernitydb-pure-python-nosql-fast-database">
+<h1>CodernityDB pure python, NoSQL, fast database<a class="headerlink" href="#codernitydb-pure-python-nosql-fast-database" title="Permalink to this headline">¶</a></h1>
+<p>CodernityDB is opensource, pure Python (no 3rd party dependency), fast (really fast check <a class="reference internal" href="speed.html#speed"><em>Speed</em></a> if you don&#8217;t believe in words), multiplatform, schema-less, <a class="reference external" href="http://en.wikipedia.org/wiki/NoSQL">NoSQL</a> database. It has optional support for HTTP server version (<a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a>), and also Python client library (<a class="reference external" href="http://labs.codernity.com/codernitydb-pyclient">CodernityDB-PyClient</a>) that aims to be 100% compatible with embedded version.</p>
+<img alt="_images/CodernityDB.png" class="align-center" src="_images/CodernityDB.png" />
+<p>You can call it a more advanced key-value database. With multiple key-values indexes in the same engine. Also CodernityDB supports functions that are executed inside database.</p>
+<div class="section" id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Native Python database</li>
+<li>Multiple indexes</li>
+<li>Fast (more than 50 000 insert operations per second see <a class="reference internal" href="speed.html#speed"><em>Speed</em></a> for details)</li>
+<li>Embedded mode (default) and <a class="reference internal" href="server.html#server"><em>Server</em></a>, with client library that aims to be 100% compatible with embedded one.</li>
+<li>Easy way to implement custom Storage (see <a class="reference internal" href="examples.html#example-storage"><em>Example storages</em></a>)</li>
+</ul>
+</div>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p>Because CodernityDB is pure Python you need to perform standard installation for Python applications:</p>
+<div class="highlight-python"><pre>pip install CodernityDB</pre>
+</div>
+<p>or using easy_install:</p>
+<div class="highlight-python"><pre>easy_install CodernityDB</pre>
+</div>
+<p>or from sources:</p>
+<div class="highlight-python"><pre>hg clone ssh://hg@bitbucket.org/codernity/codernitydb
+cd codernitydb
+python setup.py install</pre>
+</div>
+</div>
+<div class="section" id="contribute-bugs-requests">
+<h2>Contribute &amp; Bugs &amp; Requests<a class="headerlink" href="#contribute-bugs-requests" title="Permalink to this headline">¶</a></h2>
+<p>CodernityDB is one of projects developed and released by <a class="reference external" href="http://codernity.com">Codernity</a>, so you can contact us directly in any case.</p>
+<p>Do you want to contribute? Great! Then just fork our repository (<a class="reference external" href="https://bitbucket.org/codernity/codernitydb">https://bitbucket.org/codernity/codernitydb</a>) on Bitbucket and do a pull request. It can&#8217;t be more easy!</p>
+<p>To fill a bug please also use Bitbucket.</p>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<p>In case of any problems, feature request you can also contact us directly.</p>
+<p>Do you want customized version of CodernityDB ? No problem, just contact us.</p>
+</div>
+<div class="section" id="documentation-index">
+<h2>Documentation index<a class="headerlink" href="#documentation-index" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="design.html#how-it-s-build">How it&#8217;s build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html#acid">ACID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html#disk-usage">Disk usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html#database-operations-flow">Database operations flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#hash-index">Hash Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#b-plus-tree-index">B Plus Tree Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#index-functions">Index functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#easier-way-of-creating-indexes">Easier way of creating indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#tables-collections">Tables, collections...?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_indexes.html#how-an-index-code-is-processed-by-codernitydb">How an index code is processed by CodernityDB?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="speed.html#hash-index-only">Hash Index only</a></li>
+<li class="toctree-l2"><a class="reference internal" href="speed.html#hash-bplustree-index">Hash + BPlusTree Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="speed.html#huge-insert">Huge insert</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.html#http">HTTP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#web-frameworks">Web frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#ui">UI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#insert-save-store">Insert / Save / Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#get-query">Get / Query</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#duplicates">Duplicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#ordered-data">Ordered data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#update-delete">Update / Delete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick.html#index-functions">Index functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-indexes">Example indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-storages">Example storages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-database-functions">Example database functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#indexes">Indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-CodernityDB.storage">Storage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+</ul>
+</div>
+</div>
+</div>
 
-      <header>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            <h1>Codernitydb</h1>
-            <h2>A pure python, NoSQL, fast database. </h2>
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
-      </header>
 
-      <section id="downloads">
-        <span class="inner">
-          <a href="https://github.com/perchouli/codernitydb/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/perchouli/codernitydb/tarball/master" class="tgz"><em>download</em> .TGZ</a>
-        </span>
-      </section>
-
-
-      <span class="banner-fix"></span>
-
-
-      <section id="main_content">
-        <h3>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-
-      <footer>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            <p>this project by <a href="https://github.com/perchouli">perchouli</a> can be found on <a href="https://github.com/perchouli/codernitydb">GitHub</a></p>
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
-        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
-        <span class="octocat"></span>
-      </footer>
-
+        </div>
     </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
 
-    
-  </body>
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
 </html>

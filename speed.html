@@ -1,0 +1,408 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Speed &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="Server version" href="server.html"/>
+                <link rel="prev" title="How it’s tested" href="how_its_tested.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Speed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hash-index-only">Hash Index only</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hash-bplustree-index">Hash + BPlusTree Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#huge-insert">Huge insert</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="speed">
+<span id="id1"></span><h1>Speed<a class="headerlink" href="#speed" title="Permalink to this headline">¶</a></h1>
+<p>Average record size during that speed tests was <strong>1524
+bytes</strong> or described separately.</p>
+<p>Number of indexes does <strong>not affect</strong> get performance. It affect
+insert performance because data must come through that index.</p>
+<p>The platform used for that tests was:</p>
+<ul class="simple">
+<li>i5-2500K CPU</li>
+<li>8 GB DDR3 1333 MHz of ram memory</li>
+<li>Hitachi HDS721010DLE630 as HDD</li>
+<li>Debian Wheezy 64bit</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please note that Operatig system and/or Python will optimize disk
+read calls, in &#8220;same <tt class="docutils literal"><span class="pre">_id</span></tt> get&#8221; test there were much less system calls to
+<tt class="docutils literal"><span class="pre">read</span></tt> function than 100 000.</p>
+</div>
+<div class="section" id="hash-index-only">
+<h2>Hash Index only<a class="headerlink" href="#hash-index-only" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils" id="hash-speed">
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Number</th>
+<th class="head">Time (secs)</th>
+<th class="head">Total size</th>
+<th class="head">Total throughput <a class="footnote-reference" href="#f1" id="id2">[1]</a></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Insert 1524b</td>
+<td>1 000 000</td>
+<td>28.05</td>
+<td>1577203 kB (~1.5 GB) <a class="footnote-reference" href="#f4" id="id3">[4]</a></td>
+<td>54.91 MB/s</td>
+</tr>
+<tr class="row-odd"><td>Insert 44b</td>
+<td>1 000 000</td>
+<td>17.65</td>
+<td>94926 kB (~93 MB) <a class="footnote-reference" href="#f4" id="id4">[4]</a></td>
+<td>5.37 MB/s</td>
+</tr>
+<tr class="row-even"><td>Unique get  (~1524b each) <a class="footnote-reference" href="#f2" id="id5">[2]</a></td>
+<td>100 000</td>
+<td>0.76</td>
+<td>148828 kB (~145 MB)</td>
+<td>191 MB/s</td>
+</tr>
+<tr class="row-odd"><td>Same <tt class="docutils literal"><span class="pre">_id</span></tt> get (1524b) <a class="footnote-reference" href="#f3" id="id6">[3]</a></td>
+<td>100 000</td>
+<td>0.16</td>
+<td>148828 kB (~145 MB)</td>
+<td>906 MB/s</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">CodernityDB <strong>never</strong> caches disk read directly. Internal cache
+mechanizm only affects metadata lookup in database
+structure.</p>
+</div>
+</div>
+<div class="section" id="hash-bplustree-index">
+<h2>Hash + BPlusTree Index<a class="headerlink" href="#hash-bplustree-index" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils" id="tree-speed">
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Number</th>
+<th class="head">Time (secs)</th>
+<th class="head">Total size</th>
+<th class="head">Total throughput <a class="footnote-reference" href="#f1" id="id7">[1]</a></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Insert with empty storage <a class="footnote-reference" href="#f5" id="id8">[5]</a></td>
+<td>100 000</td>
+<td>5.87</td>
+<td>166608 kB (~162 MB)</td>
+<td>27.71 MB/s</td>
+</tr>
+<tr class="row-odd"><td>Insert with full storage <a class="footnote-reference" href="#f6" id="id9">[6]</a></td>
+<td>100 000</td>
+<td>6.56</td>
+<td>315436 kB (~308 MB)</td>
+<td>46.96 MB/s</td>
+</tr>
+<tr class="row-even"><td>Same key get <a class="footnote-reference" href="#f7" id="id10">[7]</a></td>
+<td>100 000</td>
+<td>0.16</td>
+<td>148828 kB (~145 MB)</td>
+<td>906 MB/s</td>
+</tr>
+<tr class="row-odd"><td>Random key get <a class="footnote-reference" href="#f8" id="id11">[8]</a></td>
+<td>50 000</td>
+<td>2.23</td>
+<td>74414 kB (~72 MB)</td>
+<td>32.59 MB/s</td>
+</tr>
+<tr class="row-even"><td>First 50000 records</td>
+<td>10 * 50000 <a class="footnote-reference" href="#f9" id="id12">[9]</a></td>
+<td>1.51</td>
+<td>744140 kB (~726 MB)</td>
+<td>481 MB/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="huge-insert">
+<h2>Huge insert<a class="headerlink" href="#huge-insert" title="Permalink to this headline">¶</a></h2>
+<p>By huge we mean <tt class="docutils literal"><span class="pre">10</span> <span class="pre">000</span> <span class="pre">000+</span></tt>. Below you will find table that shows how
+much it take to insert next <tt class="docutils literal"><span class="pre">100</span> <span class="pre">000</span></tt> data. On the right side you
+will find a hundreds of hundreds of thousands (so 195 means 19.5
+milions) data that are already in database. Whole test was to insert <tt class="docutils literal"><span class="pre">40</span> <span class="pre">000</span> <span class="pre">000</span></tt> records. Test was performed with only <strong>HashIndex</strong> enabled.</p>
+<div class="highlight-python"><pre>195 7.95013904572
+196 3.65534615517
+197 3.76729917526
+198 3.67554092407
+199 3.67811894417
+200 3.68342399597
+201 7.85825514793
+202 7.03050684929
+203 3.83275294304
+204 3.71660590172
+205 3.73785018921
+...
+345 9.38193798065
+346 5.12198114395
+347 5.05182003975
+348 5.08870697021
+349 9.35661196709
+350 8.65566110611
+351 5.08686304092
+352 5.09454798698
+353 5.25117206573
+354 5.27701687813
+355 9.33711600304</pre>
+</div>
+<p>As you can see CodernityDB performs pretty stable even on quite big number of records inside database.</p>
+<p>We can easily compare those data to Kyoto Cabinet for example. Kyoto DB was: <tt class="docutils literal"><span class="pre">casket.kch#bnum=5000000#xmsiz=536870912</span></tt></p>
+<div class="highlight-python"><pre>195 4.10116410255
+196 82.7376952171
+197 67.5338990688
+198 1.37760806084
+199 1.06519412994
+200 1.05488991737
+201 1.0541009903
+202 35.6051700115
+203 1.0752620697
+204 1.05934405327
+205 1.05623102188
+...
+345 2.68368792534
+346 53.0082919598
+347 1.61376214027
+348 1.40895700455
+349 79.2329280376
+350 1.2841398716
+351 1.2099750042
+352 71.6390359402
+353 1.20401000977
+354 1.15575003624
+355 55.4045758247</pre>
+</div>
+<div class="section" id="surprised">
+<h3><em>Surprised?</em><a class="headerlink" href="#surprised" title="Permalink to this headline">¶</a></h3>
+<p>As you can see while Kyoto Cabinet is quite fast in most cases, it slowdowns <strong>a lot</strong> sometimes (do you know better setup that we should use? Contact us). <tt class="docutils literal"><span class="pre">autosync</span></tt> and <tt class="docutils literal"><span class="pre">autotran</span></tt> was disabled in Kyoto Cabinet. What&#8217;s even more important in CodernityDB you can have more than one index (it affects performance though), so you don&#8217;t have to copy your data all over single databases.</p>
+<p>There you will find statistics for that tests:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Database</th>
+<th class="head">Min</th>
+<th class="head">Max</th>
+<th class="head">Mean</th>
+<th class="head">Std</th>
+<th class="head">Total</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Kyoto Cabinet</td>
+<td>0.629998922348</td>
+<td>146.798651934</td>
+<td>13.6441506329</td>
+<td>25.5503667156</td>
+<td>5471.30440378</td>
+</tr>
+<tr class="row-odd"><td>CodernityDB</td>
+<td>1.63907909393</td>
+<td>12.9895970821</td>
+<td>4.57873315585</td>
+<td>4.57873315585</td>
+<td>1836.0719955</td>
+</tr>
+</tbody>
+</table>
+<p>CodernityDB slow downs on when there is a lot of records in database, but as you can see it performs pretty stable. And remember, Kyoto Cabinet is C++ database while CodernityDB is pure Python.</p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> In get methods it doesn&#8217;t mean disk I/O throughput</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[2]</a></td><td>Gets for unique records in database</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td>Gets for always the same record.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[4]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> That is the total size used by database</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[5]</a></td><td>Tree index doesn&#8217;t store anything to storage</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[6]</a></td><td>Tree index stores the same data as <em>id</em> one (1524 B average size)</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[7]</a></td><td>Get for the same key in Tree index</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[8]</a></td><td>Gets for unique keys in Tree index. That&#8217;s <strong>worst</strong> case for Tree Index</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id12">[9]</a></td><td>The operation was repeated 10 times in a row</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

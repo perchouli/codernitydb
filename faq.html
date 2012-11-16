@@ -1,0 +1,154 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>FAQ &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="API docs" href="api.html"/>
+                <link rel="prev" title="Examples" href="examples.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="faq">
+<span id="id1"></span><h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<p>Here you will find some questions and answers</p>
+<dl class="docutils">
+<dt>What about JOINs (known from SQL databases) ?</dt>
+<dd>You can write database function. Please see <a class="reference internal" href="examples.html#join-like1"><em>Join like 1</em></a>. Just remember CodernityDB is <em>not</em> relational database.</dd>
+<dt>Will it work on Jython ?</dt>
+<dd>On 2.5 no, on 2.7 it should but currently it will not because of bug in Jython IO implementation. But currently Jython 2.7 is in alpha stage, so it will change in future.</dd>
+<dt>How fast is CodernityDB ?</dt>
+<dd>It&#8217;s pretty fast. It can be said that you can insert even more than 55 000 records to Hash Index every second (see <a class="reference internal" href="speed.html#speed"><em>Speed</em></a> for more details)</dd>
+<dt>Can I add index to existing DB ?</dt>
+<dd>Yes you can, but you will need to reindex that index to have in it data that were in database already before you add that index. (see <a class="reference internal" href="database_indexes.html#database-indexes"><em>Database indexes</em></a> for details)</dd>
+<dt>What about tables or collections ?</dt>
+<dd>Everything can be done through our Index mechanism see <a class="reference internal" href="database_indexes.html#tables-colections-q"><em>Tables, collections...?</em></a>.</dd>
+<dt>How does it compare to MongoDB, CouchDB and other &#8220;big&#8221; NoSQL databases ?</dt>
+<dd>It does not compare. Different purposes, different design, different use case. For some projects it makes sense to use CodernityDB instead of MongoDB, CouchDB and others, for some other not.</dd>
+<dt>Why Python 3 is not supported ?</dt>
+<dd>Python 3 introduced many incompatible changes. In case of CodernityDB having working version for 2.x and 3.x series in the same codebase without ugly hacks (big monkey-patching etc.) is almost impossible. If you&#8217;re interested Python 3 version of CodernityDB contact us. Porting CodernityDB to Python 3.x is not hard. Python 3.x support in fact was never needed. That&#8217;s why there is no support for it (yet?).</dd>
+<dt>I want to contribute, what can I do?</dt>
+<dd>Just fork and create pull request <a class="reference external" href="http://bitbucket.org/codernity/codernitydb">CodernityDB &#64; Bitbucket</a>.</dd>
+<dt>I found a bug, where can I report it?</dt>
+<dd>Please report it on Bitbucket bugtracker in our repo <a class="reference external" href="http://bitbucket.org/codernity/codernitydb">CodernityDB &#64; Bitbucket</a>.</dd>
+<dt>I want to have a bit customized CodernityDB</dt>
+<dd>No problem, just contact us to get more details about that.</dd>
+<dt>I want to use CodernityDB in commercial project, do I have to pay for it?</dt>
+<dd>CodernityDB is released on <a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0 license</a>, it allows you to freely use it even for commercial purposes without any need to pay for it. IT&#8217;S FREE FOR COMMERCIAL USE.</dd>
+</dl>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

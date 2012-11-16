@@ -1,0 +1,332 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Design &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="Database indexes" href="database_indexes.html"/>
+                <link rel="prev" title="CodernityDB pure python, NoSQL, fast database" href="index.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-it-s-build">How it&#8217;s build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acid">ACID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#disk-usage">Disk usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#database-operations-flow">Database operations flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="design">
+<span id="id1"></span><h1>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please remember that CodernityDB is <em>not</em> relational Database, forcing it to work in that model will usually work, but it&#8217;s not recommended. You should try to denormalize it (<cite>Database normalization</cite>).</p>
+</div>
+<div class="section" id="how-it-s-build">
+<h2>How it&#8217;s build<a class="headerlink" href="#how-it-s-build" title="Permalink to this headline">¶</a></h2>
+<p>CodernityDB is build from 3 important parts. Please read also <a class="reference internal" href="#database-operations-description"><em>Database operations flow</em></a> to understand how CodernityDB works.</p>
+<div class="section" id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
+<p>It holds information about Indexes, and mostly does operation on those
+indexes. It&#8217;s the visible Object for End User.</p>
+<p>Currently there are implemented 4 different databases</p>
+<ol class="arabic simple">
+<li>Database - a database to use in single process/thread environment</li>
+<li>DatabaseTreadSafe - a database to use with threads, readers don&#8217;t
+block writters etc. GeventDatabase is 1:1 copy of that database.</li>
+<li>DatabaseSuperThreadSafe - a database to also use with threads, but
+database operations are limited to only one in given time.</li>
+<li>CodernityDB-HTTP - a HTTP server version of database, for multi
+thread and multi process environments. <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a>.</li>
+</ol>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">Database to work requires at least one Index. That required index
+must be named <strong>id</strong>. It will store <strong>all</strong> objects that are saved
+in database.</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Do you know that you can use CodernityDB as simple key-value on
+disk storage? Just define only one index (the <strong>id</strong> one).</p>
+</div>
+</div>
+<div class="section" id="index">
+<span id="database-design-index"></span><h3>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">If you want to search / query database for given parameters /
+values etc., you have to specify the index that will return
+key/value from it. Please see <a class="reference internal" href="examples.html#examples"><em>Examples</em></a> and <a class="reference internal" href="database_indexes.html#database-indexes"><em>Database indexes</em></a>.</p>
+</div>
+<p>By index we call the class in Python language that was added to the
+Database. It can be compared to SQL table (read only), to update
+you always need to pass full object to database, our Indexes can be
+compared also with CouchDB views mechanizm. (you would like probably to see <a class="reference internal" href="database_indexes.html#simple-index"><em>Easier way of creating indexes</em></a>). You can have as much indexes as you want and single record in database can &#8220;exists&#8221; in more than one index.</p>
+<p>Index itself does not store any information except it&#8217;s
+<em>metadata</em>. You don&#8217;t have to copy full data everytime in indexes,
+because all indexes different than <em>id</em> one, are bound with it by
+<tt class="docutils literal"><span class="pre">_id</span></tt> value, and you can easily get content from that <em>id</em> index by
+adding <tt class="docutils literal"><span class="pre">with_doc=True</span></tt> to your get queries (please refer to
+<a class="reference internal" href="api.html#CodernityDB.database.Database.get" title="CodernityDB.database.Database.get"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.get()</span></tt></a> for method documentation)</p>
+<p>Don&#8217;t worry it&#8217;s not hard, to write index, that&#8217;s an example of hash index
+(more in <a class="reference internal" href="examples.html#examples"><em>Examples</em></a>)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Remember that adding new index when database exists you have to
+perform reindex on that new index.</p>
+</div>
+<div class="highlight-python" id="example-md5-hash-based-index"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Md5Index</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;16s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Md5Index</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">digest</span><span class="p">(),</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>That&#8217;s one of the simplest index class, it will allow you to query
+database for specified <cite>name</cite>, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">john</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;md5&#39;</span><span class="p">,</span> <span class="s">&#39;John&#39;</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Currently <em>Hash</em> based index (<a class="reference external" href="http://en.wikipedia.org/wiki/Hash_table">Hash Table</a> separate chaining version) and <em>B+Tree</em> based (<a class="reference external" href="http://en.wikipedia.org/wiki/B%2B_tree">B Plus Tree</a>) are avaliable.</p>
+<p>Both indexes makes huge use of <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_file">Sparse files</a>.</p>
+<p>For more informations about indexes visit <a class="reference internal" href="database_indexes.html#database-indexes"><em>Database indexes</em></a></p>
+<p>Also please remember that more indexes affects write performance.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <strong>id</strong> index should save whole object content, otherwise the options <em>with_doc</em> will not work as expected.</p>
+</div>
+</div>
+<div class="section" id="storage">
+<h3>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<p>Storage is used by index to store values from it (look at the second return parameter in code example above).</p>
+<p>If index returns <tt class="docutils literal"><span class="pre">None</span></tt> as value, no storage operation is
+performed.</p>
+<p>Storage needs to save python value to the disk and return the position
+and size to allow Index to save that data. The default implementation
+uses Python <a class="reference external" href="http://docs.python.org/library/marshal.html">marshal</a> to serialize and deserialize Python objects
+passed as value into it. So you will be abble to store those object
+that are serializable by <a class="reference external" href="http://docs.python.org/library/marshal.html">marshal</a> module.</p>
+</div>
+</div>
+<div class="section" id="acid">
+<h2>ACID<a class="headerlink" href="#acid" title="Permalink to this headline">¶</a></h2>
+<p>CodernityDB never overwrites existing data. The <strong>id</strong> index is
+<strong>always</strong> consistent. And other indexes can be always restored,
+refreshed (<a class="reference internal" href="api.html#CodernityDB.database.Database.reindex_index" title="CodernityDB.database.Database.reindex_index"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.reindex_index()</span></tt></a> operation) from it.</p>
+<p>In given time, just one writer is allowed to write into single index
+(update / delete actions). Readers are never blocked.</p>
+<p>The write is first performed on storage, and then on
+index metadata. After every write operation, the index does flush of the storage and
+metadata files. It means that in worst case (power lost during write
+operation) the previous metadata and storage information will be
+valid.</p>
+<p>Database doesn&#8217;t allow multiple object operations, and has no support
+for typical transaction mechanizm (like SQL databases have). But
+<em>single object operation</em> is fully atomic.</p>
+<p>To handle multiple updates to the same document we use <tt class="docutils literal"><span class="pre">_rev</span></tt> (like <a class="reference external" href="http://couchdb.apache.org">CouchDB</a>) field,
+that informs us about document version. When <tt class="docutils literal"><span class="pre">rev</span></tt> is not matched
+with one from Database, write operation is refused.</p>
+<p>There is also nothing like <em>delayed write</em> in default CodernityDB
+implementation. After each write, internals and file buffers are flushed, and then the write confirmation is returned to user.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">CodernityDB does no sync kernel buffers with disk itself. To be sure that data is written to disk please call <a class="reference internal" href="api.html#CodernityDB.database.Database.fsync" title="CodernityDB.database.Database.fsync"><tt class="xref py py-meth docutils literal"><span class="pre">fsync()</span></tt></a></p>
+</div>
+</div>
+<div class="section" id="disk-usage">
+<h2>Disk usage<a class="headerlink" href="#disk-usage" title="Permalink to this headline">¶</a></h2>
+<p><strong>Indexes</strong> tries to reuse as much space as possible, because
+<em>metadata</em> size is fixed, during every write operation,
+if index finds <em>metadata</em> marked as removed or so, it reuses it -
+writes new data into that place.</p>
+<p>Because of <em>never update</em> in <strong>Storage</strong>, a lot of space is wasted
+there. To optimize the disk usage run
+<a class="reference internal" href="api.html#CodernityDB.database.Database.compact" title="CodernityDB.database.Database.compact"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.compact()</span></tt></a> or
+<a class="reference internal" href="api.html#CodernityDB.index.Index.compact" title="CodernityDB.index.Index.compact"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.index.Index.compact()</span></tt></a> method.</p>
+</div>
+<div class="section" id="database-operations-flow">
+<span id="database-operations-description"></span><h2>Database operations flow<a class="headerlink" href="#database-operations-flow" title="Permalink to this headline">¶</a></h2>
+<p>During insert into database, incomming data is passed to
+<tt class="docutils literal"><span class="pre">make_key_value</span></tt> functions in <em>all</em> indexes in order of adding or
+changing them in database.
+On query operations function <tt class="docutils literal"><span class="pre">make_key</span></tt> is called to get
+valid key for the given index.
+So having more indexes affects write speed, but does not affect read speed at all.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Interested in speed? Visit <a class="reference internal" href="speed.html#speed"><em>Speed</em></a> showcase.</p>
+</div>
+<div class="section" id="insert">
+<h3>Insert<a class="headerlink" href="#insert" title="Permalink to this headline">¶</a></h3>
+<p>Incomming data is at first processed in <em>id</em> index. Then it goes
+through <tt class="docutils literal"><span class="pre">make_key_value</span></tt> method, in next stage the value is stored in
+<em>storage</em>, and at last the metadata is stored in <em>index</em>.
+Then the procedure is repeated for other indexes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please see <a class="reference internal" href="api.html#CodernityDB.database.Database.insert" title="CodernityDB.database.Database.insert"><tt class="xref py py-meth docutils literal"><span class="pre">insert()</span></tt></a> docs
+for details.</p>
+</div>
+</div>
+<div class="section" id="update">
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
+<p>Works in the same way as <em>insert</em> operation. But you have to specify
+<tt class="docutils literal"><span class="pre">_rev</span></tt> and <tt class="docutils literal"><span class="pre">_id</span></tt> fields. The <tt class="docutils literal"><span class="pre">_rev</span></tt> field is compared with
+currently stored in database. If they match, the operation continues, in
+other situation <a class="reference internal" href="api.html#CodernityDB.database.DatabaseConflict" title="CodernityDB.database.DatabaseConflict"><tt class="xref py py-exc docutils literal"><span class="pre">DatabaseConflict</span></tt></a> is raised.</p>
+<p>Also there is no possibility to update single attribute of object in
+database. You have to always do full update. So even for updating a single
+attribute you have to perform <tt class="docutils literal"><span class="pre">get</span></tt> + <tt class="docutils literal"><span class="pre">update</span></tt> on whole object from database.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please see <a class="reference internal" href="api.html#CodernityDB.database.Database.update" title="CodernityDB.database.Database.update"><tt class="xref py py-meth docutils literal"><span class="pre">update()</span></tt></a> docs for details.</p>
+</div>
+</div>
+<div class="section" id="delete">
+<h3>Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
+<p>During delete phase at first the data is deleted from <em>all</em> indexes
+but <em>id</em>, then if succeeded at last phase from <em>id</em> index. Delete operation is in
+general just a bit changed update one. In fact the <em>delete</em> means
+<em>mark as deleted</em>. No direct delete is performed. The place used by
+<em>metadata</em> will be reused in first possible situation (ie. will not
+iterate further if element marked as <em>deleted</em> is found).</p>
+<p>To real delete data from database you have to first delete it, then run
+<a class="reference internal" href="api.html#CodernityDB.database.Database.compact" title="CodernityDB.database.Database.compact"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.compact()</span></tt></a> or <a class="reference internal" href="api.html#CodernityDB.database.Database.reindex" title="CodernityDB.database.Database.reindex"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.reindex()</span></tt></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please see <a class="reference internal" href="api.html#CodernityDB.database.Database.delete" title="CodernityDB.database.Database.delete"><tt class="xref py py-meth docutils literal"><span class="pre">delete()</span></tt></a> docs for details.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please see <a class="reference internal" href="database_indexes.html#database-indexes"><em>Database indexes</em></a> for index documentation and description.</p>
+</div>
+<p>Using that order, we can be sure that even in case of index failure,
+in any case we have fully working <em>id</em> index, and it can be used to
+rebuild other index structure
+(<a class="reference internal" href="api.html#CodernityDB.database.Database.reindex" title="CodernityDB.database.Database.reindex"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.reindex()</span></tt></a> and <a class="reference internal" href="api.html#CodernityDB.database.Database.compact" title="CodernityDB.database.Database.compact"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.database.Database.compact()</span></tt></a>)</p>
+</div>
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

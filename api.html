@@ -1,0 +1,1570 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>API docs &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="prev" title="FAQ" href="faq.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indexes">Indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-CodernityDB.storage">Storage</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="api-docs">
+<span id="api-database"></span><h1>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
+<p>Here you will find API docs. If you&#8217;re python user you will probably
+understand it. In other case you should visit:</p>
+<ul class="simple">
+<li><a class="reference internal" href="design.html#database-operations-description"><em>Database operations flow</em></a></li>
+<li><a class="reference internal" href="design.html#design"><em>Design</em></a></li>
+<li><a class="reference internal" href="quick.html#quick-tutorial"><em>Quick tutorial</em></a></li>
+</ul>
+<p>And you probably want to use <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a> instead this embedded version.</p>
+<div class="section" id="database">
+<h2>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please refer to <a class="reference internal" href="design.html#database-operations-description"><em>Database operations flow</em></a> for general description</p>
+</div>
+<div class="section" id="module-CodernityDB.database">
+<span id="standard"></span><h3>Standard<a class="headerlink" href="#module-CodernityDB.database" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="CodernityDB.database.Database">
+<em class="property">class </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">Database</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A default single thread database object.</p>
+<dl class="method">
+<dt id="CodernityDB.database.Database.add_index">
+<tt class="descname">add_index</tt><big>(</big><em>new_index</em>, <em>create=True</em>, <em>ind_kwargs=None</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.add_index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_index</strong> (<em>string</em>) &#8211; New index to add, can be Index object, index valid string or path to file with index code</li>
+<li><strong>create</strong> (<em>bool</em>) &#8211; Create the index after add or not</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">new index name</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.all">
+<tt class="descname">all</tt><big>(</big><em>index_name</em>, <em>limit=-1</em>, <em>offset=0</em>, <em>with_doc=False</em>, <em>with_storage=True</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alows to get all records for given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; Index to perform the operation</li>
+<li><strong>limit</strong> &#8211; defines limit for query</li>
+<li><strong>offset</strong> &#8211; defines offset (how many records from start it will ignore)</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the database</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.compact">
+<tt class="descname">compact</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.compact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compact all indexes. Runs <tt class="xref py py-meth docutils literal"><span class="pre">_compact_indexes()</span></tt> behind.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.compact_index">
+<tt class="descname">compact_index</tt><big>(</big><em>index</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.compact_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compacts index
+Used for better utilization of index metadata.
+The deleted documents will be not more in structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to destroy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.count">
+<tt class="descname">count</tt><big>(</big><em>target_funct</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counter. Allows to execute for example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And it will return then how much records are in your <tt class="docutils literal"><span class="pre">id</span></tt> index.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It sets <tt class="docutils literal"><span class="pre">kwargs['with_storage']</span> <span class="pre">=</span> <span class="pre">False</span></tt> and <tt class="docutils literal"><span class="pre">kwargs['with_doc']</span> <span class="pre">=</span> <span class="pre">False</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.create">
+<tt class="descname">create</tt><big>(</big><em>path=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> &#8211; path where to create the database</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">database path</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.create_new_rev">
+<tt class="descname">create_new_rev</tt><big>(</big><em>old_rev=None</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.create_new_rev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CodernityDB.database.Database.custom_header">
+<tt class="descname">custom_header</tt><em class="property"> = ''</em><a class="headerlink" href="#CodernityDB.database.Database.custom_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.delete">
+<tt class="descname">delete</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete data from database.</p>
+<p><tt class="docutils literal"><span class="pre">data</span></tt> has to contain <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt> fields.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to delete</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to destroy database.</p>
+<p><strong>not reversable</strong> operation!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.destroy_index">
+<tt class="descname">destroy_index</tt><big>(</big><em>index</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.destroy_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to destroy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.edit_index">
+<tt class="descname">edit_index</tt><big>(</big><em>index</em>, <em>reindex=False</em>, <em>ind_kwargs=None</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.edit_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.exists">
+<tt class="descname">exists</tt><big>(</big><em>path=None</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if database in given path exists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> &#8211; path to look for database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flushes all indexes. Runs <a class="reference internal" href="#CodernityDB.database.Database.flush_indexes" title="CodernityDB.database.Database.flush_indexes"><tt class="xref py py-meth docutils literal"><span class="pre">flush_indexes()</span></tt></a> behind.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.flush_indexes">
+<tt class="descname">flush_indexes</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.flush_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flushes all indexes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.fsync">
+<tt class="descname">fsync</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.fsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>It forces the kernel buffer to be written to disk. Use when you&#8217;re sure that you need to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.get">
+<tt class="descname">get</tt><big>(</big><em>index_name</em>, <em>key</em>, <em>with_doc=False</em>, <em>with_storage=True</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get single data from Database by <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; index to get data from</li>
+<li><strong>key</strong> &#8211; key to get</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.get_db_details">
+<tt class="descname">get_db_details</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.get_db_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get&#8217;s database details, size, indexes, environment etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">database details</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.get_index_code">
+<tt class="descname">get_index_code</tt><big>(</big><em>index_name</em>, <em>code_switch='All'</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.get_index_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>It will return full index code from index file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index_name</strong> &#8211; the name of index to look for code</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.get_index_details">
+<tt class="descname">get_index_details</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.get_index_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will return index properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">index details</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>index_name</em>, <em>key=None</em>, <em>limit=1</em>, <em>offset=0</em>, <em>with_doc=False</em>, <em>with_storage=True</em>, <em>start=None</em>, <em>end=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.get_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to get <strong>multiple</strong> data for given <tt class="docutils literal"><span class="pre">key</span></tt> for <em>Hash based indexes</em>.
+Also allows get <strong>range</strong> queries for <em>Tree based indexes</em> with <tt class="docutils literal"><span class="pre">start</span></tt> and <tt class="docutils literal"><span class="pre">end</span></tt> arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>index_name</strong> &#8211; Index to perform the operation</li>
+<li><strong>key</strong> &#8211; key to look for (has to be <tt class="docutils literal"><span class="pre">None</span></tt> to use range queries)</li>
+<li><strong>limit</strong> &#8211; defines limit for query</li>
+<li><strong>offset</strong> &#8211; defines offset (how many records from start it will ignore)</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata.</li>
+<li><strong>start</strong> &#8211; <tt class="docutils literal"><span class="pre">start</span></tt> parameter for range queries</li>
+<li><strong>end</strong> &#8211; <tt class="docutils literal"><span class="pre">end</span></tt> parameter for range queries</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">iterator over records</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>path=None</em>, <em>makedir=True</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize new database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> &#8211; Path to a database (allows delayed path configuration), if not provided self.path will be used</li>
+<li><strong>makedir</strong> &#8211; Make the <tt class="docutils literal"><span class="pre">_indexes</span></tt> directory or not</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the database path</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.insert">
+<tt class="descname">insert</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>It&#8217;s using <strong>reference</strong> on the given data dict object,
+to avoid it copy it before inserting!</p>
+<p>If data <strong>will not</strong> have <tt class="docutils literal"><span class="pre">_id</span></tt> field,
+it will be generated (random 32 chars string)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to insert</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.open">
+<tt class="descname">open</tt><big>(</big><em>path=None</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will open already existing database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> &#8211; path with database to open</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.reindex">
+<tt class="descname">reindex</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.reindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reindex all indexes. Runs <tt class="xref py py-meth docutils literal"><span class="pre">_reindex_indexes()</span></tt> behind.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.reindex_index">
+<tt class="descname">reindex_index</tt><big>(</big><em>index</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.reindex_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs reindex on index. Optimizes metadata and storage informations for given index.</p>
+<p>You can&#8217;t reindex <strong>id</strong> index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to reindex</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.run">
+<tt class="descname">run</tt><big>(</big><em>index_name</em>, <em>target_funct</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to execute given function on Database side
+(important for server mode)</p>
+<p>If <tt class="docutils literal"><span class="pre">target_funct==sum</span></tt> then given index must have <tt class="docutils literal"><span class="pre">run_sum</span></tt> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; index name to perform action.</li>
+<li><strong>target_funct</strong> &#8211; target function name (without <em>run</em> prefix)</li>
+<li><strong>*args</strong> &#8211; <tt class="docutils literal"><span class="pre">*args</span></tt> for function</li>
+<li><strong>**kwargs</strong> &#8211; <tt class="docutils literal"><span class="pre">**kwargs</span></tt> for function</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.set_indexes">
+<tt class="descname">set_indexes</tt><big>(</big><em>indexes=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.set_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set indexes using <tt class="docutils literal"><span class="pre">indexes</span></tt> param</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>indexes</strong> (iterable of <a class="reference internal" href="#CodernityDB.index.Index" title="CodernityDB.index.Index"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index</span></tt></a> objects.) &#8211; indexes to set in db</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database.Database.update">
+<tt class="descname">update</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.database.Database.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>It&#8217;s using <strong>reference</strong> on the given data dict object,
+to avoid it copy it before updating!</p>
+<p><tt class="docutils literal"><span class="pre">data</span></tt> <strong>must</strong> contain <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt> fields.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to update</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.DatabaseConflict">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">DatabaseConflict</tt><a class="headerlink" href="#CodernityDB.database.DatabaseConflict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.DatabaseException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">DatabaseException</tt><a class="headerlink" href="#CodernityDB.database.DatabaseException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.DatabaseIsNotOpened">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">DatabaseIsNotOpened</tt><a class="headerlink" href="#CodernityDB.database.DatabaseIsNotOpened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.PreconditionsException" title="CodernityDB.database.PreconditionsException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.PreconditionsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.DatabasePathException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">DatabasePathException</tt><a class="headerlink" href="#CodernityDB.database.DatabasePathException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.PreconditionsException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">PreconditionsException</tt><a class="headerlink" href="#CodernityDB.database.PreconditionsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.RecordDeleted">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">RecordDeleted</tt><a class="headerlink" href="#CodernityDB.database.RecordDeleted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.RecordNotFound">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">RecordNotFound</tt><a class="headerlink" href="#CodernityDB.database.RecordNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.database.RevConflict">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.database.</tt><tt class="descname">RevConflict</tt><a class="headerlink" href="#CodernityDB.database.RevConflict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.DatabaseException" title="CodernityDB.database.DatabaseException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.DatabaseException</span></tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CodernityDB.database.header_for_indexes">
+<tt class="descclassname">CodernityDB.database.</tt><tt class="descname">header_for_indexes</tt><big>(</big><em>index_name</em>, <em>index_class</em>, <em>db_custom=''</em>, <em>ind_custom=''</em>, <em>classes_code=''</em><big>)</big><a class="headerlink" href="#CodernityDB.database.header_for_indexes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="thread-safe-database">
+<h3>Thread Safe Database<a class="headerlink" href="#thread-safe-database" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="CodernityDB.database_thread_safe.ThreadSafeDatabase">
+<em class="property">class </em><tt class="descclassname">CodernityDB.database_thread_safe.</tt><tt class="descname">ThreadSafeDatabase</tt><big>(</big><em>path</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_thread_safe.ThreadSafeDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database_safe_shared.SafeDatabase</span></tt></p>
+<p>Thread safe version of CodernityDB that uses several lock objects,
+on different methods / different indexes etc. It&#8217;s completely different
+implementation of locking than SuperThreadSafe one.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-CodernityDB.database_super_thread_safe">
+<span id="super-thread-safe-database"></span><h3>Super Thread Safe Database<a class="headerlink" href="#module-CodernityDB.database_super_thread_safe" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="CodernityDB.database_super_thread_safe.SuperLock">
+<em class="property">class </em><tt class="descclassname">CodernityDB.database_super_thread_safe.</tt><tt class="descname">SuperLock</tt><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">type</span></tt></p>
+<dl class="staticmethod">
+<dt id="CodernityDB.database_super_thread_safe.SuperLock.wrapper">
+<em class="property">static </em><tt class="descname">wrapper</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperLock.wrapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase">
+<em class="property">class </em><tt class="descclassname">CodernityDB.database_super_thread_safe.</tt><tt class="descname">SuperThreadSafeDatabase</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.database.Database" title="CodernityDB.database.Database"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.database.Database</span></tt></a></p>
+<p>Thread safe version that always allows single thread to use db.
+It adds the same lock for all methods, so only one operation can be
+performed in given time. Completely different implementation
+than ThreadSafe version (without super word)</p>
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.add_index">
+<tt class="descname">add_index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.add_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.all">
+<tt class="descname">all</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alows to get all records for given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; Index to perform the operation</li>
+<li><strong>limit</strong> &#8211; defines limit for query</li>
+<li><strong>offset</strong> &#8211; defines offset (how many records from start it will ignore)</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.close">
+<tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the database</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.compact">
+<tt class="descname">compact</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.compact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compact all indexes. Runs <tt class="xref py py-meth docutils literal"><span class="pre">_compact_indexes()</span></tt> behind.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.compact_index">
+<tt class="descname">compact_index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.compact_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compacts index
+Used for better utilization of index metadata.
+The deleted documents will be not more in structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to destroy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.count">
+<tt class="descname">count</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counter. Allows to execute for example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And it will return then how much records are in your <tt class="docutils literal"><span class="pre">id</span></tt> index.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It sets <tt class="docutils literal"><span class="pre">kwargs['with_storage']</span> <span class="pre">=</span> <span class="pre">False</span></tt> and <tt class="docutils literal"><span class="pre">kwargs['with_doc']</span> <span class="pre">=</span> <span class="pre">False</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.create">
+<tt class="descname">create</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.create_new_rev">
+<tt class="descname">create_new_rev</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.create_new_rev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.delete">
+<tt class="descname">delete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete data from database.</p>
+<p><tt class="docutils literal"><span class="pre">data</span></tt> has to contain <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt> fields.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to delete</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.destroy">
+<tt class="descname">destroy</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to destroy database.</p>
+<p><strong>not reversable</strong> operation!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.destroy_index">
+<tt class="descname">destroy_index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.destroy_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to destroy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.edit_index">
+<tt class="descname">edit_index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.edit_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.exists">
+<tt class="descname">exists</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if database in given path exists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> &#8211; path to look for database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.fsync">
+<tt class="descname">fsync</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.fsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>It forces the kernel buffer to be written to disk. Use when you&#8217;re sure that you need to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get">
+<tt class="descname">get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get single data from Database by <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; index to get data from</li>
+<li><strong>key</strong> &#8211; key to get</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_db_details">
+<tt class="descname">get_db_details</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_db_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get&#8217;s database details, size, indexes, environment etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">database details</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_index_code">
+<tt class="descname">get_index_code</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_index_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>It will return full index code from index file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index_name</strong> &#8211; the name of index to look for code</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_index_details">
+<tt class="descname">get_index_details</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_index_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will return index properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">index details</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.get_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to get <strong>multiple</strong> data for given <tt class="docutils literal"><span class="pre">key</span></tt> for <em>Hash based indexes</em>.
+Also allows get <strong>range</strong> queries for <em>Tree based indexes</em> with <tt class="docutils literal"><span class="pre">start</span></tt> and <tt class="docutils literal"><span class="pre">end</span></tt> arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>index_name</strong> &#8211; Index to perform the operation</li>
+<li><strong>key</strong> &#8211; key to look for (has to be <tt class="docutils literal"><span class="pre">None</span></tt> to use range queries)</li>
+<li><strong>limit</strong> &#8211; defines limit for query</li>
+<li><strong>offset</strong> &#8211; defines offset (how many records from start it will ignore)</li>
+<li><strong>with_doc</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from <strong>id</strong> index will be included in output</li>
+<li><strong>with_storage</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> data from index storage will be included, otherwise just metadata.</li>
+<li><strong>start</strong> &#8211; <tt class="docutils literal"><span class="pre">start</span></tt> parameter for range queries</li>
+<li><strong>end</strong> &#8211; <tt class="docutils literal"><span class="pre">end</span></tt> parameter for range queries</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">iterator over records</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize new database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> &#8211; Path to a database (allows delayed path configuration), if not provided self.path will be used</li>
+<li><strong>makedir</strong> &#8211; Make the <tt class="docutils literal"><span class="pre">_indexes</span></tt> directory or not</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the database path</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.insert">
+<tt class="descname">insert</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>It&#8217;s using <strong>reference</strong> on the given data dict object,
+to avoid it copy it before inserting!</p>
+<p>If data <strong>will not</strong> have <tt class="docutils literal"><span class="pre">_id</span></tt> field,
+it will be generated (random 32 chars string)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to insert</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.open">
+<tt class="descname">open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.reindex">
+<tt class="descname">reindex</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.reindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reindex all indexes. Runs <tt class="xref py py-meth docutils literal"><span class="pre">_reindex_indexes()</span></tt> behind.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.reindex_index">
+<tt class="descname">reindex_index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.reindex_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs reindex on index. Optimizes metadata and storage informations for given index.</p>
+<p>You can&#8217;t reindex <strong>id</strong> index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index`</span></tt> instance, or string) &#8211; the index to reindex</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.run">
+<tt class="descname">run</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to execute given function on Database side
+(important for server mode)</p>
+<p>If <tt class="docutils literal"><span class="pre">target_funct==sum</span></tt> then given index must have <tt class="docutils literal"><span class="pre">run_sum</span></tt> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index_name</strong> &#8211; index name to perform action.</li>
+<li><strong>target_funct</strong> &#8211; target function name (without <em>run</em> prefix)</li>
+<li><strong>*args</strong> &#8211; <tt class="docutils literal"><span class="pre">*args</span></tt> for function</li>
+<li><strong>**kwargs</strong> &#8211; <tt class="docutils literal"><span class="pre">**kwargs</span></tt> for function</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.set_indexes">
+<tt class="descname">set_indexes</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.set_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set indexes using <tt class="docutils literal"><span class="pre">indexes</span></tt> param</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>indexes</strong> (iterable of <a class="reference internal" href="#CodernityDB.index.Index" title="CodernityDB.index.Index"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index</span></tt></a> objects.) &#8211; indexes to set in db</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.super_lock">
+<tt class="descname">super_lock</tt><em class="property"> = &lt;_RLock owner=None count=0&gt;</em><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.super_lock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.update">
+<tt class="descname">update</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.database_super_thread_safe.SuperThreadSafeDatabase.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>It&#8217;s using <strong>reference</strong> on the given data dict object,
+to avoid it copy it before updating!</p>
+<p><tt class="docutils literal"><span class="pre">data</span></tt> <strong>must</strong> contain <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt> fields.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; data to update</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="gevent-database">
+<h3>Gevent Database<a class="headerlink" href="#gevent-database" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="indexes">
+<h2>Indexes<a class="headerlink" href="#indexes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-CodernityDB.index">
+<span id="general-index"></span><h3>General Index<a class="headerlink" href="#module-CodernityDB.index" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="CodernityDB.index.DocIdNotFound">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">DocIdNotFound</tt><a class="headerlink" href="#CodernityDB.index.DocIdNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.ElemNotFound" title="CodernityDB.index.ElemNotFound"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.ElemNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.ElemNotFound">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">ElemNotFound</tt><a class="headerlink" href="#CodernityDB.index.ElemNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.index.Index">
+<em class="property">class </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">Index</tt><big>(</big><em>db_path</em>, <em>name</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="CodernityDB.index.Index.all">
+<tt class="descname">all</tt><big>(</big><em>start_pos</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.close_index">
+<tt class="descname">close_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.close_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.compact">
+<tt class="descname">compact</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.compact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.create_index">
+<tt class="descname">create_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.create_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CodernityDB.index.Index.custom_header">
+<tt class="descname">custom_header</tt><em class="property"> = ''</em><a class="headerlink" href="#CodernityDB.index.Index.custom_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.delete">
+<tt class="descname">delete</tt><big>(</big><em>key</em>, <em>start</em>, <em>size</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.destroy">
+<tt class="descname">destroy</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.fsync">
+<tt class="descname">fsync</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.fsync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.get">
+<tt class="descname">get</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>key</em>, <em>start_from=None</em>, <em>limit=0</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.get_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.insert">
+<tt class="descname">insert</tt><big>(</big><em>key</em>, <em>start</em>, <em>size</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.make_key">
+<tt class="descname">make_key</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.make_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.make_key_value">
+<tt class="descname">make_key_value</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.make_key_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.open_index">
+<tt class="descname">open_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.open_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.index.Index.update">
+<tt class="descname">update</tt><big>(</big><em>key</em>, <em>start</em>, <em>size</em><big>)</big><a class="headerlink" href="#CodernityDB.index.Index.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.IndexConflict">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">IndexConflict</tt><a class="headerlink" href="#CodernityDB.index.IndexConflict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.IndexException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">IndexException</tt><a class="headerlink" href="#CodernityDB.index.IndexException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.IndexNotFoundException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">IndexNotFoundException</tt><a class="headerlink" href="#CodernityDB.index.IndexNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.IndexPreconditionsException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">IndexPreconditionsException</tt><a class="headerlink" href="#CodernityDB.index.IndexPreconditionsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.ReindexException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">ReindexException</tt><a class="headerlink" href="#CodernityDB.index.ReindexException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.index.TryReindexException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.index.</tt><tt class="descname">TryReindexException</tt><a class="headerlink" href="#CodernityDB.index.TryReindexException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.ReindexException" title="CodernityDB.index.ReindexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.ReindexException</span></tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="hash-index-specific">
+<h3>Hash Index specific<a class="headerlink" href="#hash-index-specific" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please refer to <a class="reference internal" href="database_indexes.html#internal-hash-index"><em>Hash Index</em></a> for description</p>
+</div>
+<span class="target" id="module-CodernityDB.hash_index"></span><dl class="class">
+<dt id="CodernityDB.hash_index.DummyHashIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.hash_index.</tt><tt class="descname">DummyHashIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>entry_line_format='&lt;32s4sIIcI'</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.hash_index.IU_HashIndex" title="CodernityDB.hash_index.IU_HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.hash_index.IU_HashIndex</span></tt></a></p>
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.all">
+<tt class="descname">all</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.delete">
+<tt class="descname">delete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.get">
+<tt class="descname">get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.get_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.insert">
+<tt class="descname">insert</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.make_key_value">
+<tt class="descname">make_key_value</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.make_key_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.DummyHashIndex.update">
+<tt class="descname">update</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.DummyHashIndex.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.hash_index.HashIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.hash_index.</tt><tt class="descname">HashIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>entry_line_format='&lt;32s{key}IIcI'</em>, <em>hash_lim=1048575</em>, <em>storage_class=None</em>, <em>key_format='c'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.HashIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.hash_index.IU_HashIndex" title="CodernityDB.hash_index.IU_HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.hash_index.IU_HashIndex</span></tt></a></p>
+<p>That class is designed to be used in custom indexes.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.hash_index.IU_HashIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.hash_index.</tt><tt class="descname">IU_HashIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>entry_line_format='&lt;32s{key}IIcI'</em>, <em>hash_lim=1048575</em>, <em>storage_class=None</em>, <em>key_format='c'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.Index" title="CodernityDB.index.Index"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index</span></tt></a></p>
+<p>That class is for Internal Use only, if you want to use HashIndex just subclass the <a class="reference internal" href="#CodernityDB.hash_index.HashIndex" title="CodernityDB.hash_index.HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">HashIndex</span></tt></a> instead this one.</p>
+<p>That design is because main index logic should be always in database not in custom user indexes.</p>
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.all">
+<tt class="descname">all</tt><big>(</big><em>limit=-1</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.close_index">
+<tt class="descname">close_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.close_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.compact">
+<tt class="descname">compact</tt><big>(</big><em>hash_lim=None</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.compact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.create_index">
+<tt class="descname">create_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.create_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.delete">
+<tt class="descname">delete</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>start=0</em>, <em>size=0</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.get">
+<tt class="descname">get</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>key</em>, <em>limit=1</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.get_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.insert">
+<tt class="descname">insert</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>start</em>, <em>size</em>, <em>status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.make_key">
+<tt class="descname">make_key</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.make_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.make_key_value">
+<tt class="descname">make_key_value</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.make_key_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.open_index">
+<tt class="descname">open_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.open_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_HashIndex.update">
+<tt class="descname">update</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>u_start=0</em>, <em>u_size=0</em>, <em>u_status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_HashIndex.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.hash_index.</tt><tt class="descname">IU_UniqueHashIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>entry_line_format='&lt;32s8sIIcI'</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.hash_index.IU_HashIndex" title="CodernityDB.hash_index.IU_HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.hash_index.IU_HashIndex</span></tt></a></p>
+<p>Index for <em>unique</em> keys! Designed to be a <strong>id</strong> index.</p>
+<p>That class is for Internal Use only, if you want to use UniqueHashIndex just subclass the <a class="reference internal" href="#CodernityDB.hash_index.UniqueHashIndex" title="CodernityDB.hash_index.UniqueHashIndex"><tt class="xref py py-class docutils literal"><span class="pre">UniqueHashIndex</span></tt></a> instead this one.</p>
+<p>That design is because main index logic should be always in database not in custom user indexes.</p>
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.all">
+<tt class="descname">all</tt><big>(</big><em>limit=-1</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.delete">
+<tt class="descname">delete</tt><big>(</big><em>key</em>, <em>start=0</em>, <em>size=0</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.get_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.insert">
+<tt class="descname">insert</tt><big>(</big><em>key</em>, <em>rev</em>, <em>start</em>, <em>size</em>, <em>status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.make_key_value">
+<tt class="descname">make_key_value</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.make_key_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.hash_index.IU_UniqueHashIndex.update">
+<tt class="descname">update</tt><big>(</big><em>key</em>, <em>rev</em>, <em>u_start=0</em>, <em>u_size=0</em>, <em>u_status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.IU_UniqueHashIndex.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.hash_index.UniqueHashIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.hash_index.</tt><tt class="descname">UniqueHashIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>entry_line_format='&lt;32s8sIIcI'</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.hash_index.UniqueHashIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.hash_index.IU_UniqueHashIndex" title="CodernityDB.hash_index.IU_UniqueHashIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.hash_index.IU_UniqueHashIndex</span></tt></a></p>
+<p>That class is designed to be used in custom indexes. It&#8217;s designed to be <strong>id</strong> index.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="b-tree-index-specific">
+<h3>B+Tree Index specific<a class="headerlink" href="#b-tree-index-specific" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please refer to <a class="reference internal" href="database_indexes.html#internal-tree-index"><em>B Plus Tree Index</em></a> for description</p>
+</div>
+<span class="target" id="module-CodernityDB.tree_index"></span><dl class="class">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.tree_index.</tt><tt class="descname">IU_TreeBasedIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>key_format='32s'</em>, <em>pointer_format='I'</em>, <em>meta_format='32sIIc'</em>, <em>node_capacity=10</em>, <em>storage_class=None</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.Index" title="CodernityDB.index.Index"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.Index</span></tt></a></p>
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.all">
+<tt class="descname">all</tt><big>(</big><em>limit=-1</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverses linked list of all tree leaves and returns generator containing all elements stored in index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.close_index">
+<tt class="descname">close_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.close_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.compact">
+<tt class="descname">compact</tt><big>(</big><em>node_capacity=0</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.compact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.create_index">
+<tt class="descname">create_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.create_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.custom_header">
+<tt class="descname">custom_header</tt><em class="property"> = 'from CodernityDB.tree_index import TreeBasedIndex'</em><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.custom_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.delete">
+<tt class="descname">delete</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>start=0</em>, <em>size=0</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.get">
+<tt class="descname">get</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.get_between">
+<tt class="descname">get_between</tt><big>(</big><em>start</em>, <em>end</em>, <em>limit=1</em>, <em>offset=0</em>, <em>inclusive_start=True</em>, <em>inclusive_end=True</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.get_between" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.get_many">
+<tt class="descname">get_many</tt><big>(</big><em>key</em>, <em>limit=1</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.get_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.insert">
+<tt class="descname">insert</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>start</em>, <em>size</em>, <em>status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.insert_first_record_into_leaf">
+<tt class="descname">insert_first_record_into_leaf</tt><big>(</big><em>leaf_start</em>, <em>key</em>, <em>doc_id</em>, <em>start</em>, <em>size</em>, <em>status</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.insert_first_record_into_leaf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.make_key">
+<tt class="descname">make_key</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.make_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.make_key_value">
+<tt class="descname">make_key_value</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.make_key_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.open_index">
+<tt class="descname">open_index</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.open_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.tree_index.IU_TreeBasedIndex.update">
+<tt class="descname">update</tt><big>(</big><em>doc_id</em>, <em>key</em>, <em>u_start=0</em>, <em>u_size=0</em>, <em>u_status='o'</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.IU_TreeBasedIndex.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.tree_index.NodeCapacityException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.tree_index.</tt><tt class="descname">NodeCapacityException</tt><a class="headerlink" href="#CodernityDB.tree_index.NodeCapacityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.index.IndexException" title="CodernityDB.index.IndexException"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.index.IndexException</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.tree_index.TreeBasedIndex">
+<em class="property">class </em><tt class="descclassname">CodernityDB.tree_index.</tt><tt class="descname">TreeBasedIndex</tt><big>(</big><em>db_path</em>, <em>name</em>, <em>key_format='32s'</em>, <em>pointer_format='I'</em>, <em>meta_format='32sIIc'</em>, <em>node_capacity=10</em>, <em>storage_class=None</em><big>)</big><a class="headerlink" href="#CodernityDB.tree_index.TreeBasedIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.tree_index.IU_TreeBasedIndex" title="CodernityDB.tree_index.IU_TreeBasedIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.tree_index.IU_TreeBasedIndex</span></tt></a></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-CodernityDB.storage">
+<span id="storage"></span><h2>Storage<a class="headerlink" href="#module-CodernityDB.storage" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CodernityDB.storage.DummyStorage">
+<em class="property">class </em><tt class="descclassname">CodernityDB.storage.</tt><tt class="descname">DummyStorage</tt><a class="headerlink" href="#CodernityDB.storage.DummyStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Storage mostly used to fake real storage</p>
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.close">
+<tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.create">
+<tt class="descname">create</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.data_from">
+<tt class="descname">data_from</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.data_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.data_to">
+<tt class="descname">data_to</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.data_to" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.flush">
+<tt class="descname">flush</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.fsync">
+<tt class="descname">fsync</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.fsync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.get">
+<tt class="descname">get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.insert">
+<tt class="descname">insert</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.open">
+<tt class="descname">open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.save">
+<tt class="descname">save</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.DummyStorage.update">
+<tt class="descname">update</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.DummyStorage.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.storage.IU_Storage">
+<em class="property">class </em><tt class="descclassname">CodernityDB.storage.</tt><tt class="descname">IU_Storage</tt><big>(</big><em>db_path</em>, <em>name='main'</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.create">
+<tt class="descname">create</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.data_from">
+<tt class="descname">data_from</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.data_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.data_to">
+<tt class="descname">data_to</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.data_to" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.destroy">
+<tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.fsync">
+<tt class="descname">fsync</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.fsync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.get">
+<tt class="descname">get</tt><big>(</big><em>start</em>, <em>size</em>, <em>status='c'</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.insert">
+<tt class="descname">insert</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.open">
+<tt class="descname">open</tt><big>(</big><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.save">
+<tt class="descname">save</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CodernityDB.storage.IU_Storage.update">
+<tt class="descname">update</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.IU_Storage.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="CodernityDB.storage.Storage">
+<em class="property">class </em><tt class="descclassname">CodernityDB.storage.</tt><tt class="descname">Storage</tt><big>(</big><em>db_path</em>, <em>name='main'</em><big>)</big><a class="headerlink" href="#CodernityDB.storage.Storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CodernityDB.storage.IU_Storage" title="CodernityDB.storage.IU_Storage"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.storage.IU_Storage</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="CodernityDB.storage.StorageException">
+<em class="property">exception </em><tt class="descclassname">CodernityDB.storage.</tt><tt class="descname">StorageException</tt><a class="headerlink" href="#CodernityDB.storage.StorageException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

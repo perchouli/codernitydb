@@ -1,0 +1,805 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Quick tutorial &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="Examples" href="examples.html"/>
+                <link rel="prev" title="Deployment" href="deployment.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Quick tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#insert-save-store">Insert / Save / Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-query">Get / Query</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#duplicates">Duplicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ordered-data">Ordered data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-delete">Update / Delete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#index-functions">Index functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="quick-tutorial">
+<span id="id1"></span><h1>Quick tutorial<a class="headerlink" href="#quick-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Every single part of codeblock will be full example, so you can copy &amp;
+paste it to play with it</p>
+<div class="section" id="insert-save-store">
+<h2>Insert / Save / Store<a class="headerlink" href="#insert-save-store" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>I want to store 100 objects in database</div></blockquote>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut1&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">curr</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p><strong>Status</strong></p>
+<ul class="simple">
+<li>Autogenerated <tt class="docutils literal"><span class="pre">_id</span></tt> field</li>
+<li>Simple key-value</li>
+</ul>
+<p>As you can see database usage is very easy. That was the simplest
+usage of CodernityDB.</p>
+</div>
+<div class="section" id="get-query">
+<h2>Get / Query<a class="headerlink" href="#get-query" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>What if I would query database for <tt class="docutils literal"><span class="pre">x</span></tt> values ?</div></blockquote>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.hash_index</span> <span class="kn">import</span> <span class="n">HashIndex</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">a_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut2&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>As you can see now we can get a record with given <tt class="docutils literal"><span class="pre">x</span></tt> value. And
+don&#8217;t worry <tt class="docutils literal"><span class="pre">X</span></tt> index will be not affected with <tt class="docutils literal"><span class="pre">y</span></tt> assignments in
+<tt class="docutils literal"><span class="pre">33-35</span></tt> line.</p>
+<p>Now you can run</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you expected, it will print you <tt class="docutils literal"><span class="pre">200</span></tt> and then <tt class="docutils literal"><span class="pre">100</span></tt> because
+only <tt class="docutils literal"><span class="pre">100</span></tt> records have <tt class="docutils literal"><span class="pre">x</span></tt> value, so they were indexed in <tt class="docutils literal"><span class="pre">X</span></tt> index</p>
+<p><strong>Status</strong></p>
+<ul class="simple">
+<li>Possibility to query by <tt class="docutils literal"><span class="pre">x</span></tt> value.</li>
+</ul>
+</div>
+<div class="section" id="duplicates">
+<h2>Duplicates<a class="headerlink" href="#duplicates" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>What if I have duplicate key values ?</div></blockquote>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.hash_index</span> <span class="kn">import</span> <span class="n">HashIndex</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">a_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut3&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">curr</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>As you can see database supports duplicate keys.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Using Hash index, you can&#8217;t rely on record order, using
+<a class="reference internal" href="api.html#CodernityDB.database.Database.all" title="CodernityDB.database.Database.all"><tt class="xref py py-meth docutils literal"><span class="pre">all()</span></tt></a> or
+<a class="reference internal" href="api.html#CodernityDB.database.Database.get_many" title="CodernityDB.database.Database.get_many"><tt class="xref py py-meth docutils literal"><span class="pre">get_many()</span></tt></a>.</p>
+</div>
+</div>
+<div class="section" id="ordered-data">
+<h2>Ordered data<a class="headerlink" href="#ordered-data" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>Ok, but I would to have them in order from range?</div></blockquote>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.tree_index</span> <span class="kn">import</span> <span class="n">TreeBasedIndex</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">t_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut4&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">curr</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p><strong>Status</strong></p>
+<ul class="simple">
+<li>Possibility to get ordered values from given range</li>
+</ul>
+<p>As you can see, it&#8217;s not that hard. Just change the base from
+HashIndex to TreeBasedIndex.</p>
+</div>
+<div class="section" id="update-delete">
+<h2>Update / Delete<a class="headerlink" href="#update-delete" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>Ok, cool, what about updates ?</div></blockquote>
+<p>Update is very easy, let&#8217;s say you want to update all documents that
+have <tt class="docutils literal"><span class="pre">x</span> <span class="pre">%</span> <span class="pre">5</span> <span class="pre">==</span> <span class="pre">0</span></tt> and delete those with <tt class="docutils literal"><span class="pre">x</span> <span class="pre">%</span> <span class="pre">7</span> <span class="pre">==</span> <span class="pre">0</span></tt>.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.tree_index</span> <span class="kn">import</span> <span class="n">TreeBasedIndex</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">t_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut_update&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="c"># full examples so we had to add first the data</span>
+    <span class="c"># the same code as in previous step</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="c"># end of insert part</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">7</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s">&#39;updated&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">curr</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>Isn&#8217;t it easy ?</p>
+</div>
+<div class="section" id="index-functions">
+<h2>Index functions<a class="headerlink" href="#index-functions" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>I would like to calculate some averages...</div></blockquote>
+<p>There are two ways to do it:</p>
+<ul class="simple">
+<li>Outside Database</li>
+</ul>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.tree_index</span> <span class="kn">import</span> <span class="n">TreeBasedIndex</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">t_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut5_1&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;t&#39;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<ul class="simple">
+<li>Inside Database</li>
+</ul>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.tree_index</span> <span class="kn">import</span> <span class="n">TreeBasedIndex</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+
+<span class="k">class</span> <span class="nc">WithXIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">t_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t_val</span><span class="p">,</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">run_avg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_obj</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">db_obj</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span>
+            <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;t&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/tut5_2&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">x_ind</span> <span class="o">=</span> <span class="n">WithXIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_index</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
+
+    <span class="k">print</span> <span class="n">db</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;avg&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>Using that function <em>inside database</em> will perform much better when
+you will use <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a> because then calculations will be
+done server side. It will also allow you to reuse the same logic code
+in different places.</p>
+<p>In that examples we assumed that <tt class="docutils literal"><span class="pre">t</span></tt> value is not stored in our
+<tt class="docutils literal"><span class="pre">X</span></tt> index.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you&#8217;re <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a> with <a class="reference external" href="http://labs.codernity.com/codernitydb-pyclient">CodernityDB-PyClient</a>
+you should just change Database initialization (set host &amp; port).</p>
+</div>
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+/* Sidenav for Docs
+-------------------------------------------------- */
+
+/* prevent column from collapsing when affixing */
+.span3 {
+  min-height: 1px;
+}
+
+.docs-sidebar > ul {
+  margin: 16px 0 0;
+  padding: 0;
+  background-color: #fff;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+     -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+          box-shadow: 0 1px 4px rgba(0,0,0,.065);
+  list-style-type: none;
+}
+
+.docs-sidebar > ul li {
+  line-height: 14px;
+}
+
+.docs-sidebar > ul > li > a {
+  display: block;
+  *width: 190px;
+  margin: 0 0 -1px;
+  padding: 8px 14px;
+  border: 1px solid #e5e5e5;
+}
+.docs-sidebar > ul > li:first-child > a {
+  -webkit-border-radius: 6px 6px 0 0;
+     -moz-border-radius: 6px 6px 0 0;
+          border-radius: 6px 6px 0 0;
+}
+.docs-sidebar > ul > li:last-child > a {
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+}
+.docs-sidebar > ul > .active > a {
+  position: relative;
+  z-index: 2;
+  padding: 9px 15px;
+  border: 0;
+  text-shadow: 0 1px 0 rgba(0,0,0,.15);
+  -webkit-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+     -moz-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+          box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+}
+/* Chevrons */
+.docs-sidebar > ul .icon-chevron-right {
+  float: right;
+  margin-top: 2px;
+  margin-right: -6px;
+  opacity: .25;
+}
+.docs-sidebar > ul > li > a:hover {
+  background-color: #f5f5f5;
+  text-decoration: none;
+}
+.docs-sidebar > ul a:hover .icon-chevron-right {
+  opacity: .5;
+}
+.docs-sidebar > ul .active .icon-chevron-right,
+.docs-sidebar > ul .active a:hover .icon-chevron-right {
+  background-image: url(../img/glyphicons-halflings-white.png);
+  opacity: 1;
+}
+.docs-sidebar > ul.affix {
+  top: 0px;
+}
+
+.docs-sidebar > ul.affix-bottom {
+  bottom: 123px;
+  position: fixed;
+}
+
+.docs-sidebar > ul li.current a, .docs-sidebar > ul li.current a:hover {
+    color: white;
+    text-shadow: none;
+    background-color: #08C;
+    text-decoration: none;
+}
+
+.docs-sidebar > ul ul {
+    margin: 10px 25px 10px !important;
+    list-style-type: none;
+}
+
+.docs-sidebar > ul ul a {
+    background-color: transparent !important;
+    color: #08C !important;
+}
+
+div.container.content > div.row-fluid {
+    margin-bottom: 50px;
+    margin-top: 20px;
+}
+
+div.admonition {
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    color: #C09853;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    background-color: #FCF8E3;
+    border: 1px solid #FBEED5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+div.admonition.hint {
+    color: #3A87AD;
+    background-color: #D9EDF7;
+    border-color: #BCE8F1;
+}
+
+div.admonition.warning {
+    color: #B94A48;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+}
+
+div.admonition.note {
+    color: #468847;
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+}
+
+div.admonition p {
+    margin: 0;
+}
+
+p.first.admonition-title {
+    margin-right: 3px !important;
+    font-weight: bold;
+}
+
+a.headerlink {
+    color: white;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+a.headerlink:hover {
+    color: #5A5A5A;
+}
+
+div.horizontal-bar {
+    text-align: left;
+}
+
+div.masterhead {
+    padding-bottom: 15px !important;
+}
+
+div.masterhead div.container > a {
+    margin-top: 8px !important;
+    margin-left: 0 !important;
+}
+
+div.masterhead h1 img {
+    float: left;
+    left: 4px;
+    position: relative;
+    top: 11px;
+}
+
+div.masterhead h1 {
+    font-size: 45px !important;
+    margin-top: 0 !important;
+}
+
+ul.current li ul li {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+div.horizontal-bar h1 a {
+    color: #5A5A5A;
+    text-decoration: none;
+}
+
+table.docutils.footnote td.label {
+    color: #08C;
+}
+
+img.align-center {
+    margin-left: 118px;
+}
+
+#faq dt {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 24px;
+    line-height: 40px;
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    div.content, div.horizontal-bar, div.masterhead > div.container, div.footer > div.container {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+    ul.current {
+        position: static;
+        width: auto;
+    }
+}
+
+div.horizontal-bar h1 a.btn {
+  float: right;
+  color: white;
+  margin-right: 10px;
+  margin-top: 7px;
+  font-weight: normal;
+}

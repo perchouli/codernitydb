@@ -1,0 +1,750 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Database indexes &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="How it’s tested" href="how_its_tested.html"/>
+                <link rel="prev" title="Design" href="design.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Database indexes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hash-index">Hash Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#b-plus-tree-index">B Plus Tree Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#index-functions">Index functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#easier-way-of-creating-indexes">Easier way of creating indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tables-collections">Tables, collections...?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-an-index-code-is-processed-by-codernitydb">How an index code is processed by CodernityDB?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="database-indexes">
+<span id="id1"></span><h1>Database indexes<a class="headerlink" href="#database-indexes" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At first you should read <a class="reference internal" href="design.html#database-design-index"><em>what&#8217;s index in design section</em></a>.</p>
+</div>
+<p>Currently there are two main Index implementations.
+You need to know the difference between them before you will choose the base for your Index.
+Remember that you don&#8217;t need to code whole index code, just required
+methods or even parts of them.</p>
+<p>The default implemented indexes uses 2 files. One is for index
+metadata / structure, the second one is for storage. So the total
+number of files opened by database is usually
+<tt class="docutils literal"><span class="pre">number_of_indexes</span> <span class="pre">*</span> <span class="pre">2</span></tt>. Indexes makes usage of <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_file">sparse files</a> to
+store information.</p>
+<p>To see how to write index see below</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The object that you pass to database to add index, it&#8217;s not the
+same object that will be database side!</p>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#internal-index-functions"><em>Index functions</em></a> for description of powerful mechanism of inside index (database) functions.</p>
+</div>
+<p>Using custom index is quite simple. You need to decide if your index needs to be Hash based (<a class="reference internal" href="#internal-hash-index"><em>details</em></a>) or Tree based (<a class="reference internal" href="#internal-tree-index"><em>details</em></a> for
+pros and cons)</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Please remember that the object that is finally used by Database is
+not the object that you passed into!</p>
+</div>
+<p>There is special class attribute to solve import problems in indexes
+in DB.</p>
+<dl class="docutils">
+<dt>custom_header</dt>
+<dd>It&#8217;s string that will be inserted to final index file. It&#8217;s
+useful to pass the custom imports there. You will find an example
+in <a class="reference internal" href="examples.html#secure-storage-example"><em>Examples - secure storage</em></a></dd>
+<dt>storage_class</dt>
+<dd>It defines what storage to use. By default all indexes will use <a class="reference internal" href="api.html#CodernityDB.storage.Storage" title="CodernityDB.storage.Storage"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.storage.Storage</span></tt></a></dd>
+</dl>
+<div class="section" id="hash-index">
+<span id="internal-hash-index"></span><h2>Hash Index<a class="headerlink" href="#hash-index" title="Permalink to this headline">¶</a></h2>
+<p>This index is based on <a class="reference external" href="http://en.wikipedia.org/wiki/Hash_table">Hash Table</a> with <a class="reference external" href="http://en.wikipedia.org/wiki/Hash_table">separate chaining</a>. You
+can refer also for <a class="reference external" href="http://en.wikipedia.org/wiki/ISAM">ISAM</a>.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Pros</dt>
+<dd><ul class="first last simple">
+<li>Fast</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Cons</dt>
+<dd><ul class="first last simple">
+<li>Records are not in order of insert / update / delete but in <em>random</em> like</li>
+<li>Can be queried only for given key, or iterate over all keys</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>There are two major implementations</p>
+<ul class="simple">
+<li><a class="reference internal" href="api.html#CodernityDB.hash_index.UniqueHashIndex" title="CodernityDB.hash_index.UniqueHashIndex"><tt class="xref py py-class docutils literal"><span class="pre">UniqueHashIndex</span></tt></a> - should be used
+only for <strong>id</strong> index</li>
+<li><a class="reference internal" href="api.html#CodernityDB.hash_index.HashIndex" title="CodernityDB.hash_index.HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">HashIndex</span></tt></a> - a general use Hash Index.</li>
+</ul>
+<p>They differs in several places, for details you should read the code
+of them both.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="speed.html#hash-speed"><em>Hash Index speed tests</em></a></dt>
+<dd>For speed tests</dd>
+<dt><a class="reference internal" href="api.html#CodernityDB.hash_index.HashIndex" title="CodernityDB.hash_index.HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.hash_index.HashIndex</span></tt></a></dt>
+<dd>For documentation</dd>
+</dl>
+</div>
+<dl class="docutils" id="conflict-resolution">
+<dt>conflict resolution</dt>
+<dd>When using <tt class="docutils literal"><span class="pre">0xfffff</span></tt> <em>hash_lim</em> after <tt class="docutils literal"><span class="pre">1200</span></tt> inserts there is
+50% probability that conflict will occur
+(<a class="reference external" href="http://en.wikipedia.org/wiki/Birthday_problem">birthday problem</a>). Conflicts are solved by <a class="reference external" href="http://en.wikipedia.org/wiki/Hash_table">separate
+chaining</a>, so keys with the same hash function results are linked
+into list, then traversed when needed.</dd>
+<dt>duplicate keys</dt>
+<dd>For duplicate keys the same mechanism is used as for
+<a class="reference internal" href="#conflict-resolution"><em>conflict resolution</em></a>. All indexes different than <em>id</em> one can
+accept more than one record with the same key
+(<a class="reference internal" href="api.html#CodernityDB.database.Database.get_many" title="CodernityDB.database.Database.get_many"><tt class="xref py py-meth docutils literal"><span class="pre">get_many()</span></tt></a>).</dd>
+</dl>
+<div class="section" id="hash-index-details">
+<span id="custom-hash-index"></span><h3>Hash Index details<a class="headerlink" href="#hash-index-details" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For api documentation please see <a class="reference internal" href="api.html#CodernityDB.hash_index.HashIndex" title="CodernityDB.hash_index.HashIndex"><tt class="xref py py-class docutils literal"><span class="pre">HashIndex</span></tt></a></p>
+</div>
+<p>Below you will find explained in details parameters for that index
+type.</p>
+<dl class="docutils" id="key-format">
+<dt>key_format</dt>
+<dd><p class="first">It defines what type is your key.</p>
+<p>The most important for you as you&#8217;re interested to write index for
+your use is the key size.</p>
+<p>For example if you want to use MD5 based index you would need set
+the <tt class="docutils literal"><span class="pre">key_format</span></tt> to <tt class="docutils literal"><span class="pre">16s</span></tt> which would set the size for <em>key</em>
+to 16 characters exactly how long is md5 hash (digest).</p>
+<p>An example code for Md5 based index can be found <a class="reference internal" href="design.html#design"><em>Design</em></a>,
+more examples in <a class="reference internal" href="examples.html#examples"><em>Examples</em></a></p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For format specification and explanation please visit
+<a class="reference external" href="http://docs.python.org/library/struct.html#format-characters">Python struct documentation</a></p>
+</div>
+</dd>
+<dt>hash_lim</dt>
+<dd><p class="first">It defines how big results will return index hash function.</p>
+<p>Current default is <tt class="docutils literal"><span class="pre">0xfffff</span></tt> which means <tt class="docutils literal"><span class="pre">1048575</span></tt> different
+hash function results.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">In perfect conditions you will be able to store those
+number of unique records without conflicts, in practice you
+will be able to store like <tt class="docutils literal"><span class="pre">1200</span></tt> records without conflict
+with 50% probability (for example <a class="reference external" href="http://en.wikipedia.org/wiki/Birthday_problem">birthday problem</a>). Lookup
+when conflict occurs is slower because linked list is
+traversed. More informations about conflicts <a class="reference internal" href="#internal-hash-index"><em>Hash Index</em></a>.</p>
+</div>
+<div class="last admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">If you want to have index that searches for let&#8217;s say
+<tt class="docutils literal"><span class="pre">True</span></tt> and  <tt class="docutils literal"><span class="pre">False</span></tt> values, you <strong>should</strong> set that
+parameter to <tt class="docutils literal"><span class="pre">2</span></tt>. Because the rest values will be not used
+(however nothing bad will happen).</p>
+</div>
+</dd>
+<dt>make_key_value</dt>
+<dd><p class="first">(<a class="reference internal" href="api.html#CodernityDB.index.Index.make_key_value" title="CodernityDB.index.Index.make_key_value"><tt class="xref py py-meth docutils literal"><span class="pre">make_key_value()</span></tt></a>)</p>
+<p class="last">That function is called by database when inserting new or updating
+objects in database.  It <strong>has</strong> to return <tt class="docutils literal"><span class="pre">None</span></tt> if index is
+not matched (not required to operate on it) and 2 values if index
+is matched. That 2 values are in order: <em>key</em> and <em>value</em>. Please
+remember that key must fit your <tt class="xref py py-attr docutils literal"><span class="pre">entry_line_format</span></tt>.</p>
+</dd>
+<dt>make_key</dt>
+<dd><p class="first">(<a class="reference internal" href="api.html#CodernityDB.index.Index.make_key" title="CodernityDB.index.Index.make_key"><tt class="xref py py-meth docutils literal"><span class="pre">make_key()</span></tt></a>)</p>
+<p class="last">That function is called when query operations are performed on
+database. It should format the key correctly to match that one
+returned by <a class="reference internal" href="api.html#CodernityDB.index.Index.make_key_value" title="CodernityDB.index.Index.make_key_value"><tt class="xref py py-meth docutils literal"><span class="pre">CodernityDB.index.Index.make_key_value()</span></tt></a></p>
+</dd>
+<dt>entry_line_format</dt>
+<dd><p class="first">(<em>for advanced users</em>, please check if <a class="reference internal" href="#key-format"><em>key format</em></a> is not
+enough for you)</p>
+<p>Entry line format contains all metadata required for Hash Index to
+work.</p>
+<p>First You need to decide it will look like. The default is
+<tt class="docutils literal"><span class="pre">&lt;32s{key}IIcI</span></tt> which means in order:</p>
+<ol class="arabic simple" start="0">
+<li>mark for use <em>little-endian</em> encoding <tt class="docutils literal"><span class="pre">&lt;</span></tt></li>
+<li>document id format <tt class="docutils literal"><span class="pre">32s</span></tt></li>
+<li>index key format <tt class="docutils literal"><span class="pre">{key}</span></tt>, it will be replaced with <tt class="docutils literal"><span class="pre">c</span></tt> or
+if defined with value from <tt class="docutils literal"><span class="pre">key_format</span></tt> parameter.</li>
+<li>start of a record in storage format <tt class="docutils literal"><span class="pre">I</span></tt></li>
+<li>size of a record in storage format <tt class="docutils literal"><span class="pre">I</span></tt></li>
+<li>status format <tt class="docutils literal"><span class="pre">c</span></tt> (you probably do not want to change it)</li>
+<li>next record (in case of conflicts) format <tt class="docutils literal"><span class="pre">I</span></tt></li>
+</ol>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you expect that your index might require more than
+<em>4294967295</em> bytes of space or metadata (that&#8217;s the max number
+for <tt class="docutils literal"><span class="pre">I</span></tt> format), change it to <tt class="docutils literal"><span class="pre">Q</span></tt>.</p>
+</div>
+</dd>
+</dl>
+<div class="section" id="hash-index-example">
+<h4>Hash Index Example<a class="headerlink" href="#hash-index-example" title="Permalink to this headline">¶</a></h4>
+<p>Let&#8217;s assume that you want to write hash based index that will
+separate objects with <tt class="docutils literal"><span class="pre">a</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0</span></tt> from <tt class="docutils literal"><span class="pre">a</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">1</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">AIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;?&#39;</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;hash_lim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="n">none</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">val</span> <span class="o">%</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+<p>It will allow you to perform for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">number_of_zeros</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">number_of_ones</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="b-plus-tree-index">
+<span id="internal-tree-index"></span><h2>B Plus Tree Index<a class="headerlink" href="#b-plus-tree-index" title="Permalink to this headline">¶</a></h2>
+<p>This index is based on <a class="reference external" href="http://en.wikipedia.org/wiki/B%2B_tree">B Plus Tree</a>. Duplicate keys are stored
+inside Tree structure (on leafs/nodes).</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Pros</dt>
+<dd><ul class="first last simple">
+<li>Can be queried for range queries</li>
+<li>Records are in order (depends of your keys)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Cons</dt>
+<dd><ul class="first last simple">
+<li>Slower than Hash based indexes</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="speed.html#tree-speed"><em>Tree Index speed tests</em></a></dt>
+<dd>For speed tests</dd>
+<dt><a class="reference internal" href="api.html#CodernityDB.tree_index.TreeBasedIndex" title="CodernityDB.tree_index.TreeBasedIndex"><tt class="xref py py-class docutils literal"><span class="pre">CodernityDB.tree_index.TreeBasedIndex</span></tt></a></dt>
+<dd>For documentation</dd>
+</dl>
+</div>
+<dl class="docutils">
+<dt>duplicate keys</dt>
+<dd>Duplicate keys are stored inside tree structure. So in worst case
+when you have more duplicate keys than <tt class="docutils literal"><span class="pre">node_size</span></tt> tree will
+became suboptimal (a half of one node will be always empty)</dd>
+</dl>
+<div class="section" id="tree-index-details">
+<h3>Tree Index details<a class="headerlink" href="#tree-index-details" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For api documentation please see <a class="reference internal" href="api.html#CodernityDB.tree_index.TreeBasedIndex" title="CodernityDB.tree_index.TreeBasedIndex"><tt class="xref py py-class docutils literal"><span class="pre">TreeBasedIndex</span></tt></a></p>
+</div>
+<p>That index is based on <a class="reference external" href="http://en.wikipedia.org/wiki/B%2B_tree">BPlus tree</a>. It&#8217;s main advantage is that it
+stores data in order. And you can make <em>range</em> queries.</p>
+<dl class="docutils">
+<dt>key_format</dt>
+<dd>It&#8217;s the same as in hash index, so please refer to <a class="reference internal" href="#key-format"><em>key_format
+in hash index details</em></a></dd>
+<dt>pointer_format</dt>
+<dd>It&#8217;s information about internal pointer format in tree. Change it
+only when you need it (for example when your index file might be
+bigger than <tt class="docutils literal"><span class="pre">4294967295</span> <span class="pre">bytes</span></tt>)</dd>
+<dt>meta_format</dt>
+<dd>Contains similar information as <tt class="docutils literal"><span class="pre">entry_line_format</span></tt> in hash
+index. Change it when you really need to.</dd>
+<dt>node_capacity</dt>
+<dd>One of the most important parameters in whole tree index. It
+defines how big is one leaf / node inside tree. If you expect much
+data to come into your index, you should play with a bit to adjust
+the most correct size. Generally, bigger value means less tree
+height, but it might mean more shifts inside when doing insert
+operation. It can be said, that bigger node_capacity means faster
+get operations.</dd>
+</dl>
+<div class="section" id="tree-index-example">
+<h4>Tree Index Example<a class="headerlink" href="#tree-index-example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SimpleTreeIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">13</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTreeIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">a_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+<p>It will allow you to perform for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">from_3_to_10</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="s">&#39;tree&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">inclusive_start</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inclusive_end</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>And you will get all records that have <tt class="docutils literal"><span class="pre">a</span></tt> value from 3 to 10.</p>
+</div>
+</div>
+</div>
+<div class="section" id="index-functions">
+<span id="internal-index-functions"></span><h2>Index functions<a class="headerlink" href="#index-functions" title="Permalink to this headline">¶</a></h2>
+<p>Quite important thing in CodernityDB are index functions. You can do with them anything you want they have access to database object, so they can perform operations on multiple indexes. If you want join like operation, you should write function. Then you will be able to run that function database side when using <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a>. The only mandatory argument for that kind of function is <tt class="docutils literal"><span class="pre">db</span></tt>, the rest are function arguments.</p>
+<p>Writing function is easy see an example there:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run_timeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">11</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;pub_date&#39;</span><span class="p">]</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;text&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">curr</span>
+</pre></div>
+</div>
+<p>That function performs simple JOIN operation (that JOIN known from SQL databases). As you can see it&#8217;s exactly the same as you would code in your code to archive that.</p>
+<p>Function should start it&#8217;s name from <tt class="docutils literal"><span class="pre">run_</span></tt> then you can call it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gen</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="s">&quot;timeline&quot;</span><span class="p">,</span> <span class="s">&quot;user_a&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned before, while you work in embedded mode it makes no big difference, but when using <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a> it makes huge.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please remember that CodernityDB is <em>not</em> relational Database, forcing it to work in that model will usually work, but it&#8217;s not recommended. You should try to denormalize it (<a class="reference external" href="http://en.wikipedia.org/wiki/Database_normalization">Database normalization</a>).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please see <a class="reference internal" href="examples.html#examples"><em>Examples</em></a> for more examples, and <a class="reference internal" href="api.html#module-CodernityDB.tree_index" title="CodernityDB.tree_index"><tt class="xref py py-mod docutils literal"><span class="pre">CodernityDB.tree_index</span></tt></a> for full documentation</p>
+</div>
+</div>
+<div class="section" id="easier-way-of-creating-indexes">
+<span id="simple-index"></span><h2>Easier way of creating indexes<a class="headerlink" href="#easier-way-of-creating-indexes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>Do I really need to code indexes in Python, is there an easier way to create indexes?</div></blockquote>
+<p>You bet there is! We prepared special, simplified mode for creating indexes. That code will be translated to Python code, and then used exactly in the same way as the rest indexes (so that simple indexes are exactly the same fast as pure Python ones). They are just simple by name not by possibilities.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Don&#8217;t be surprised, if we will name it SimpleIndex in several places there.</p>
+</div>
+<p>Usage of this mode is really basic, you just need to provide 2 (or optionally 3) things:</p>
+<ul class="simple">
+<li>properties of the index like this:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">name</span> <span class="o">=</span> <span class="n">MyTestIndex</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="n">HashIndex</span>
+<span class="n">key_format</span> <span class="o">=</span> <span class="n">I</span>
+<span class="n">etc</span><span class="o">.</span> <span class="n">etc</span><span class="o">.</span> <span class="o">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>body for <em>make_key_value</em> containing our simplified syntax:</li>
+</ul>
+<div class="highlight-python"><pre>make_key_value:
+a &gt; 1: 1, None
+a, None</pre>
+</div>
+<ul class="simple">
+<li>and optionally body for <em>make_key</em> (if you don&#8217;t provide it, it will be generated automaticlly and set to return key value as it is):</li>
+</ul>
+<div class="highlight-python"><pre>make_key:
+key &gt; 1: 1
+key</pre>
+</div>
+<p>Syntax of function body is really basic, every line preceded by a statement with colon at the end means that
+if conditions before colon are met, function will return everything that follows colon. If there is no colon,
+value will be always returned. Of course the order of lines actually matters, so if you provide body like that:</p>
+<div class="highlight-python"><pre>a &gt; 1: 1, None
+a &gt; 2: 2, None</pre>
+</div>
+<p>The second value will be never returned (because if <em>a</em> is less then 1 it&#8217;s for sure less than 2).
+Every name will be look for in dictionaries given to functions, so body like:</p>
+<div class="highlight-python"><pre>a &gt; 1: a, None</pre>
+</div>
+<p>will generate python code like that:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">],</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p>That&#8217;s everything you need to know to work with our simplified index creator, you just need to alway provide <em>name</em> and <em>type</em> in index properties
+and provide body for make_key_value, which has to return always two values (the 2nd has to be a dictionary or None).
+Here you have some examples and their equivalents in python. Remember that this simplified creator doesn&#8217;t provide python power,
+so if you want to write more sophisticated index, you will have to learn python.</p>
+<div class="highlight-python"><pre>name = Test
+type = HashIndex
+key_format = 16s
+
+make_key_value:
+md5(a),None
+
+make_key:
+md5(key)</pre>
+</div>
+<p>is an equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Test</span><span class="p">(</span> <span class="n">HashIndex</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;key_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;16s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span> <span class="n">Test</span> <span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span> <span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">]</span> <span class="p">)</span> <span class="o">.</span><span class="n">digest</span><span class="p">()</span> <span class="p">,</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span> <span class="p">(</span> <span class="n">key</span> <span class="p">)</span> <span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="keywords-helpers-in-simple-index">
+<h3>Keywords &amp; Helpers in simple index<a class="headerlink" href="#keywords-helpers-in-simple-index" title="Permalink to this headline">¶</a></h3>
+<p>Please note that Python <tt class="docutils literal"><span class="pre">None</span></tt> value can be written as: <tt class="docutils literal"><span class="pre">none</span></tt>, <tt class="docutils literal"><span class="pre">None</span></tt>, <tt class="docutils literal"><span class="pre">null</span></tt>.</p>
+<p>Supported logic operators:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">and</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">&amp;&amp;</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">or</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">||</span></tt></li>
+</ul>
+<p>Functions that you can use in <tt class="docutils literal"><span class="pre">make_key</span></tt> and <tt class="docutils literal"><span class="pre">make_key_value</span></tt>:</p>
+<dl class="method">
+<dt id="str">
+<tt class="descname">str</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#str" title="Permalink to this definition">¶</a></dt>
+<dd><p>it will convert value to string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; value to convert to string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">string value of <tt class="docutils literal"><span class="pre">value</span></tt></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="len">
+<tt class="descname">len</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#len" title="Permalink to this definition">¶</a></dt>
+<dd><p>it will return length of a value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; a value to check length</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">length of value</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="md5">
+<tt class="descname">md5</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>it will return md5 value of a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>string</em>) &#8211; string value to get md5 from it</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">md5 sum of value</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="fix_r">
+<tt class="descname">fix_r</tt><big>(</big><em>value</em>, <em>length</em><big>)</big><a class="headerlink" href="#fix_r" title="Permalink to this definition">¶</a></dt>
+<dd><p>it will return fixed string length. <tt class="docutils literal"><span class="pre">Value</span></tt> shorter than <tt class="docutils literal"><span class="pre">length</span></tt>
+will be right filled with <tt class="docutils literal"><span class="pre">_</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> (<em>string</em>) &#8211; value to adjust string length</li>
+<li><strong>length</strong> (<em>integer</em>) &#8211; how long should be output string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">fixed size string</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Obviously you can use that simple indexes in <a class="reference external" href="http://labs.codernity.com/codernitydb-http">CodernityDB-HTTP</a> without any problem.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Error reporting / handling system in that mode will tell you exactly what&#8217;s wrong with your code.</p>
+</div>
+</div>
+</div>
+<div class="section" id="tables-collections">
+<span id="tables-colections-q"></span><h2>Tables, collections...?<a class="headerlink" href="#tables-collections" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>Ok, I got it, but can I store more than one data type in Database. Is there something like table or collection ?</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In <a class="reference external" href="http://bitbucket.org/codernity/codernitydb-demos">CodernityDB Demos</a> you can find minitwit example which is rewrite from Sqlite application.</p>
+</div>
+<p>Sure! You can use Index mechanism do to it. As it has been mentioned before, Index mechanism in CodernityDB is like read only Table in SQL databases (see <a class="reference internal" href="design.html#database-design-index"><em>index design</em></a>). So all you need is to define how your records will differ each other.</p>
+<p>Let&#8217;s assume that you want to users and users and some data that belongs to user. You will probably want to be able to get all users, and all things that belongs to him, right? So.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">class</span> <span class="nc">AllUsers</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;16s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AllUsers</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;_t&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;user&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">digest</span><span class="p">(),</span> <span class="bp">None</span>
+
+
+<span class="k">class</span> <span class="nc">AllItems</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;16s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AllUsers</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;_t&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;item&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;owner&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">digest</span><span class="p">(),</span> <span class="bp">None</span>
+</pre></div>
+</td></tr></table></div>
+<p>Having that indexes in your database will allow you to query for single user and for items of that user. Isn&#8217;t it simple?
+As you can see, index in CodernityDB is not an index that you probably get used to. It&#8217;s much more.</p>
+</div>
+<div class="section" id="how-an-index-code-is-processed-by-codernitydb">
+<h2>How an index code is processed by CodernityDB?<a class="headerlink" href="#how-an-index-code-is-processed-by-codernitydb" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>When you provide CodernityDB with an index, it uses <a class="reference external" href="http://docs.python.org/2/library/inspect.html#inspect.getsource">getsource</a> function from <a class="reference external" href="http://docs.python.org/2/library/inspect.html">inspect module</a> to get index code. This means, that after you call add_index function, it will look for the index class in current scope, take the whole class code as it is (including intends) and place it inside it&#8217;s own code. Hence there are few cons you have to bear in mind:</div></blockquote>
+<ul class="simple">
+<li>You can not generate class code on the fly inside, let&#8217;s say, a function, like that:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="bp">None</span>
+        <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">key</span>
+    <span class="k">return</span> <span class="n">MyIndex</span>
+</pre></div>
+</div>
+<p>Despite of code being correct in python terms, it will produce an error in CodernityDB, since class isn&#8217;t defined in proper scope.</p>
+<blockquote>
+<div><ul class="simple">
+<li>You can not provide index class code with a variable defined outside this class:</li>
+</ul>
+</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="k">class</span> <span class="nc">MyIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithXIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+<p>Even if now class is in proper scope, the example won&#8217;t work, because variable <em>a</em> isn&#8217;t known to CodernityDB.</p>
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Examples &mdash; CodernityDB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="_static/favicon.ico">
+        <!-- Le styles -->
+        <link href="_static/bootstrap.css" rel="stylesheet">
+        <link href="_static/bootstrap-responsive.css" rel="stylesheet">
+        <link href="_static/labs.css" rel="stylesheet">
+        <link href="_static/docs.css" rel="stylesheet">
+        <link href="_static/pygments.css" rel="stylesheet">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+            <script type="text/javascript">
+                var DOCUMENTATION_OPTIONS = {
+                    URL_ROOT:'',
+                    VERSION:'0.3.61',
+                    COLLAPSE_INDEX:false,
+                    FILE_SUFFIX:'.html',
+                    HAS_SOURCE:  true
+                };
+            </script>
+                <script type="text/javascript" src="_static/jquery.js"></script>
+                <script type="text/javascript" src="_static/underscore.js"></script>
+                <script type="text/javascript" src="_static/bootstrap-dropdown.js"></script>
+                <link rel="shortcut icon" href="_static/favicon.ico"/>
+            <link rel="top" title="CodernityDB" href="index.html"/>
+                <link rel="next" title="FAQ" href="faq.html"/>
+                <link rel="prev" title="Quick tutorial" href="quick.html"/> 
+    </head>
+<body>
+        <div class="masterhead hero-unit">
+            <div class="container">
+                <a href="http://codernity.com"><img src="_static/logo_subpage.png"></a>
+                <h1><img src="_static/erlenmeyer-flask-small.png"> <a href="http://labs.codernity.com">Labs</a></h1>
+            </div>
+        </div>
+        <div class="horizontal-bar">
+            <div class="container">
+                <h1>
+                    <a href="index.html">CodernityDB</a>
+                    <a class="btn btn-primary" href="https://bitbucket.org/codernity/codernitydb/get/default.tar.gz"><i class="icon-download-alt icon-white"></i> Download</a>
+                </h1>
+            </div>
+        </div>
+        <!--
+        <form class="navbar-search" action="search.html"
+              method="get">
+            <input type="text" name="q" placeholder="search"/>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>-->
+
+<div class="content container">
+    <div class="row-fluid">
+        <div class="docs-sidebar span3"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_indexes.html">Database indexes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_its_tested.html">How it&#8217;s tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speed.html">Speed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-indexes">Example indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-storages">Example storages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-database-functions">Example database functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API docs</a></li>
+</ul>
+
+        </div>
+        <div class="docs-content span9">
+                
+  <div class="section" id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Here you will find some examples, from different projects / ideas. So
+they might miss some <em>context</em> informations etc.</p>
+<div class="section" id="example-indexes">
+<span id="id2"></span><h2>Example indexes<a class="headerlink" href="#example-indexes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="custom-hash">
+<h3>Custom Hash<a class="headerlink" href="#custom-hash" title="Permalink to this headline">¶</a></h3>
+<p>It defines index that separates data in two groups <tt class="docutils literal"><span class="pre">&gt;5</span></tt> and <tt class="docutils literal"><span class="pre">&lt;=5</span></tt> based on <tt class="docutils literal"><span class="pre">test</span></tt> parameter.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CustomHashIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;hash_lim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CustomHashIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="md5-hash">
+<h3>MD5 Hash<a class="headerlink" href="#md5-hash" title="Permalink to this headline">¶</a></h3>
+<p>Nothing more than index shown in <a class="reference internal" href="design.html#design"><em>Design</em></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Md5Index</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;32s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Md5Index</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="with-a">
+<h3>With A<a class="headerlink" href="#with-a" title="Permalink to this headline">¶</a></h3>
+<p>It allows to search in database for objects that contains <tt class="docutils literal"><span class="pre">a</span></tt> in
+their structure.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">WithAIndex</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;32s&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithAIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">a_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_val</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_val</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">a_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a_val</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">a_val</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">md5</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="simple-tree">
+<h3>Simple Tree<a class="headerlink" href="#simple-tree" title="Permalink to this headline">¶</a></h3>
+<p>That index uses Tree index. It will allow you to search <strong>in order</strong>
+for elements that have <tt class="docutils literal"><span class="pre">t</span></tt> in their structure.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Simple_TreeIndex</span><span class="p">(</span><span class="n">TreeBasedIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;node_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Simple_TreeIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">t_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t_val</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="with-run">
+<h3>With Run<a class="headerlink" href="#with-run" title="Permalink to this headline">¶</a></h3>
+<p>This index will allow you to run <tt class="docutils literal"><span class="pre">sum</span></tt> function on database context
+(you don&#8217;t have to retrieve all the data first, and then process
+it). Strongly recommended on <a class="reference internal" href="server.html#server"><em>Server version</em></a> usage.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">WithRun_Index</span><span class="p">(</span><span class="n">HashIndex</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;key_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WithRun_Index</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_obj</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">db_obj</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="n">index_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_storage</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">a_val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)}</span>
+            <span class="k">return</span> <span class="n">a_val</span><span class="p">,</span> <span class="n">out</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="example-storages">
+<span id="example-storage"></span><h2>Example storages<a class="headerlink" href="#example-storages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="secure-storage">
+<span id="secure-storage-example"></span><h3>Secure storage<a class="headerlink" href="#secure-storage" title="Permalink to this headline">¶</a></h3>
+<p>It allows you to crypt storage information with <a class="reference external" href="http://en.wikipedia.org/wiki/Salsa20">Salsa20</a> algorithm. To
+use it you need to have index that will open storage with encryption key.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+
+<span class="kn">from</span> <span class="nn">CodernityDB.hash_index</span> <span class="kn">import</span> <span class="n">UniqueHashIndex</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">CodernityDB.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span>
+
+<span class="kn">import</span> <span class="nn">salsa20</span>
+<span class="kn">import</span> <span class="nn">marshal</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">class</span> <span class="nc">Salsa20Storage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Salsa20Storage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">db_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enc_key</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">data_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">iv</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">sal</span> <span class="o">=</span> <span class="n">salsa20</span><span class="o">.</span><span class="n">Salsa20</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enc_key</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="n">sal</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">:])</span>
+        <span class="n">m_data</span> <span class="o">=</span> <span class="n">marshal</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">s_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m_data</span>
+
+    <span class="k">def</span> <span class="nf">data_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">iv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">m_data</span> <span class="o">=</span> <span class="n">marshal</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">sal</span> <span class="o">=</span> <span class="n">salsa20</span><span class="o">.</span><span class="n">Salsa20</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enc_key</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="n">sal</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">m_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">iv</span> <span class="o">+</span> <span class="n">s_data</span>
+
+
+<span class="k">class</span> <span class="nc">EncUniqueHashIndex</span><span class="p">(</span><span class="n">UniqueHashIndex</span><span class="p">):</span>
+
+    <span class="n">__enc_key</span> <span class="o">=</span> <span class="s">&#39;a&#39;</span> <span class="o">*</span> <span class="mi">32</span>
+
+    <span class="n">custom_header</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">from demo_secure_storage import Salsa20Storage</span>
+<span class="s">from hashlib import sha256&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EncUniqueHashIndex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">enc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__enc_key</span>
+
+    <span class="nd">@enc_key.setter</span>
+    <span class="k">def</span> <span class="nf">enc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__enc_key</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__enc_key</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">enc_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__enc_key</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/demo_secure&#39;</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s">&#39;abcdefgh&#39;</span>
+    <span class="n">id_ind</span> <span class="o">=</span> <span class="n">EncUniqueHashIndex</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="n">storage_class</span><span class="o">=</span><span class="s">&#39;Salsa20Storage&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">set_indexes</span><span class="p">([</span><span class="n">id_ind</span><span class="p">])</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">id_ind</span><span class="o">.</span><span class="n">enc_key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s">&#39;testing&#39;</span><span class="p">))</span>
+
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dbr</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s">&#39;/tmp/demo_secure&#39;</span><span class="p">)</span>
+    <span class="n">dbr</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+    <span class="n">dbr</span><span class="o">.</span><span class="n">id_ind</span><span class="o">.</span><span class="n">enc_key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">dbr</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">curr</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="example-database-functions">
+<h2>Example database functions<a class="headerlink" href="#example-database-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="join-like-1">
+<span id="join-like1"></span><h3>Join like 1<a class="headerlink" href="#join-like-1" title="Permalink to this headline">¶</a></h3>
+<p>It will join user with timeline entries. See <a class="reference external" href="http://bitbucket.org/codernity/codernitydb-demos">CodernityDB Demos</a> <tt class="docutils literal"><span class="pre">minitwitt</span></tt> to see more things like this.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run_timeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_many</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">11</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">with_doc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;pub_date&#39;</span><span class="p">]</span>
+        <span class="n">curr</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">][</span><span class="s">&#39;text&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">curr</span><span class="p">[</span><span class="s">&#39;doc&#39;</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">curr</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4">
+                <address>
+                    <strong>Codernity</strong><br>
+                    Ostrowskiego 30 St.<br>
+                    Wroclaw, 53-238, Poland<br>
+                </address>
+            </div>
+            <div class="span4 offset4 right">
+                <address>
+                    +48 71 70 70 934 <abbr title="Phone number"><i class="icon-headphones"></i></abbr><br/>
+                    <a href="mailto:contact@codernity.com">contact@codernity.com</a> <abbr title="Email address"><i class="icon-envelope"></i></abbr><br/>
+                    <a href="http://codernity.com">http://codernity.com</a> <abbr title="Website"><i class="icon-home"></i></abbr>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="_static/bootstrap-scrollspy.js"></script>
+<script src="_static/bootstrap-affix.js"></script>
+<script src="_static/labs.js"></script>
+
+<!-- Piwik -->
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.codernity.com/" : "http://piwik.codernity.com/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.codernity.com/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+div.masterhead {
+    background-image: url('background.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    text-align: center;
+    padding: 3px 0 129px 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+div.masterhead div.container > a {
+    float: left;
+    margin-top: 125px;
+    margin-left: 120px;
+}
+
+div.masterhead div.container h1 a {
+    margin-top: 20px;
+    float: left;
+    margin-left: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+div.masterhead object {
+    position: relative;
+    top: 44px;
+    float: left;
+}
+
+div.masterhead h1 {
+    font-size: 80px;
+    float: left;
+}
+
+div.horizontal-bar {
+    padding: 15px 0;
+    text-align: center;
+    background-color: whiteSmoke;
+    border-top: 1px solid white;
+    border-bottom: 1px solid #DDD;
+}
+
+div.footer {
+    padding: 15px 0 0 0;
+    background-color: whiteSmoke;
+    border-bottom: 1px solid white;
+    border-top: 1px solid #DDD;
+}
+
+div.footer div.right address {
+    text-align: right;
+}
+
+div.horizontal-bar ul {
+    margin-left: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+div.horizontal-bar ul li {
+    display: inline-block;
+    padding: 5px 8px;
+    line-height: 1;
+}
+
+div.products {
+    text-align: center;
+    padding: 20px 0 20px 0;
+}
+
+div.products > h2 {
+    font-weight: 200;
+    font-size: 60px;
+}
+
+div.products div.thumbnail > h2 {
+    font-size: 24px;
+}
+
+h1, h2, h3 {
+    color: #5A5A5A;
+}
+
+div.products div.thumbnail h2 {
+    font-weight: 100;
+    maring-bottom: 0;
+}
+
+div.products div.thumbnail p {
+    text-align: left;
+    padding: 10px;
+}
+
+div.thumbnail {
+    text-decoration: none;
+    font-weight: normal;
+}
+
+hr {
+    height: 1px;
+    margin: 20px 0;
+    background-image: -webkit-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -moz-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -ms-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -o-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    border: 0;
+}
+
+.pager {
+    margin: 3px 20px 15px;
+}
+
+
+/* Sidenav for Docs
+-------------------------------------------------- */
+
+/* prevent column from collapsing when affixing */
+.span3 {
+    min-height: 1px;
+}
+
+.bs-docs-sidenav {
+    width: 228px;
+    margin: 30px 0 0;
+    padding: 0;
+    background-color: #fff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    box-shadow: 0 1px 4px rgba(0,0,0,.065);
+}
+.bs-docs-sidenav > li > a {
+    display: block;
+    *width: 190px;
+    margin: 0 0 -1px;
+    padding: 8px 14px;
+    border: 1px solid #e5e5e5;
+}
+.bs-docs-sidenav > li:first-child > a {
+    -webkit-border-radius: 6px 6px 0 0;
+    -moz-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+.bs-docs-sidenav > li:last-child > a {
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+}
+.bs-docs-sidenav > .active > a {
+    position: relative;
+    z-index: 2;
+    padding: 9px 15px;
+    border: 0;
+    text-shadow: 0 1px 0 rgba(0,0,0,.15);
+    -webkit-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+    -moz-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+    box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+}
+/* Chevrons */
+.bs-docs-sidenav .icon-chevron-right {
+    float: right;
+    margin-top: 2px;
+    margin-right: -6px;
+    opacity: .25;
+}
+.bs-docs-sidenav > li > a:hover {
+    background-color: #f5f5f5;
+}
+.bs-docs-sidenav a:hover .icon-chevron-right {
+    opacity: .5;
+}
+.bs-docs-sidenav .active .icon-chevron-right,
+.bs-docs-sidenav .active a:hover .icon-chevron-right {
+    background-image: url(../img/glyphicons-halflings-white.png);
+    opacity: 1;
+}
+
+table {
+    width: 100%;
+}
+
+div.linenodiv pre {
+    padding-right: 0;
+}
+
+table.docutils {
+    border: 1px solid #dddddd;
+    border-collapse: separate;
+    *border-collapse: collapse;
+    border-left: 0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+table.docutils.footnote {
+    margin-bottom: 0;
+}
+
+table.docutils th,
+table.docutils td {
+    border-left: 1px solid #dddddd;
+}
+
+table.docutils caption + thead tr:first-child th,
+table.docutils caption + tbody tr:first-child th,
+table.docutils caption + tbody tr:first-child td,
+table.docutils colgroup + thead tr:first-child th,
+table.docutils colgroup + tbody tr:first-child th,
+table.docutils colgroup + tbody tr:first-child td,
+table.docutils thead:first-child tr:first-child th,
+table.docutils tbody:first-child tr:first-child th,
+table.docutils tbody:first-child tr:first-child td {
+    border-top: 0;
+}
+
+table.docutils thead:first-child tr:first-child th:first-child,
+table.docutils tbody:first-child tr:first-child td:first-child {
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+}
+
+table.docutils thead:first-child tr:first-child th:last-child,
+table.docutils tbody:first-child tr:first-child td:last-child {
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+}
+
+table.docutils thead:last-child tr:last-child th:first-child,
+table.docutils tbody:last-child tr:last-child td:first-child,
+table.docutils tfoot:last-child tr:last-child td:first-child {
+    -webkit-border-radius: 0 0 0 4px;
+    -moz-border-radius: 0 0 0 4px;
+    border-radius: 0 0 0 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+}
+
+table.docutils thead:last-child tr:last-child th:last-child,
+table.docutils tbody:last-child tr:last-child td:last-child,
+table.docutils tfoot:last-child tr:last-child td:last-child {
+    -webkit-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+}
+
+table.docutils caption + thead tr:first-child th:first-child,
+table.docutils caption + tbody tr:first-child td:first-child,
+table.docutils colgroup + thead tr:first-child th:first-child,
+table.docutils colgroup + tbody tr:first-child td:first-child {
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+}
+
+table.docutils caption + thead tr:first-child th:last-child,
+table.docutils caption + tbody tr:first-child td:last-child,
+table.docutils colgroup + thead tr:first-child th:last-child,
+table.docutils colgroup + tbody tr:first-child td:last-child {
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -moz-border-right-topleft: 4px;
+}
+
+table.docutils.footnote {
+    border: none;
+}
+
+table.docutils td, table.docutils th {
+    border-right: none !important;
+    border-bottom: none !important;
+}
+
+table.docutils tbody td {
+    padding: 5px;
+    border-top: 1px solid #DDD;
+}
+
+table.docutils.footnote td {
+    border: none;
+}
+
+table.docutils th.head {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+table.docutils.field-list {
+    margin-top: 19px;
+}
+
+table.docutils.field-list .field-name {
+    padding-top: 5px;
+}
+
+table.docutils.field-list tr:first-child + tr th, table.docutils.field-list tr:first-child ~ tr th {
+     border-top: 1px solid #DDD !important;
+}
+
+td.label {
+    background-color: white;
+    width: 10px;
+    border: none;
+}
+
+td.linenos {
+    width: 36px;
+}
+
+div.docs-sidebar > ul > li > a.reference.internal {
+    background-image: url('chevron_right.png');
+    background-repeat: no-repeat;
+    background-position: right 10px;
+}
+
+div.docs-sidebar > ul > li > a.current.reference.internal {
+    background-image: url('chevron_right_white.png');
+}
