@@ -1,7 +1,7 @@
 Deployment
 ==========
 
-To meake use of CodernityDB (or |CodernityDB-PyClient-link|), you will need just to create global object that will be avaliable to all your application threads etc.
+To make use of CodernityDB (or |CodernityDB-PyClient-link|), you will need just to create global object that will be available to all your application threads etc.
 
 .. seealso:
 

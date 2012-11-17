@@ -30,7 +30,7 @@ Currently there are implemented 4 different databases
 
 1. Database - a database to use in single process/thread environment
 2. DatabaseTreadSafe - a database to use with threads, readers don't
-   block writters etc. GeventDatabase is 1:1 copy of that database.
+   block writers etc. GeventDatabase is 1:1 copy of that database.
 3. DatabaseSuperThreadSafe - a database to also use with threads, but
    database operations are limited to only one in given time.
 4. CodernityDB-HTTP - a HTTP server version of database, for multi
@@ -66,7 +66,7 @@ you always need to pass full object to database, our Indexes can be
 compared also with CouchDB views mechanizm. (you would like probably to see :ref:`simple_index`). You can have as much indexes as you want and single record in database can "exists" in more than one index.
 
 Index itself does not store any information except it's
-*metadata*. You don't have to copy full data everytime in indexes,
+*metadata*. You don't have to copy full data every time in indexes,
 because all indexes different than *id* one, are bound with it by
 ``_id`` value, and you can easily get content from that *id* index by
 adding ``with_doc=True`` to your get queries (please refer to
@@ -109,11 +109,11 @@ database for specified `name`, for example:
 
 
 
-Currently *Hash* based index (`Hash Table`_ separate chaining version) and *B+Tree* based (`B Plus Tree`_) are avaliable.
+Currently *Hash* based index (`Hash Table`_ separate chaining version) and *B+Tree* based (`B Plus Tree`_) are available.
 
 Both indexes makes huge use of `Sparse files`_.
 
-For more informations about indexes visit :ref:`database_indexes`
+For more information about indexes visit :ref:`database_indexes`
 
 Also please remember that more indexes affects write performance.
 
@@ -133,7 +133,7 @@ performed.
 Storage needs to save python value to the disk and return the position
 and size to allow Index to save that data. The default implementation
 uses Python marshal_ to serialize and deserialize Python objects
-passed as value into it. So you will be abble to store those object
+passed as value into it. So you will be able to store those object
 that are serializable by marshal_ module.
 
 
@@ -202,7 +202,7 @@ there. To optimize the disk usage run
 Database operations flow
 ------------------------
 
-During insert into database, incomming data is passed to
+During insert into database, incoming data is passed to
 ``make_key_value`` functions in *all* indexes in order of adding or
 changing them in database.
 On query operations function ``make_key`` is called to get
@@ -217,7 +217,7 @@ So having more indexes affects write speed, but does not affect read speed at al
 Insert
 ^^^^^^
 
-Incomming data is at first processed in *id* index. Then it goes
+Incoming data is at first processed in *id* index. Then it goes
 through ``make_key_value`` method, in next stage the value is stored in
 *storage*, and at last the metadata is stored in *index*.
 Then the procedure is repeated for other indexes.

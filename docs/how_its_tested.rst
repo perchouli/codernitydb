@@ -23,7 +23,7 @@ combination might report wrong results.
     your hardware). Really **do not** run tests suite on environments
     with less than 4 cpu cores without clock at least 2.5GHz, also if
     you run SSD for personal use, use ramcache instead. Test suite
-    perorms more than 24 000 000 system calls to write, read, lseek.
+    performs more than 24 000 000 system calls to write, read, lseek.
 
 .. note::
     For more details visit or clone our |cdb_repo| and check ``tox.ini`` and

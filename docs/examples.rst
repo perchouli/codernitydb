@@ -5,7 +5,7 @@ Examples
 ====================
 
 Here you will find some examples, from different projects / ideas. So
-they might miss some *context* informations etc.
+they might miss some *context* information etc.
 
 
 .. _example_indexes:

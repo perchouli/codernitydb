@@ -146,9 +146,9 @@ hash_lim
     .. hint:: In perfect conditions you will be able to store those
         number of unique records without conflicts, in practice you
         will be able to store like ``1200`` records without conflict
-        with 50% probability (for example `birthday problem`_). Lookup
+        with 50% probability (for example `birthday problem`_). Look up
         when conflict occurs is slower because linked list is
-        traversed. More informations about conflicts :ref:`Hash Index
+        traversed. More information about conflicts :ref:`Hash Index
         <internal_hash_index>`.
 
     .. hint:: If you want to have index that searches for let's say
@@ -275,7 +275,7 @@ inside Tree structure (on leafs/nodes).
 duplicate keys
     Duplicate keys are stored inside tree structure. So in worst case
     when you have more duplicate keys than ``node_size`` tree will
-    became suboptimal (a half of one node will be always empty)
+    became sub-optimal (a half of one node will be always empty)
 
 
 
@@ -434,7 +434,7 @@ Usage of this mode is really basic, you just need to provide 2 (or optionally 3)
     a > 1: 1, None
     a, None
 
-* and optionally body for *make_key* (if you don't provide it, it will be generated automaticlly and set to return key value as it is):
+* and optionally body for *make_key* (if you don't provide it, it will be generated automatically and set to return key value as it is):
     
 ::
 
@@ -465,7 +465,7 @@ will generate python code like that:
     if data["a"] > 1:
         return data["a"], None
 
-That's everything you need to know to work with our simplified index creator, you just need to alway provide *name* and *type* in index properties
+That's everything you need to know to work with our simplified index creator, you just need to always provide *name* and *type* in index properties
 and provide body for make_key_value, which has to return always two values (the 2nd has to be a dictionary or None). 
 Here you have some examples and their equivalents in python. Remember that this simplified creator doesn't provide python power,
 so if you want to write more sophisticated index, you will have to learn python.
@@ -557,7 +557,7 @@ Functions that you can use in ``make_key`` and ``make_key_value``:
 Tables, collections...?
 -------------------------
 
-    Ok, I got it, but can I store more than one data type in Database. Is there something like table or collection ?
+    OK, I got it, but can I store more than one data type in Database. Is there something like table or collection ?
 
 .. note::
 

@@ -23,7 +23,7 @@ database. **You will need to add just 2 lines in your code to make use of it!** 
     as CodernityDB test suite ?
 
 
-Here you will find some screenshots from the interface:
+Here you will find some screen shots from the interface:
 
 .. image:: CodernityDB_HTTP_new_doc.png
 .. image:: CodernityDB_HTTP_index_overview.png

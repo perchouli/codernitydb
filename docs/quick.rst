@@ -4,7 +4,7 @@
 Quick tutorial 
 ====================
 
-Every single part of codeblock will be full example, so you can copy &
+Every single part of code block will be full example, so you can copy &
 paste it to play with it
 
 
@@ -70,7 +70,7 @@ As you can see database supports duplicate keys.
 Ordered data
 ------------
 
-    Ok, but I would to have them in order from range?
+    OK, but I would to have them in order from range?
 
 .. literalinclude:: quick_key_value4.py
    :linenos:
@@ -87,7 +87,7 @@ HashIndex to TreeBasedIndex.
 Update / Delete
 ---------------
 
-    Ok, cool, what about updates ?
+    OK, cool, what about updates ?
 
 Update is very easy, let's say you want to update all documents that
 have ``x % 5 == 0`` and delete those with ``x % 7 == 0``.

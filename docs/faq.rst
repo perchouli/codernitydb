@@ -24,10 +24,10 @@ What about tables or collections ?
     Everything can be done through our Index mechanism see :ref:`tables_colections_q`.
 
 How does it compare to MongoDB, CouchDB and other "big" NoSQL databases ?
-    It does not compare. Different purposes, different design, different use case. For some projects it makes sense to use CodernityDB instead of MongoDB, CouchDB and others, for some other not.
+    Different purposes + different design. CodernityDB doesn't have yet any replication engine. However we are sure that there is a place for CodernityDB. Nothing is impossible in CodernityDB, because Index IS a Python class where you can do anything (if you're not a Python user we created :ref:`simple_index`).
 
 Why Python 3 is not supported ?
-    Python 3 introduced many incompatible changes. In case of CodernityDB having working version for 2.x and 3.x series in the same codebase without ugly hacks (big monkey-patching etc.) is almost impossible. If you're interested Python 3 version of CodernityDB contact us. Porting CodernityDB to Python 3.x is not hard. Python 3.x support in fact was never needed. That's why there is no support for it (yet?).
+    Python 3 introduced many incompatible changes. In case of CodernityDB having working version for 2.x and 3.x series in the same code base without ugly hacks (big monkey-patching etc.) is almost impossible. If you're interested Python 3 version of CodernityDB contact us. Porting CodernityDB to Python 3.x is not hard. Python 3.x support in fact was never needed. That's why there is no support for it (yet?).
 
 I want to contribute, what can I do?
     Just fork and create pull request |bitbucket_link|.
