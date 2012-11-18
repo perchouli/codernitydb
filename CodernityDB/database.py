@@ -419,7 +419,10 @@ class Database(object):
             self.add_index(id_ind, create=False)
             # del CodernityDB.index
         for index in self.indexes:
-            index.create_index()
+            try:
+                index.create_index()
+            except IndexException:
+                raise DatabaseConflict("Already exists (detected on index=%s)" % index.name)
         return True
 
     def _read_indexes(self):

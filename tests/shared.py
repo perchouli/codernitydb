@@ -268,6 +268,17 @@ class DB_Tests:
         db.destroy()
         assert db.exists() == False
 
+    def test_double_create(self, tmpdir):
+        p = os.path.join(str(tmpdir), 'db')
+        db = self._db(p)
+        db.create()
+        db2 = self._db(p)
+        with pytest.raises(DatabaseConflict):
+            db2.create()
+        db.destroy()
+        db2 = self._db(p)
+        db.create()
+
     def test_real_life_example_random(self, tmpdir, operations):
 
         db = self._db(os.path.join(str(tmpdir), 'db'))
