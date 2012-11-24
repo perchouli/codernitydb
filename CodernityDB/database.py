@@ -198,6 +198,11 @@ class Database(object):
         else:
             return ind_obj
 
+    def __check_if_index_unique(self, name, num):
+        indexes = os.listdir(os.path.join(self.path, '_indexes'))
+        if any((x for x in indexes if x[2:-3] == name and x[:2] != str(num))):
+            raise IndexConflict("Already exists")
+
     def __write_index(self, new_index, number=0, edit=False, ind_kwargs=None):
         #print new_index
         if ind_kwargs is None:
@@ -234,6 +239,8 @@ class Database(object):
                 raise PreconditionsException(
                     "Id index must be the first added")
             ind_path = "%.2d%s" % (number, name)
+            if not edit:
+                self.__check_if_index_unique(name, number)
 
             with io.FileIO(os.path.join(p, ind_path + '.py'), 'w') as f:
                 f.write(new_index)
@@ -272,6 +279,8 @@ class Database(object):
             if number == 0 and not edit and not ind.name == 'id':
                 raise PreconditionsException(
                     "Id index must be the first added")
+            if not edit:
+                self.__check_if_index_unique(ind.name, number)
             self._add_single_index(p, number, ind)
             ind_path = "%.2d%s" % (number, ind.name)
             ind_obj = self._read_index_single(p, ind_path + '.py', ind_kwargs)

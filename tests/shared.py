@@ -19,7 +19,7 @@ from CodernityDB.database import Database, RecordDeleted, RecordNotFound
 from CodernityDB.database import DatabaseException, RevConflict, DatabasePathException, DatabaseConflict, PreconditionsException
 
 from CodernityDB.hash_index import HashIndex, UniqueHashIndex
-from CodernityDB.index import IndexException, TryReindexException, IndexNotFoundException, IndexPreconditionsException
+from CodernityDB.index import IndexException, TryReindexException, IndexNotFoundException, IndexPreconditionsException, IndexConflict
 
 from CodernityDB.tree_index import TreeBasedIndex
 
@@ -273,8 +273,9 @@ class DB_Tests:
         db = self._db(p)
         db.create()
         db2 = self._db(p)
-        with pytest.raises(DatabaseConflict):
+        with pytest.raises((DatabaseConflict, IndexConflict)):
             db2.create()
+        db2.open()
         db.destroy()
         db2 = self._db(p)
         db.create()
