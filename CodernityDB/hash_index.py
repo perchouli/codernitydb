@@ -793,6 +793,53 @@ class DummyHashIndex(IU_HashIndex):
             self.storage = DummyStorage()
         self.storage.create()
 
+
+class IU_MultiHashIndex(IU_HashIndex):
+    """
+    Class that allows to index more than one key per database record.
+
+    It operates very well on GET/INSERT. It's not optimized for
+    UPDATE operations (will always readd everything)
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(IU_MultiHashIndex, self).__init__(*args, **kwargs)
+
+    def insert(self, doc_id, key, start, size, status='o'):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        ins = super(IU_MultiHashIndex, self).insert
+        for curr_key in key:
+            ins(doc_id, curr_key, start, size, status)
+        return True
+
+    def update(self, doc_id, key, u_start, u_size, u_status='o'):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        upd = super(IU_MultiHashIndex, self).update
+        for curr_key in key:
+            upd(doc_id, curr_key, u_start, u_size, u_status)
+
+    def delete(self, doc_id, key, start=0, size=0):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        delete = super(IU_MultiHashIndex, self).delete
+        for curr_key in key:
+            delete(doc_id, curr_key, start, size)
+
+    def get(self, key):
+        return super(IU_MultiHashIndex, self).get(key)
+
+    def make_key_value(self, data):
+        raise NotImplemented
+
+
 # classes for public use, done in this way because of
 # generation static files with indexes (_index directory)
 
@@ -809,3 +856,9 @@ class UniqueHashIndex(IU_UniqueHashIndex):
     That class is designed to be used in custom indexes. It's designed to be **id** index.
     """
     pass
+
+
+class MultiHashIndex(IU_MultiHashIndex):
+    """
+    That class is designed to be used in custom indexes.
+    """

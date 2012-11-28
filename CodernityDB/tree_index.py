@@ -1985,5 +1985,62 @@ class IU_TreeBasedIndex(Index):
         self._clear_cache()
 
 
+class IU_MultiTreeBasedIndex(IU_TreeBasedIndex):
+    """
+    Class that allows to index more than one key per database record.
+
+    It operates very well on GET/INSERT. It's not optimized for
+    UPDATE operations (will always readd everything)
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(IU_MultiTreeBasedIndex, self).__init__(*args, **kwargs)
+
+    def insert(self, doc_id, key, start, size, status='o'):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        ins = super(IU_MultiTreeBasedIndex, self).insert
+        for curr_key in key:
+            ins(doc_id, curr_key, start, size, status)
+        return True
+
+    def update(self, doc_id, key, u_start, u_size, u_status='o'):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        upd = super(IU_MultiTreeBasedIndex, self).update
+        for curr_key in key:
+            upd(doc_id, curr_key, u_start, u_size, u_status)
+
+    def delete(self, doc_id, key, start=0, size=0):
+        if isinstance(key, (list, tuple)):
+            key = set(key)
+        elif not isinstance(key, set):
+            key = set([key])
+        delete = super(IU_MultiTreeBasedIndex, self).delete
+        for curr_key in key:
+            delete(doc_id, curr_key, start, size)
+
+    def get(self, key):
+        return super(IU_MultiTreeBasedIndex, self).get(key)
+
+    def make_key_value(self, data):
+        raise NotImplemented
+
+
+# classes for public use, done in this way because of
+# generation static files with indexes (_index directory)
+
+
 class TreeBasedIndex(IU_TreeBasedIndex):
+
+
+class MultiTreeBasedIndex(IU_MultiTreeBasedIndex):
+    """
+    It allows to index more than one key for record. (ie. prefix/infix/suffix search mechanizms)
+    That class is designed to be used in custom indexes.
+    """
     pass

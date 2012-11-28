@@ -16,12 +16,12 @@
 # limitations under the License.
 
 from CodernityDB.database import Database, RecordDeleted, RecordNotFound
-from CodernityDB.database import DatabaseException, RevConflict, DatabasePathException, DatabaseConflict, PreconditionsException
+from CodernityDB.database import DatabaseException, RevConflict, DatabasePathException, DatabaseConflict, PreconditionsException, IndexConflict
 
-from CodernityDB.hash_index import HashIndex, UniqueHashIndex
-from CodernityDB.index import IndexException, TryReindexException, IndexNotFoundException, IndexPreconditionsException, IndexConflict
+from CodernityDB.hash_index import HashIndex, UniqueHashIndex, MultiHashIndex
+from CodernityDB.index import IndexException, TryReindexException, IndexNotFoundException, IndexPreconditionsException
 
-from CodernityDB.tree_index import TreeBasedIndex
+from CodernityDB.tree_index import TreeBasedIndex, MultiTreeBasedIndex
 
 from CodernityDB.debug_stuff import database_step_by_step
 
@@ -201,6 +201,32 @@ class WithRunEdit_Index(HashIndex):
 
     def make_key(self, key):
         return key
+
+
+class TreeMultiTest(MultiTreeBasedIndex):
+
+    custom_header = """from CodernityDB.tree_index import MultiTreeBasedIndex
+from itertools import izip"""
+
+    def __init__(self, *args, **kwargs):
+        kwargs['key_format'] = '16s'
+        super(TreeMultiTest, self).__init__(*args, **kwargs)
+        self.__l = kwargs.get('w_len', 2)
+
+    def make_key_value(self, data):
+        name = data['w']
+        l = self.__l
+        max_l = len(name)
+        out = set()
+        for x in xrange(l - 1, max_l):
+            m = (name, )
+            for y in xrange(0, x):
+                m += (name[y + 1:],)
+            out.update(set(''.join(x).rjust(16, '_').lower() for x in izip(*m)))  #ignore import error
+        return out, dict(name=name)
+
+    def make_key(self, key):
+        return key.rjust(16, '_').lower()
 
 
 class DB_Tests:
@@ -948,3 +974,27 @@ class DB_Tests:
             db.add_index(CustomHashIndex(db.path, 'custom'))
         db.add_index(UniqueHashIndex(db.path, 'id'))
         db.add_index(CustomHashIndex(db.path, 'custom'))
+
+    def test_multi_index(self, tmpdir):
+        with open('tests/misc/words.txt', 'r') as f:
+            data = f.read().split()
+        words = map(lambda x: x.strip().replace('.', "").replace(',', ""), data)
+        db = self._db(os.path.join(str(tmpdir), 'db'))
+        db.create()
+        db.add_index(TreeMultiTest(db.path, 'words'))
+        for word in words:
+            db.insert(dict(w=word))
+        assert db.count(db.all, 'words') == 3245
+        assert db.get('words', 'Coder')['name'] == 'Codernity'
+        assert db.get('words', "dern")['name'] == "Codernity"
+        assert db.get('words', 'Codernity')['name'] == "Codernity"
+
+        u = db.get('words', 'Codernit', with_doc=True)
+        doc = u['doc']
+        doc['up'] = True
+        db.update(doc)
+        assert db.get('words', "dern")['name'] == "Codernity"
+
+        db.delete(doc)
+        with pytest.raises(RecordNotFound):
+            db.get('words', "Codern")
