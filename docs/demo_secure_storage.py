@@ -13,9 +13,9 @@ import os
 
 class Salsa20Storage(Storage):
 
-    def __init__(self, db_path, name):
+    def __init__(self, db_path, name, enc_key):
         super(Salsa20Storage, self).__init__(db_path, name)
-        self.enc_key = None
+        self.enc_key = enc_key
 
     def data_from(self, data):
         iv = data[:8]
@@ -55,14 +55,27 @@ from hashlib import sha256"""
             self.__enc_key = value
         self.storage.enc_key = self.__enc_key
 
+    def _open_storage(self):
+        if not self.storage:
+            self.storage = Salsa20Storage(
+                self.db_path, self.name, self.enc_key)
+            self.storage.open()
+
+    def _create_storage(self):
+        if not self.storage:
+            self.storage = Salsa20Storage(
+                self.db_path, self.name, self.enc_key)
+            self.storage.create()
+
 
 def main():
     db = Database('/tmp/demo_secure')
     key = 'abcdefgh'
-    id_ind = EncUniqueHashIndex(db.path, 'id', storage_class='Salsa20Storage')
+    id_ind = EncUniqueHashIndex(db.path, 'id')
     db.set_indexes([id_ind])
     db.create()
     db.id_ind.enc_key = key
+    print db.id_ind.storage
 
     for x in xrange(100):
         db.insert(dict(x=x, data='testing'))
