@@ -58,6 +58,13 @@ Gevent Database
 Indexes
 -------
 
+.. note::
+   If you're **not interested in CodernityDB development / extending** you don't need to read this section, 
+   please then refer to :ref:`database_indexes`, **otherwise** please remember that index methods are called from
+   ``Database`` object.
+
+   
+
 General Index
 ^^^^^^^^^^^^^
 

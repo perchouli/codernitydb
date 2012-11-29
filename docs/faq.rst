@@ -38,6 +38,9 @@ I found a bug, where can I report it?
 I want to have a bit customized CodernityDB
     No problem, just contact us to get more details about that.
 
+Can I do prefix/infix/suffix search in CodernityDB ?
+    Sure! Please refer to :ref:`multiple_keys_index`. By using such method you will get very fast prefix/infix/suffix search mechanism.
+
 I want to use CodernityDB in commercial project, do I have to pay for it?
     CodernityDB is released on `Apache 2.0 license`_, it allows you to freely use it even for commercial purposes without any need to pay for it. IT'S FREE FOR COMMERCIAL USE. 
 

@@ -2036,6 +2036,7 @@ class IU_MultiTreeBasedIndex(IU_TreeBasedIndex):
 
 
 class TreeBasedIndex(IU_TreeBasedIndex):
+    pass
 
 
 class MultiTreeBasedIndex(IU_MultiTreeBasedIndex):

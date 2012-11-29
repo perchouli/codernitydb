@@ -122,6 +122,10 @@ class Database(object):
         self.opened = False
 
     def create_new_rev(self, old_rev=None):
+        """
+        Creates new revision number based on previous one.
+        Increments it + random bytes. On overflow starts from 0 again.
+        """
         if old_rev:
             try:
                 rev_num = int(old_rev[:4], 16)
@@ -327,6 +331,13 @@ class Database(object):
         return name
 
     def edit_index(self, index, reindex=False, ind_kwargs=None):
+        """
+        Allows to edit existing index.
+
+        :param bool redindex: should be the index reindexed after change
+
+        :returns: index name
+        """
         if ind_kwargs is None:
             ind_kwargs = {}
         ind_obj, name = self.__write_index(index, -1, edit=True)
@@ -447,6 +458,9 @@ class Database(object):
                 self.add_index('path:' + ind, create=False)
 
     def __compat_things(self):
+        """
+        Things for compatibility.
+        """
         # patch for rev size change
         if not self.id_ind:
             return

@@ -115,6 +115,12 @@ Hash Index details
    For api documentation please see :py:class:`.HashIndex`
 
 
+.. seealso::
+
+   :ref:`multiple_keys_index`
+      for Multiindex hash based implementation (more than one key per database data).
+
+
 Below you will find explained in details parameters for that index
 type.
 
@@ -271,6 +277,9 @@ inside Tree structure (on leafs/nodes).
     :py:class:`CodernityDB.tree_index.TreeBasedIndex`
         For documentation
 
+   :ref:`multiple_keys_index`
+      for Multiindex tree based implementation (more than one key per database data).
+
 
 duplicate keys
     Duplicate keys are stored inside tree structure. So in worst case
@@ -346,6 +355,68 @@ It will allow you to perform for example:
     [...]
 
 And you will get all records that have ``a`` value from 3 to 10.
+
+
+
+.. _multiple_keys_index:
+
+Multikeys index
+----------------
+
+Multikeys indexes (aka Multiindex) are indexes where you can have more than one key per database data. They share the same properties as their bases (:ref:`internal_hash_index` and :ref:`internal_tree_index`).
+
+Imagine something like infix search:
+
+.. code-block:: python
+    
+    class TreeMultiTest(MultiTreeBasedIndex):
+
+        custom_header = """from CodernityDB.tree_index import MultiTreeBasedIndex
+    from itertools import izip"""
+
+        def __init__(self, *args, **kwargs):
+            kwargs['key_format'] = '16s'
+            super(TreeMultiTest, self).__init__(*args, **kwargs)
+            self.__l = kwargs.get('w_len', 2)
+
+        def make_key_value(self, data):
+            name = data['w']
+            l = self.__l
+            max_l = len(name)
+            out = set()
+            for x in xrange(l - 1, max_l):
+                m = (name, )
+                for y in xrange(0, x):
+                    m += (name[y + 1:],)
+                out.update(set(''.join(x).rjust(16, '_').lower() for x in izip(*m)))  #ignore import error
+            return out, dict(w=name)
+
+        def make_key(self, key):
+            return key.rjust(16, '_').lower()
+    
+By using that index you will be able to perform infix search over all words in your database. Only one difference from non multi index is that ``make_key_value`` has to return iterable (the best will be set because it has unique values). Then you can easily run something like that:
+    
+.. code-block:: python
+    
+    db = Database('/tmp/multi')
+    db.create()
+    db.add_index(TreeMultiTest(db.path, "words"))
+    
+    db.insert(dict(w='Codernity'))
+    
+    print db.get('words', 'dern')['w']  # "Codernity"
+    print db.get('words', 'cod')['w']  # "Codernity"
+    
+
+As you can see implementing infix/suffix/prefix search mechanism in CodernityDB is very easy.
+    
+.. note::
+    Multiindex requires more time to insert data. Get speed is exactly as fast as in non multiindex (same rules applies to both of them).
+    
+Obviously that's not only one use case for that indexes, it's just probably the most obvious usage example.
+    
+Currently both Hash and Tree indexes have multiindex implementations: ``MultiHashIndex`` and ``MultiTreeBasedIndex`` (yes they are just prefixed by word ``Multi``).
+
 
 
 
@@ -587,7 +658,7 @@ How an index code is processed by CodernityDB?
         class MyIndex(HashIndex):
             def __init__(self, *args, **kwargs):
                 kwargs['key_format'] = 'I'
-                super(WithXIndex, self).__init__(*args, **kwargs)
+                super(MyIndex, self).__init__(*args, **kwargs)
             def make_key_value(self,data):
                 if data['a'] == a:
                     return data['b'], None
@@ -605,7 +676,7 @@ Despite of code being correct in python terms, it will produce an error in Coder
     class MyIndex(HashIndex):
         def __init__(self, *args, **kwargs):
             kwargs['key_format'] = 'I'
-            super(WithXIndex, self).__init__(*args, **kwargs)
+            super(MyIndex, self).__init__(*args, **kwargs)
         def make_key_value(self,data):
             if data['a'] == a:
                 return data['b'], None
