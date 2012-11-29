@@ -18,7 +18,6 @@
 import os
 import io
 from inspect import getsource
-from textwrap import dedent
 from indexcreator import Parser
 
 # for custom indexes
@@ -160,7 +159,10 @@ class Database(object):
         It will use :py:meth:`inspect.getsource` to get class source.
         Then it will build real index file, save it in ``_indexes`` directory.
         """
-        code = dedent(getsource(index.__class__))
+        code = getsource(index.__class__)
+        if not code.startswith('c'):  # fix for indented index codes
+            import textwrap
+            code = textwrap.dedent(code)
         index._order = i
         cls_code = getattr(index, 'classes_code', [])
         classes_code = ""

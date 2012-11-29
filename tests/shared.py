@@ -229,6 +229,7 @@ from itertools import izip"""
         return key.rjust(16, '_').lower()
 
 
+
 class DB_Tests:
 
     def setup_method(self, method):
@@ -998,3 +999,25 @@ class DB_Tests:
         db.delete(doc)
         with pytest.raises(RecordNotFound):
             db.get('words', "Codern")
+
+    def test_add_indented_index(self, tmpdir):
+        class IndentedMd5Index(HashIndex):
+
+            def __init__(self, *args, **kwargs):
+                #kwargs['entry_line_format'] = '<32s32sIIcI'
+                kwargs['key_format'] = '16s'
+                kwargs['hash_lim'] = 4 * 1024
+                super(IndentedMd5Index, self).__init__(*args, **kwargs)
+
+            def make_key_value(self, data):
+                return md5(data['name']).digest(), None
+
+            def make_key(self, key):
+                return md5(key).digest()
+
+        db = self._db(os.path.join(str(tmpdir), 'db'))
+        db.create()
+        db.add_index(IndentedMd5Index(db.path, 'ind'))
+
+        db.insert(dict(name='a'))
+        assert db.get('ind', 'a', with_doc=True)['doc']['name'] == 'a'
