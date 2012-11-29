@@ -55,17 +55,18 @@ from hashlib import sha256"""
             self.__enc_key = value
         self.storage.enc_key = self.__enc_key
 
-    def _open_storage(self):
+    def _setup_storage(self):
         if not self.storage:
             self.storage = Salsa20Storage(
                 self.db_path, self.name, self.enc_key)
-            self.storage.open()
+
+    def _open_storage(self):
+        self._setup_storage()
+        self.storage.open()
 
     def _create_storage(self):
-        if not self.storage:
-            self.storage = Salsa20Storage(
-                self.db_path, self.name, self.enc_key)
-            self.storage.create()
+        self._setup_storage()
+        self.storage.create()
 
 
 def main():
