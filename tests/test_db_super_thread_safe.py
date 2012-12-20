@@ -39,6 +39,6 @@ class Test_TreeIndex(TreeIndexTests):
     _db = SuperThreadSafeDatabase
 
 
-class Test_Threads2(Test_Threads):
+class Test_Threads(Test_Threads):
 
     _db = SuperThreadSafeDatabase

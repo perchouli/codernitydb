@@ -39,14 +39,19 @@ Hash Index only
      - Total throughput [#f1]_
    * - Insert 1524b
      - 1 000 000
-     - 28.05
+     - 22.79
      - 1577203 kB (~1.5 GB) [#f4]_
-     - 54.91 MB/s
+     - 67,58 MB/s
    * - Insert 44b
      - 1 000 000
-     - 17.65
+     - 12.63
      - 94926 kB (~93 MB) [#f4]_
-     - 5.37 MB/s
+     - 7.34 MB/s
+   * - Insert 13b
+     - 1 000 000
+     - 11.31
+     - 68558 kB (~67 MB)
+     - 5.92 MB/s
    * - Unique get  (~1524b each) [#f2]_
      - 100 000
      - 0.76
@@ -65,6 +70,7 @@ Hash Index only
     mechanizm only affects metadata lookup in database
     structure.
 
+As you can see it's possible to reach near 100 000 per second insert operations per second (when single record has 13 bytes).
 
 
 Hash + BPlusTree Index
@@ -82,14 +88,14 @@ Hash + BPlusTree Index
      - Total throughput [#f1]_
    * - Insert with empty storage [#f5]_
      - 100 000
-     - 5.87
+     - 4.88
      - 166608 kB (~162 MB)
-     - 27.71 MB/s
+     - 33.34 MB/s
    * - Insert with full storage [#f6]_
      - 100 000
-     - 6.56
+     - 5.75
      - 315436 kB (~308 MB)
-     - 46.96 MB/s
+     - 58.67 MB/s
    * - Same key get [#f7]_
      - 100 000
      - 0.16
@@ -97,14 +103,14 @@ Hash + BPlusTree Index
      - 906 MB/s
    * - Random key get [#f8]_
      - 50 000
-     - 2.23
+     - 2.11
      - 74414 kB (~72 MB)
-     - 32.59 MB/s
+     - 34.44 MB/s
    * - First 50000 records
      - 10 * 50000 [#f9]_
-     - 1.51
+     - 1.46
      - 744140 kB (~726 MB)
-     - 481 MB/s
+     - 497.74 MB/s
 
 
 

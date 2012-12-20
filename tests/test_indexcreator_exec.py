@@ -1,27 +1,35 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2011-2012 Codernity (http://codernity.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# This test are for checking Parser only, using simple exec isn't exactly what database does with simple index code,
+# they are used only because they allow handy check of correctness of generated code
+
 from CodernityDB.indexcreator import Parser, IndexCreatorValueException, IndexCreatorFunctionException
-from CodernityDB.database import Database
+from CodernityDB.database import Database, RecordNotFound
 from CodernityDB.hash_index import HashIndex
-#from CodernityDB.tree_index import TreeBasedIndex
+from CodernityDB.tree_index import TreeBasedIndex
+from CodernityDB.tree_index import MultiTreeBasedIndex
+from CodernityDB.hash_index import MultiHashIndex
+from itertools import izip
 from hashlib import md5
 from py.test import raises
 import os
 import uuid
-
-#class db_set():
-    #def __init__(self,t):
-        #self.t = t
-    #def __enter__(self):
-        #self.db = Database(os.path.join(str(self.t), 'db'))
-        #self.db.create()
-        #return self.db
-    #def __exit__(self,type,value,traceback):
-        #self.db.destroy()
-
-
-def pytest_funcarg__db(request):
-    db = Database(os.path.join(str(request.getfuncargvalue('tmpdir')), 'db'))
-    db.create()
-    return db
 
 
 def pytest_funcarg__p(request):
@@ -32,19 +40,38 @@ def pytest_funcarg__p(request):
 def simple_compare(s, args_mkv, args_mk):
     p = Parser()
     n = "_" + uuid.uuid4().hex
-    exec p.parse(s, n) in globals()
+    exec p.parse(s, n)[1] in globals()
 
-    #n2 = p.parse(s)
-    #exec n2 in globals()
-    #n2 = n2.splitlines()[1][2:]
+    # n2 = p.parse(s)
+    # exec n2 in globals()
+    # n2 = n2.splitlines()[1][2:]
 
     for a, o in args_mkv:
         assert globals()[n]('test', 'test').make_key_value(a) == o
-        #assert globals()[n2]('test','test').make_key_value(a) == o
+        # assert globals()[n2]('test','test').make_key_value(a) == o
 
     for a, o in args_mk:
         assert globals()[n]('test', 'test').make_key(a) == o
-        #assert globals()[n2]('test','test').make_key(a) == o
+        # assert globals()[n2]('test','test').make_key(a) == o
+
+# special comparator for comparing lists
+
+
+def simple_compare_without_order(s, args_mkv, args_mk):
+    p = Parser()
+    n = "_" + uuid.uuid4().hex
+    exec p.parse(s, n)[1] in globals()
+
+    for a, o in args_mkv:
+        a, b = globals()[n]('test', 'test').make_key_value(a)
+        if a is not None:
+            a = sorted(a)
+        if b is not None:
+            b = sorted(b)
+        assert (a, b) == o
+
+    for a, o in args_mk:
+        assert globals()[n]('test', 'test').make_key(a) == o
 
 
 class TestIndexCreatorRightInput:
@@ -268,7 +295,7 @@ class TestIndexCreatorRightInput:
         make_key:
         a"""
 
-        r = p.parse(s)
+        _, r = p.parse(s)
         rs = r.splitlines()
         assert rs[0] == "# s"
         assert rs[1][2:] == rs[2][6:39]
@@ -529,7 +556,7 @@ class TestIndexCreatorRightInput:
         make_key:
         0"""
 
-        n = p.parse(s)
+        _, n = p.parse(s)
         exec n in globals()
         n = n.splitlines()[1][2:]
         assert globals()[n]('test', 'test').hash_lim == 1
@@ -544,7 +571,7 @@ class TestIndexCreatorRightInput:
         0,None
         make_key:
         0"""
-        n2 = p.parse(s2)
+        _, n2 = p.parse(s2)
         exec n2 in globals()
         n2 = n2.splitlines()[1][2:]
         assert globals()[n2]('test', 'test').hash_lim == 600
@@ -559,7 +586,7 @@ class TestIndexCreatorRightInput:
         0,None
         make_key:
         0"""
-        n3 = p.parse(s3)
+        _, n3 = p.parse(s3)
         exec n3 in globals()
         n3 = n3.splitlines()[1][2:]
         assert globals()[n3]('test', 'test').hash_lim == 1
@@ -573,7 +600,7 @@ class TestIndexCreatorRightInput:
         0,None
         make_key:
         0"""
-        n4 = p.parse(s4)
+        _, n4 = p.parse(s4)
         exec n4 in globals()
         n4 = n4.splitlines()[1][2:]
         assert globals()[n4]('test', 'test').key_format == 'I'
@@ -1414,7 +1441,7 @@ class TestIndexCreatorExceptions():
         with raises(IndexCreatorValueException):
             p.parse(s8, 'TestIndex')
 
-    def test_excessive_return(self,p):
+    def test_excessive_return(self, p):
         s1 = """
         name = s
         key_format =     32s
@@ -1425,10 +1452,10 @@ class TestIndexCreatorExceptions():
         2,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorFunctionException):
             p.parse(s1, 'TestIndex')
-        
+
         s2 = """
         name = s
         key_format =     32s
@@ -1439,10 +1466,10 @@ class TestIndexCreatorExceptions():
         1>3:2,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorFunctionException):
             p.parse(s2, 'TestIndex')
-        
+
         s3 = """
         name = s
         key_format =     32s
@@ -1453,11 +1480,11 @@ class TestIndexCreatorExceptions():
         make_key:
         1
         2"""
-        
+
         with raises(IndexCreatorFunctionException):
             p.parse(s3, 'TestIndex')
 
-    def test_wrong_properities(self,p):
+    def test_wrong_properities(self, p):
         s1 = """
         name = s
         key_format =     32s
@@ -1467,10 +1494,10 @@ class TestIndexCreatorExceptions():
         1<=2:1,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorValueException):
             p.parse(s1, 'TestIndex')
-        
+
         s2 = """
         name = s
         key_format =     32s
@@ -1480,7 +1507,7 @@ class TestIndexCreatorExceptions():
         1<=2:1,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorValueException):
             p.parse(s2, 'TestIndex')
 
@@ -1493,11 +1520,11 @@ class TestIndexCreatorExceptions():
         1<=2:1,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorValueException):
             p.parse(s3, 'TestIndex')
 
-    def test_duplicate_props(self,p):
+    def test_duplicate_props(self, p):
         s1 = """
         name = s
         key_format =     32s
@@ -1507,33 +1534,95 @@ class TestIndexCreatorExceptions():
         1<=2:1,None
         make_key:
         a>1:1"""
-        
+
         with raises(IndexCreatorValueException):
             p.parse(s1, 'TestIndex')
-        
-class TestIndexCreatorWithDatabase:
-    def test_output_check(self, db, tmpdir):
-        s = """
-        type = HashIndex
-        name = s
-        key_format =     32s
-        hash_lim = 1
-        make_key_value:
-        0,None
-        make_key:
-        0
-        """
-        db.add_index(s)
-        assert s == db.get_index_code('s', code_switch='S')
 
-        s1 = """
-        type = TreeBasedIndex
-        name = s1
-        key_format =     32s
+
+class TestMultiIndexCreator:
+    def test_prefix(self):
+        s = """
+        name = s
+        type = MultiTreeBasedIndex
         make_key_value:
-        0,None
-        make_key:
-        0
+        prefix(a,2,3,3),None
         """
-        db.add_index(s1)
-        assert s1 == db.get_index_code('s1', code_switch='S')
+
+        simple_compare_without_order(
+            s, [({'a': 'abcd', 'b': 4}, (sorted(["_ab", "abc"]), None)),
+                ({'a': 'ab', 'b':
+                  4}, (sorted(["_ab"]), None)),
+                ({'a': 'a', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': '', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': 'abc', 'b': 4},
+                 (sorted(["_ab", "abc"]), None))
+                ],
+            [
+            ])
+        s2 = """
+        name = s2
+        type = MultiTreeBasedIndex
+        make_key_value:
+        prefix(a,0,20,5),None
+        """
+
+        simple_compare_without_order(
+            s2, [(
+                {'a': 'abcd', 'b': 4}, (sorted(["___ab", "__abc", "_abcd", "____a"]), None)),
+                ({'a': 'ab', 'b': 4}, (sorted(
+                                       ["___ab", "____a"]), None)),
+                ({'a': 'a', 'b': 'abcd'},
+                 (sorted(["____a"]), None)),
+                ({'a': '', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': 'abc', 'b': 4}, (sorted(["___ab",
+                 "__abc", "____a"]), None))
+            ],
+            [
+            ])
+
+    def test_suffix(self):
+        s = """
+        name = s
+        type = MultiTreeBasedIndex
+        make_key_value:
+        suffix(a,2,3,4),None
+        """
+
+        simple_compare_without_order(
+            s, [({'a': 'abcd', 'b': 4}, (sorted(["__cd", "_bcd"]), None)),
+                ({'a': 'ab', 'b':
+                  4}, (sorted(["__ab"]), None)),
+                ({'a': 'a', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': '', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': 'abc', 'b': 4},
+                 (sorted(["__bc", "_abc"]), None))
+                ],
+            [
+            ])
+
+        s2 = """
+        name = s2
+        type = MultiTreeBasedIndex
+        make_key_value:
+        suffix(a,0,20,5),None
+        """
+
+        simple_compare_without_order(
+            s2, [(
+                {'a': 'abcd', 'b': 4}, (sorted(["___cd", "__bcd", "_abcd", "____d"]), None)),
+                ({'a': 'ab', 'b': 4}, (sorted(
+                                       ["___ab", "____b"]), None)),
+                ({'a': 'a', 'b': 'abcd'},
+                 (sorted(["____a"]), None)),
+                ({'a': '', 'b':
+                  'abcd'}, (sorted([]), None)),
+                ({'a': 'abc', 'b': 4}, (sorted(["___bc",
+                 "__abc", "____c"]), None))
+            ],
+            [
+            ])

@@ -46,10 +46,10 @@ in DB.
 custom_header
     It's string that will be inserted to final index file. It's
     useful to pass the custom imports there. You will find an example
-    in :ref:`Examples - secure storage <secure_storage_example>`
+    in :ref:`Examples - secure storage <secure_storage_example>`.
 
 storage_class
-    It defines what storage to use. By default all indexes will use :py:class:`CodernityDB.storage.Storage`
+    It defines what storage to use. By default all indexes will use :py:class:`CodernityDB.storage.Storage`. If your Storage needs to be initialized in custom way please look at :ref:`Examples - secure storage <secure_storage_example>`.
 
 
 .. _internal_hash_index:
@@ -117,8 +117,8 @@ Hash Index details
 
 .. seealso::
 
-   :ref:`multiple_keys_index`
-      for Multiindex hash based implementation (more than one key per database data).
+    :ref:`multiple_keys_index`
+       for Multiindex hash based implementation (more than one key per database data).
 
 
 Below you will find explained in details parameters for that index
@@ -277,8 +277,8 @@ inside Tree structure (on leafs/nodes).
     :py:class:`CodernityDB.tree_index.TreeBasedIndex`
         For documentation
 
-   :ref:`multiple_keys_index`
-      for Multiindex tree based implementation (more than one key per database data).
+    :ref:`multiple_keys_index`
+       for Multiindex tree based implementation (more than one key per database data).
 
 
 duplicate keys
@@ -616,6 +616,45 @@ Functions that you can use in ``make_key`` and ``make_key_value``:
     :returns: fixed size string
     :rtype: string
 
+.. method:: infix(value, min_len, max_len, fixed_len)
+
+    it will generate all possible infixes of ``value`` not shorter than ``min_len`` 
+    and not longer than ``max_len`` while all of them will have fixed length
+    defined in ``fixed_len`` (which works exactly as ``fix_r``)
+    
+    :param string value: a string which all infixes will be generated from
+    :param integer min_len: minimal length of an infix
+    :param integer max_len: maximal length of an infix
+    :param integer fixed_len: fixed size of all infixes
+    :returns: set containing fixed size infixes
+    :rtype: set  
+
+.. method:: prefix(value, min_len, max_len, fixed_len)
+
+    it will generate all possible prefixes of ``value`` not shorter than ``min_len`` 
+    and not longer than ``max_len`` while all of them will have fixed length
+    defined in ``fixed_len`` (which works exactly as ``fix_r``)
+    
+    :param string value: a string which all prefixes will be generated from
+    :param integer min_len: minimal length of an prefix
+    :param integer max_len: maximal length of an prefix
+    :param integer fixed_len: fixed size of all prefixes
+    :returns: set containing fixed size prefixes
+    :rtype: set   
+
+.. method:: suffix(value, min_len, max_len, fixed_len)
+
+    it will generate all possible suffixes of ``value`` not shorter than ``min_len`` 
+    and not longer than ``max_len`` while all of them will have fixed length
+    defined in ``fixed_len`` (which works exactly as ``fix_r``)
+    
+    :param string value: a string which all suffixes will be generated from
+    :param integer min_len: minimal length of an suffix
+    :param integer max_len: maximal length of an suffix
+    :param integer fixed_len: fixed size of all suffixes
+    :returns: set containing fixed size suffixes
+    :rtype: set   
+
 .. note::
     Obviously you can use that simple indexes in |CodernityDB-HTTP-link| without any problem.
 
@@ -623,7 +662,7 @@ Functions that you can use in ``make_key`` and ``make_key_value``:
     Error reporting / handling system in that mode will tell you exactly what's wrong with your code.
 
 
-.. _tables_colections_q:
+.. _tables_collections_q:
 
 Tables, collections...?
 -------------------------
@@ -683,4 +722,62 @@ Despite of code being correct in python terms, it will produce an error in Coder
         def make_key(self,key):
                 return key
 
-Even if now class is in proper scope, the example won't work, because variable *a* isn't known to CodernityDB.
+Even if now class is in proper scope, the example won't work, because variable ``a`` isn't known to CodernityDB.
+
+
+.. _sharding_in_indexes:
+
+Sharding in indexes
+-------------------
+
+For advanced users we have sharded indexes.
+
+All you need to do if you want to use Sharded indexes is just:
+
+.. literalinclude:: codes/shard_demo.py
+   :linenos:
+
+
+.. warning::
+
+   Just remember that you have to **hardcode** ShardIndex parameters (unlike other indexes). So you **really** should derive from it's class.
+
+
+
+.. _sharding_performance:
+
+
+Performance
+~~~~~~~~~~~
+
+Consider this script
+
+.. literalinclude:: codes/shard_vs_noshard.py
+   :linenos:
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Number of inserts
+     - Time in sharded
+     - Time in non sharded
+   * - 5 000 000
+     - 65.405 seconds
+     - 74.699 seconds
+   * - 10 000 000
+     - 148.095 seconds
+     - 186.383 seconds
+
+
+As you can see, sharding **does matter**. It gives you almost **25%** performance boost. Totally free. Similar performance boost applies to get operations.
+
+
+.. note::
+
+    What's even more important in Sharding is that as you probably already know CodernityDB index metadata stores data position and size by using ``struct`` module. By default those fields are ``I`` format (``unsigned int``). So when you need to change that format to ``Q`` without sharding, you probably can switch to sharding and still use ``I`` format. ``I`` format can accept values up to ``4294967295`` bytes so about 4GB. Having 100 shards will mean that you can index up to ``4GB * 100`` data.
+
+
+.. note::
+
+   Currently one index can have up to 255 shards.

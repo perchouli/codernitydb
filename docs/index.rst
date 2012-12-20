@@ -1,13 +1,15 @@
-CodernityDB pure python, NoSQL, fast database
+CodernityDB pure python, fast, NoSQL database
 =============================================
 
-CodernityDB is opensource, pure Python (no 3rd party dependency), fast (really fast check :ref:`speed` if you don't believe in words), multi platform, schema-less, NoSQL_ database. It has optional support for HTTP server version (|CodernityDB-HTTP-link|), and also Python client library (|CodernityDB-PyClient-link|) that aims to be 100% compatible with embedded version.
+CodernityDB is opensource, pure Python (no 3rd party dependency), fast (50 000 insert and 100 000 get operations per second, check :ref:`speed` if you don't believe in words), multi platform, schema-less, NoSQL_ database. 
 
 .. image:: CodernityDB.png
     :align: center
 
 
-You can call it a more advanced key-value database. With multiple key-values indexes in the same engine. Also CodernityDB supports functions that are executed inside database.
+You can also call it a more advanced key-value database, with multiple key-values indexes in the same engine (for sure it's not "simple key/value store"). Also CodernityDB supports functions that are executed inside database. It has optional support for HTTP server version (|CodernityDB-HTTP-link|), and also Python client library (|CodernityDB-PyClient-link|) that aims to be 100% compatible with embedded version.
+
+**And it's** `Apache 2.0`_ **licensed !**
 
 
 Key features
@@ -15,10 +17,11 @@ Key features
 
 * Native Python database
 * Multiple indexes
-* Fast (more than 50 000 insert operations per second see :ref:`speed` for details)
+* Fast (even 100 000 insert and more than 100 000 get operations per second see :ref:`speed` for details)
 * Embedded mode (default) and :ref:`Server<server>`, with client library that aims to be 100% compatible with embedded one.
 * Easy way to implement custom Storage (see :ref:`example_storage`)
-
+* Collections / Tables support (see :ref:`tables_collections_q`)
+* Sharding (see :ref:`sharding_in_indexes`)
 
 Install
 ~~~~~~~
@@ -41,7 +44,7 @@ or from sources::
 Contribute & Bugs & Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CodernityDB is one of projects developed and released by Codernity_, so you can contact us directly in any case.
+CodernityDB is one of projects developed and released by Codernity_, so you can contact us directly in any case via db@codernity.com.
 
 Do you want to contribute? Great! Then just fork our repository (|cdb_repo|) on Bitbucket and do a pull request. It can't be more easy!
 
@@ -92,3 +95,5 @@ Indices and tables
 
 .. _NoSQL: http://en.wikipedia.org/wiki/NoSQL
 .. _KnockoutJS: http://knockoutjs.com/
+.. _Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
+

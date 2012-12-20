@@ -55,23 +55,68 @@ class Parser(object):
         self.stage = 0
         self.logic = ['and', 'or', 'in']
         self.logic2 = ['&', '|']
-        self.allowed_props = {'TreeBasedIndex': ['type','name','key_format','node_capacity','pointer_format','meta_format'],
-                              'HashIndex': ['type','name','key_format','hash_lim','entry_line_format']
-                             }
+        self.allowed_props = {'TreeBasedIndex': ['type', 'name', 'key_format', 'node_capacity', 'pointer_format', 'meta_format'],
+                              'HashIndex': ['type', 'name', 'key_format', 'hash_lim', 'entry_line_format'],
+                              'MultiHashIndex': ['type', 'name', 'key_format', 'hash_lim', 'entry_line_format'],
+                              'MultiTreeBasedIndex': ['type', 'name', 'key_format', 'node_capacity', 'pointer_format', 'meta_format']
+                              }
         self.funcs = {'md5': (['md5'], ['.digest()']),
                       'len': (['len'], []),
                       'str': (['str'], []),
-                      'fix_r': (['self.fix_r'], [])
+                      'fix_r': (['self.fix_r'], []),
+                      'prefix': (['self.prefix'], []),
+                      'infix': (['self.infix'], []),
+                      'suffix': (['self.suffix'], [])
                       }
+        self.handle_int_imports = {'infix': "from itertools import izip\n"}
+
         self.funcs_with_body = {'fix_r':
-                                ("""   def fix_r(self,s,l):
+                                ("""    def fix_r(self,s,l):
         e = len(s)
         if e == l:
             return s
         elif e > l:
             return s[:l]
         else:
-            return s.rjust(l,'_')\n""", False)}
+            return s.rjust(l,'_')\n""", False),
+                                'prefix':
+                                ("""    def prefix(self,s,m,l,f):
+        t = len(s)
+        if m < 1:
+            m = 1
+        o = set()
+        if t > l:
+            s = s[:l]
+            t = l
+        while m <= t:
+            o.add(s.rjust(f,'_'))
+            s = s[:-1]
+            t -= 1
+        return o\n""", False),
+                                'suffix':
+                                ("""    def suffix(self,s,m,l,f):
+        t = len(s)
+        if m < 1:
+            m = 1
+        o = set()
+        if t > l:
+            s = s[t-l:]
+            t = len(s)
+        while m <= t:
+            o.add(s.rjust(f,'_'))
+            s = s[1:]
+            t -= 1
+        return o\n""", False),
+                                'infix':
+                                ("""    def infix(self,s,m,l,f):
+        t = len(s)
+        o = set()
+        for x in xrange(m - 1, l):
+            t = (s, )
+            for y in xrange(0, x):
+                t += (s[y + 1:],)
+            o.update(set(''.join(x).rjust(f, '_').lower() for x in izip(*t)))
+        return o\n""", False)}
         self.none = ['None', 'none', 'null']
         self.props_assign = ['=', ':']
         self.all_adj_num_comp = {token.NUMBER: (
@@ -202,7 +247,7 @@ class Parser(object):
 
     def add(self, l, i):
         def add_aux(*args):
-            #print args,self.ind
+            # print args,self.ind
             if len(l[i]) < self.ind:
                 l[i].append([])
             l[i][self.ind - 1].append(args)
@@ -222,16 +267,18 @@ class Parser(object):
         self.prop_name = True
         self.prop_assign = False
         self.is_one_arg_enough = False
-        self.to_import = []
         self.funcs_stack = []
-        self.last_line = [-1,-1,-1]
+        self.last_line = [-1, -1, -1]
         self.props_set = []
+        self.custom_header = set()
 
-        self.tokens = ['# %s\n' % self.name, 'class %s(' % self.name, '):\n', '   def __init__(self, *args, **kwargs):        ']
+        self.tokens = []
+        self.tokens_head = ['# %s\n' % self.name, 'class %s(' % self.name, '):\n', '    def __init__(self, *args, **kwargs):        ']
 
         for i in xrange(3):
             tokenize.tokenize(self.readline(i), self.add(self.pre_tokens, i))
-            # tokenize treats some keyword not in the right way, thats why we have to change some of them
+            # tokenize treats some keyword not in the right way, thats why we
+            # have to change some of them
             for nk, k in enumerate(self.pre_tokens[i]):
                 for na, a in enumerate(k):
                     if a[0] == token.NAME and a[1] in self.logic:
@@ -273,24 +320,31 @@ class Parser(object):
         if self.index_name == "":
             raise IndexCreatorValueException("Missing index name\n")
 
-        self.tokens[0] = "# " + self.index_name + "\n" + self.tokens[0]
+        self.tokens_head[0] = "# " + self.index_name + "\n" + \
+            self.tokens_head[0]
 
         for i in self.funcs_with_body:
             if self.funcs_with_body[i][1]:
-                self.tokens.insert(4, self.funcs_with_body[i][0])
+                self.tokens_head.insert(4, self.funcs_with_body[i][0])
 
-        for i in self.to_import:
-            self.tokens[0] += i
-        self.tokens[0] += self.tokens[1]
-        del self.tokens[1]
+        if None in self.custom_header:
+            self.custom_header.remove(None)
+        if self.custom_header:
+            s = '    custom_header = """'
+            for i in self.custom_header:
+                s += i
+            s += '"""\n'
+            self.tokens_head.insert(4, s)
 
         if self.index_type in self.allowed_props:
             for i in self.props_set:
                 if i not in self.allowed_props[self.index_type]:
-                    raise IndexCreatorValueException("Properity %s is not allowed for index type: %s"%(i,self.index_type))
+                    raise IndexCreatorValueException("Properity %s is not allowed for index type: %s" % (i, self.index_type))
 
-        #print " ".join(self.tokens)
-        return " ".join(self.tokens)
+        #print "".join(self.tokens_head)
+        #print "----------"
+        #print (" ".join(self.tokens))
+        return "".join(self.custom_header), "".join(self.tokens_head) + (" ".join(self.tokens))
 
     # has to be run BEFORE tokenize
     def check_enclosures(self, d, st):
@@ -447,7 +501,7 @@ class Parser(object):
     def cnt_line_nr(self, l, stage):
         nr = -1
         for n, i in enumerate(self.predata[stage]):
-            #print i,"|||",i.strip(),"|||",l
+            # print i,"|||",i.strip(),"|||",l
             if l == i.strip():
                 nr = n
         if nr == -1:
@@ -476,7 +530,7 @@ class Parser(object):
 
         if d[0][0] == token.NAME or d[0][0] == token.STRING:
             if d[0][1] in self.props_set:
-                raise IndexCreatorValueException("Properity %s is set more than once" % d[0][1],self.cnt_line_nr(d[0][4],0))
+                raise IndexCreatorValueException("Properity %s is set more than once" % d[0][1], self.cnt_line_nr(d[0][4], 0))
             self.props_set += [d[0][1]]
             if d[0][1] == "type" or d[0][1] == "name":
                 t, tk, _, _, line = d[2]
@@ -495,8 +549,12 @@ class Parser(object):
 
                 if d[0][1] == "type":
                     if d[2][1] == "TreeBasedIndex":
-                        self.to_import += ["from CodernityDB.tree_index import TreeBasedIndex\n"]
-                    self.tokens.insert(2, tk)
+                        self.custom_header.add("from CodernityDB.tree_index import TreeBasedIndex\n")
+                    elif d[2][1] == "MultiTreeBasedIndex":
+                        self.custom_header.add("from CodernityDB.tree_index import MultiTreeBasedIndex\n")
+                    elif d[2][1] == "MultiHashIndex":
+                        self.custom_header.add("from CodernityDB.hash_index import MultiHashIndex\n")
+                    self.tokens_head.insert(2, tk)
                     self.index_type = tk
                 else:
                     self.index_name = tk
@@ -516,7 +574,7 @@ class Parser(object):
 
     def generate_func(self, t, tk, pos_start, pos_end, line, hdata, stage):
         if self.last_line[stage] != -1 and pos_start[0] > self.last_line[stage] and line != '':
-            raise IndexCreatorFunctionException("This line will never be executed!",self.cnt_line_nr(line,stage))
+            raise IndexCreatorFunctionException("This line will never be executed!", self.cnt_line_nr(line, stage))
         if t == 0:
             return
 
@@ -533,7 +591,7 @@ class Parser(object):
             self.line_cons[stage][pos_start[0] - 1] -= 1
 
         if tk in self.logic2:
-            #print tk
+            # print tk
             if line[pos_start[1] - 1] != tk and line[pos_start[1] + 1] != tk:
                 self.tokens += [tk]
             if line[pos_start[1] - 1] != tk and line[pos_start[1] + 1] == tk:
@@ -575,6 +633,7 @@ class Parser(object):
                 if tk in self.funcs_with_body:
                     self.funcs_with_body[tk] = (
                         self.funcs_with_body[tk][0], True)
+                self.custom_header.add(self.handle_int_imports.get(tk))
                 self.funcs_stack += [(tk, self.cur_brackets)]
         else:
             self.tokens += [tk]

@@ -56,7 +56,7 @@ class SuperLock(type):
                     if b_attr == 'flush' or b_attr == 'flush_indexes':
                         pass
                     else:
-                        #setattr(base, b_attr, SuperLock.wrapper(a))
+                        # setattr(base, b_attr, SuperLock.wrapper(a))
                         new_attr[b_attr] = SuperLock.wrapper(a)
         for attr_name, attr_value in attr.iteritems():
             if isinstance(attr_value, FunctionType) and not attr_name.startswith('_'):
@@ -74,6 +74,10 @@ class SuperThreadSafeDatabase(Database):
     than ThreadSafe version (without super word)
     """
 
+    __metaclass__ = SuperLock
+
+    def __init__(self, *args, **kwargs):
+        super(SuperThreadSafeDatabase, self).__init__(*args, **kwargs)
 
     def __patch_index_gens(self, name):
         ind = self.indexes_names[name]
@@ -106,7 +110,3 @@ class SuperThreadSafeDatabase(Database):
         res = super(SuperThreadSafeDatabase, self).edit_index(*args, **kwargs)
         self.__patch_index_gens(res)
         return res
-    __metaclass__ = SuperLock
-
-    def __init__(self, *args, **kwargs):
-        super(SuperThreadSafeDatabase, self).__init__(*args, **kwargs)

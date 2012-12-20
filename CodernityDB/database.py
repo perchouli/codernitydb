@@ -18,7 +18,6 @@
 import os
 import io
 from inspect import getsource
-from indexcreator import Parser
 
 # for custom indexes
 from CodernityDB.storage import Storage, IU_Storage
@@ -42,6 +41,8 @@ from CodernityDB.misc import NONE
 from CodernityDB.env import cdb_environment
 
 from random import randrange
+
+import warnings
 
 
 def header_for_indexes(index_name, index_class, db_custom="", ind_custom="", classes_code=""):
@@ -211,14 +212,16 @@ class Database(object):
             raise IndexConflict("Already exists")
 
     def __write_index(self, new_index, number=0, edit=False, ind_kwargs=None):
-        #print new_index
+        # print new_index
         if ind_kwargs is None:
             ind_kwargs = {}
         p = os.path.join(self.path, '_indexes')
         if isinstance(new_index, basestring) and not new_index.startswith("path:"):
             if len(new_index.splitlines()) < 4 or new_index.splitlines()[3] != '# inserted automatically':
+                from indexcreator import Parser
                 par = Parser()
-                s = par.parse(new_index).splitlines()
+                custom_imports, s = par.parse(new_index)
+                s = s.splitlines()
                 name = s[0][2:]
                 c = s[1][2:]
                 comented = ['\n\n#SIMPLIFIED CODE']
@@ -226,9 +229,8 @@ class Database(object):
                 comented.append('#SIMPLIFIED CODE END\n\n')
 
                 s = header_for_indexes(
-                    name, c) + "\n".join(s[2:]) + "\n".join(comented)
+                    name, c, ind_custom=custom_imports) + "\n".join(s[2:]) + "\n".join(comented)
                 new_index = s
-
             else:
                 name = new_index.splitlines()[0][2:]
                 name = name.strip()
@@ -328,6 +330,8 @@ class Database(object):
         if name == 'id':
             self.__set_main_storage()
             self.__compat_things()
+        for patch in getattr(ind_obj, 'patchers', ()):  # index can patch db object
+            patch(self)
         return name
 
     def edit_index(self, index, reindex=False, ind_kwargs=None):
@@ -342,6 +346,7 @@ class Database(object):
             ind_kwargs = {}
         ind_obj, name = self.__write_index(index, -1, edit=True)
         old = next(x for x in self.indexes if x.name == name)
+        old.close_index()
         index_of_index = self.indexes.index(old)
         ind_obj.open_index()
         self.indexes[index_of_index] = ind_obj
@@ -445,7 +450,8 @@ class Database(object):
             try:
                 index.create_index()
             except IndexException:
-                raise DatabaseConflict("Already exists (detected on index=%s)" % index.name)
+                raise DatabaseConflict(
+                    "Already exists (detected on index=%s)" % index.name)
         return True
 
     def _read_indexes(self):
@@ -466,7 +472,6 @@ class Database(object):
             return
         if self.id_ind.entry_line_format[4:6] == '4s':
             # rev compatibility...
-            import warnings
             warnings.warn("Your database is using old rev mechanizm \
 for ID index. You should update that index \
 (CodernityDB.migrate.migrate).")
@@ -588,38 +593,30 @@ for ID index. You should update that index \
         """
         try:
             old_should_index = index.make_key_value(db_data)
-        except:
+        except Exception as ex:
+            warnings.warn("""Problem during update for `%s`, ex = `%s`, \
+uou should check index code.""" % (index.name, ex), RuntimeWarning)
             old_should_index = None
         if old_should_index:
             old_key, old_value = old_should_index
             try:
                 new_should_index = index.make_key_value(data)
-            except:
+            except Exception as ex:
+                warnings.warn("""Problem during update for `%s`, ex = `%r`, \
+you should check index code.""" % (index.name, ex), RuntimeWarning)
                 new_should_index = None
             if new_should_index:
                 new_key, new_value = new_should_index
                 if new_key != old_key:
                     index.delete(doc_id, old_key)
-                    if new_value:
-                        storage = index.storage
-                        start, size = storage.insert(new_value)
-                    else:
-                        start = 1
-                        size = 0
-                    index.insert(doc_id, new_key, start, size)
+                    index.insert_with_storage(doc_id, new_key, new_value)
                 elif new_value != old_value:
-                    if new_value:
-                        storage = index.storage
-                        start, size = storage.insert(new_value)
-                    else:
-                        start = 1
-                        size = 0
                     try:
-                        index.update(doc_id, new_key, start, size)
+                        index.update_with_storage(doc_id, new_key, new_value)
                     except (ElemNotFound, DocIdNotFound):
                         # element should be in index but isn't
                         #(propably added new index without reindex)
-                        raise TryReindexException()
+                        warnings.warn("""Reindex might be required for index %s""" % index.name)
             else:
                 index.delete(doc_id, old_key)
         else:  # not previously indexed
@@ -634,9 +631,10 @@ for ID index. You should update that index \
         if db_data['_rev'] != _rev:
             raise RevConflict()
         new_rev = self.create_new_rev(_rev)
-        storage = self.storage
-        start, size = storage.update(value)
-        self.id_ind.update(_id, new_rev, start, size)
+        # storage = self.storage
+        # start, size = storage.update(value)
+        # self.id_ind.update(_id, new_rev, start, size)
+        self.id_ind.update_with_storage(_id, new_rev, value)
         return _id, new_rev, db_data
 
     def _update_indexes(self, _rev, data):
@@ -658,26 +656,30 @@ for ID index. You should update that index \
         """
         try:
             should_index = index.make_key_value(data)
-        except:
+        except Exception as ex:
+            warnings.warn("""Problem during insert for `%s`, ex = `%r`, \
+you should check index code.""" % (index.name, ex), RuntimeWarning)
             should_index = None
         if should_index:
             key, value = should_index
-            if value:
-                storage = index.storage
-                start, size = storage.insert(value)
-            else:
-                start = 1
-                size = 0
-            index.insert(doc_id, key, start, size)
+            index.insert_with_storage(doc_id, key, value)
+            # if value:
+            #     storage = index.storage
+            #     start, size = storage.insert(value)
+            # else:
+            #     start = 1
+            #     size = 0
+            # index.insert(doc_id, key, start, size)
 
     def _insert_id_index(self, _rev, data):
         """
         Performs insert on **id** index.
         """
         _id, value = self.id_ind.make_key_value(data)  # may be improved
-        storage = self.storage
-        start, size = storage.insert(value)
-        self.id_ind.insert(_id, _rev, start, size)
+#        storage = self.storage
+        # start, size = storage.insert(value)
+        # self.id_ind.insert(_id, _rev, start, size)
+        self.id_ind.insert_with_storage(_id, _rev, value)
         return _id
 
     def _insert_indexes(self, _rev, data):
@@ -711,7 +713,7 @@ for ID index. You should update that index \
         """
         Performs delete from **id** index
         """
-        #key, value = self.id_ind.make_key_value(data)
+        # key, value = self.id_ind.make_key_value(data)
         # key = data['_id']
         key = self.id_ind.make_key(_id)
         self.id_ind.delete(key)
@@ -900,7 +902,6 @@ for ID index. You should update that index \
             self.__not_opened()
             raise IndexNotFoundException(
                 "Index `%s` doesn't exists" % index_name)
-        storage = ind.storage
         try:
             l_key, _unk, start, size, status = ind.get(key)
         except ElemNotFound as ex:
@@ -910,16 +911,18 @@ for ID index. You should update that index \
         elif status == 'd':
             raise RecordDeleted("Deleted")
         if with_storage and size:
+            storage = ind.storage
             data = storage.get(start, size, status)
         else:
 
             data = {}
         if with_doc and index_name != 'id':
+            storage = ind.storage
             doc = self.get('id', l_key, False)
             if data:
                 data['doc'] = doc
             else:
-                data = dict(doc=doc)
+                data = {'doc': doc}
         data['_id'] = l_key
         if index_name == 'id':
             data['_rev'] = _unk
@@ -927,7 +930,7 @@ for ID index. You should update that index \
             data['key'] = _unk
         return data
 
-    def get_many(self, index_name, key=None, limit=1, offset=0, with_doc=False, with_storage=True, start=None, end=None, **kwargs):
+    def get_many(self, index_name, key=None, limit=-1, offset=0, with_doc=False, with_storage=True, start=None, end=None, **kwargs):
         """
         Allows to get **multiple** data for given ``key`` for *Hash based indexes*.
         Also allows get **range** queries for *Tree based indexes* with ``start`` and ``end`` arguments.
@@ -974,7 +977,7 @@ for ID index. You should update that index \
                     if data:
                         data['doc'] = doc
                     else:
-                        data = dict(doc=doc)
+                        data = {'doc': doc}
                 data['_id'] = doc_id
                 if key is None:
                     data['key'] = ind_data[1]

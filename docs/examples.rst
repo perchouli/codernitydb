@@ -149,6 +149,30 @@ it). Strongly recommended on :ref:`server` usage.
             return key
 
 
+Example sharded hash
+""""""""""""""""""""
+
+Example sharded index, it will shard records on ``key`` into 10 shards. (see :ref:`sharding_in_indexes`)
+
+.. code-block:: python
+
+    class MySharded(ShardedHashIndex):
+
+        custom_header = """from CodernityDB.sharded_hash import ShardedHashIndex"""
+
+        def __init__(self, *args, **kwargs):
+            kwargs['sh_nums'] = 10
+            kwargs['key_format'] = 'I'
+            kwargs['use_make_keys'] = True
+            super(MySharded, self).__init__(*args, **kwargs)
+
+        def make_key_value(self, data):
+            return data['x'] % 10, None
+
+        def calculate_shard(self, key):
+            return key % self.sh_nums
+
+
 
 .. _example_storage:
 

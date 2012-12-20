@@ -96,7 +96,7 @@ class Index(object):
         self._close()
 
     def create_index(self):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def _fix_params(self):
         self.buckets.seek(0)
@@ -128,34 +128,34 @@ class Index(object):
         self.storage.destroy()
 
     def _find_key(self, key):
-        raise NotImplemented
+        raise NotImplementedError()
 
-    def update(self, key, start, size):
-        raise NotImplemented
+    def update(self, doc_id, key, start, size):
+        raise NotImplementedError()
 
-    def insert(self, key, start, size):
-        raise NotImplemented
+    def insert(self, doc_id, key, start, size):
+        raise NotImplementedError()
 
     def get(self, key):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def get_many(self, key, start_from=None, limit=0):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def all(self, start_pos):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def delete(self, key, start, size):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def make_key_value(self, data):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def make_key(self, data):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def compact(self, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def destroy(self, *args, **kwargs):
         self._close()
@@ -177,3 +177,19 @@ class Index(object):
             self.storage.fsync()
         except:
             pass
+
+    def update_with_storage(self, doc_id, key, value):
+        if value:
+            start, size = self.storage.insert(value)
+        else:
+            start = 1
+            size = 0
+        return self.update(doc_id, key, start, size)
+
+    def insert_with_storage(self, doc_id, key, value):
+        if value:
+            start, size = self.storage.insert(value)
+        else:
+            start = 1
+            size = 0
+        return self.insert(doc_id, key, start, size)

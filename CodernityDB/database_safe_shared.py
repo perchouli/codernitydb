@@ -16,8 +16,8 @@
 # limitations under the License.
 
 from CodernityDB.env import cdb_environment
-from CodernityDB.database import PreconditionsException
-from database import Database
+from CodernityDB.database import PreconditionsException, RevConflict, Database
+#from database import Database
 
 from collections import defaultdict
 from functools import wraps
@@ -59,9 +59,11 @@ class SafeDatabase(Database):
 
     def __init__(self, path, *args, **kwargs):
         super(SafeDatabase, self).__init__(path, *args, **kwargs)
-        self.indexes_locks = defaultdict(lambda: cdb_environment['rlock_obj']())
+        self.indexes_locks = defaultdict(
+            lambda: cdb_environment['rlock_obj']())
         self.close_open_lock = cdb_environment['rlock_obj']()
         self.main_lock = cdb_environment['rlock_obj']()
+        self.id_revs = {}
 
     def __patch_index_gens(self, name):
         ind = self.indexes_names[name]
@@ -130,6 +132,16 @@ class SafeDatabase(Database):
                 self.__patch_index(res)
             return res
 
+    def _single_update_index(self, index, data, db_data, doc_id):
+        with self.indexes_locks[index.name]:
+            super(SafeDatabase, self)._single_update_index(
+                index, data, db_data, doc_id)
+
+    def _single_delete_index(self, index, data, doc_id, old_data):
+        with self.indexes_locks[index.name]:
+            super(SafeDatabase, self)._single_delete_index(
+                index, data, doc_id, old_data)
+
     def edit_index(self, *args, **kwargs):
         with self.main_lock:
             res = super(SafeDatabase, self).edit_index(*args, **kwargs)
@@ -155,7 +167,8 @@ class SafeDatabase(Database):
         if key in self.indexes_locks:
             lock = self.indexes_locks[index.name + "reind"]
         else:
-            self.indexes_locks[index.name + "reind"] = cdb_environment['rlock_obj']()
+            self.indexes_locks[index.name +
+                               "reind"] = cdb_environment['rlock_obj']()
             lock = self.indexes_locks[index.name + "reind"]
         self.main_lock.release()
         try:
@@ -178,3 +191,39 @@ class SafeDatabase(Database):
             super(SafeDatabase, self).fsync()
         finally:
             self.main_lock.release()
+
+    def _update_id_index(self, _rev, data):
+        with self.indexes_locks['id']:
+            return super(SafeDatabase, self)._update_id_index(_rev, data)
+
+    def _delete_id_index(self, _id, _rev, data):
+        with self.indexes_locks['id']:
+            return super(SafeDatabase, self)._delete_id_index(_id, _rev, data)
+
+    def _update_indexes(self, _rev, data):
+        _id, new_rev, db_data = self._update_id_index(_rev, data)
+        with self.main_lock:
+            self.id_revs[_id] = new_rev
+        for index in self.indexes[1:]:
+            with self.main_lock:
+                curr_rev = self.id_revs.get(_id)  # get last _id, _rev
+                if curr_rev != new_rev:
+                    break  # new update on the way stop current
+            self._single_update_index(index, data, db_data, _id)
+        with self.main_lock:
+            if self.id_revs[_id] == new_rev:
+                del self.id_revs[_id]
+        return _id, new_rev
+
+    def _delete_indexes(self, _id, _rev, data):
+        old_data = self.get('id', _id)
+        if old_data['_rev'] != _rev:
+            raise RevConflict()
+        with self.main_lock:
+            self.id_revs[_id] = _rev
+        for index in self.indexes[1:]:
+            self._single_delete_index(index, data, _id, old_data)
+        self._delete_id_index(_id, _rev, data)
+        with self.main_lock:
+            if self.id_revs[_id] == _rev:
+                del self.id_revs[_id]

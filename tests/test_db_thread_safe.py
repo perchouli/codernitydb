@@ -25,6 +25,7 @@ from threading import Thread
 import os
 import time
 import random
+import pytest
 
 
 class Test_Database(DB_Tests):
@@ -65,7 +66,8 @@ class Test_Threads(object):
             l.remove(a)
         assert l == []
 
-    def test_conc_update(self, tmpdir):
+    @pytest.mark.parametrize(('threads_num', ), [(x, ) for x in (3, 10, 20, 50, 100, 250)])
+    def test_conc_update(self, tmpdir, threads_num):
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.create()
         db.add_index(WithAIndex(db.path, 'with_a'))
@@ -89,13 +91,12 @@ class Test_Threads(object):
                 else:
                     return True
         ths = []
-        for x in xrange(25):  # python threads... beware!!!
+        for x in xrange(threads_num):  # python threads... beware!!!
             ths.append(Thread(target=updater))
         for th in ths:
             th.start()
         for th in ths:
             th.join()
 
-        print list(db.all('with_a', with_doc=True))
         assert db.count(db.all, 'with_a', with_doc=True) == 1
         assert db.count(db.all, 'id') == 1

@@ -16,7 +16,7 @@ class AllItems(HashIndex):
 
     def __init__(self, *args, **kwargs):
         kwargs['key_format'] = '16s'
-        super(AllUsers, self).__init__(*args, **kwargs)
+        super(AllItems, self).__init__(*args, **kwargs)
 
     def make_key(self, key):
         return md5(key).digest()

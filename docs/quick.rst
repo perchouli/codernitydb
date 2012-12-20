@@ -129,11 +129,11 @@ In that examples we assumed that ``t`` value is not stored in our
    you should just change Database initialization (set host & port).
 
 
-.. _tables_colections_q2:
+.. _tables_collections_q2:
 
 Tables, collections...?
 -------------------------
 
     OK, I got it, but can I store more than one data type in Database. Is there something like table or collection ?
 
-Plaese refer to :ref:`tables_colections_q` for this task.
+Please refer to :ref:`tables_collections_q` for this task.

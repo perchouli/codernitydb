@@ -210,7 +210,7 @@ class IU_HashIndex(Index):
     def _calculate_position(self, key):
         return abs(hash(key) & self.hash_lim) * self.bucket_line_size + self._start_ind
 
-    #TODO add cache!
+    # TODO add cache!
     def _locate_key(self, key, start):
         """
         Locate position of the key, it will iterate using `next` field in record
@@ -333,7 +333,7 @@ class IU_HashIndex(Index):
                                                           size,
                                                           status,
                                                           _next))
-                self.flush()
+#                self.flush()
                 self.buckets.seek(found_at)
                 self.buckets.write(self.entry_struct.pack(_doc_id,
                                                           _key,
@@ -371,7 +371,7 @@ class IU_HashIndex(Index):
                                                       size,
                                                       status,
                                                       0))
-            self.flush()
+#            self.flush()
             self._find_key.delete(key)
             self.buckets.seek(start_position)
             self.buckets.write(self.bucket_struct.pack(wrote_at))
@@ -447,8 +447,8 @@ class IU_HashIndex(Index):
         if curr_data:
             location = self.bucket_struct.unpack(curr_data)[0]
         else:
-            #case happens when trying to delete element with new index key in data
-            #after adding new index to database without reindex
+            # case happens when trying to delete element with new index key in data
+            # after adding new index to database without reindex
             raise TryReindexException()
         found_at, _doc_id, _key, start, size, status, _next = self._locate_doc_id(doc_id, key, location)
         self.buckets.seek(found_at)
@@ -532,7 +532,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
         super(IU_UniqueHashIndex, self).__init__(db_path, name,
                                                  entry_line_format, *args, **kwargs)
         self.create_key = random_hex_32  # : set the function to create random key when no _id given
-        #self.entry_struct=struct.Struct(entry_line_format)
+        # self.entry_struct=struct.Struct(entry_line_format)
 
 #    @lfu_cache(100)
     def _find_key(self, key):
@@ -553,7 +553,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
             return None, None, 0, 0, 'u'
 
     def _find_key_many(self, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def _find_place(self, start, key):
         """
@@ -660,7 +660,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
                                                       status,
                                                       _next))
 
-            self.flush()
+#            self.flush()
             self.buckets.seek(found_at)
             self.buckets.write(self.entry_struct.pack(_key,
                                                       _rev,
@@ -688,7 +688,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
                                                       size,
                                                       status,
                                                       0))
-            self.flush()
+#            self.flush()
             self.buckets.seek(start_position)
             self.buckets.write(self.bucket_struct.pack(wrote_at))
             self.flush()
@@ -723,10 +723,10 @@ class IU_UniqueHashIndex(IU_HashIndex):
                     limit -= 1
 
     def get_many(self, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def delete(self, key, start=0, size=0):
-        self.update(key, '0000', start, size, 'd')
+        self.update(key, '00000000', start, size, 'd')
 
     def make_key_value(self, data):
         _id = data['_id']
@@ -748,13 +748,29 @@ class IU_UniqueHashIndex(IU_HashIndex):
     def _clear_cache(self):
         self._find_key.clear()
 
+    def insert_with_storage(self, _id, _rev, value):
+        if value:
+            start, size = self.storage.insert(value)
+        else:
+            start = 1
+            size = 0
+        return self.insert(_id, _rev, start, size)
+
+    def update_with_storage(self, _id, _rev, value):
+        if value:
+            start, size = self.storage.insert(value)
+        else:
+            start = 1
+            size = 0
+        return self.update(_id, _rev, start, size)
+
 
 class DummyHashIndex(IU_HashIndex):
     def __init__(self, db_path, name, entry_line_format="<32s4sIIcI", *args, **kwargs):
         super(DummyHashIndex, self).__init__(db_path, name,
                                              entry_line_format, *args, **kwargs)
         self.create_key = random_hex_32  # : set the function to create random key when no _id given
-        #self.entry_struct=struct.Struct(entry_line_format)
+        # self.entry_struct=struct.Struct(entry_line_format)
 
     def update(self, *args, **kwargs):
         return True
@@ -837,7 +853,7 @@ class IU_MultiHashIndex(IU_HashIndex):
         return super(IU_MultiHashIndex, self).get(key)
 
     def make_key_value(self, data):
-        raise NotImplemented
+        raise NotImplementedError()
 
 
 # classes for public use, done in this way because of

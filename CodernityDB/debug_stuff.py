@@ -192,7 +192,7 @@ def database_from_steps(db_obj, path):
             meth(*line[1], **line[2])
 
 
-#def insert_for_debug(self, data):
+# def insert_for_debug(self, data):
 #
 #    _rev = data['_rev']
 #

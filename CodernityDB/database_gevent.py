@@ -23,7 +23,7 @@ cdb_environment['mode'] = "gevent"
 cdb_environment['rlock_obj'] = RLock
 
 
-#from CodernityDB.database import Database
+# from CodernityDB.database import Database
 from CodernityDB.database_safe_shared import SafeDatabase
 
 

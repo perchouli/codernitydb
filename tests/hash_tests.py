@@ -99,12 +99,9 @@ class HashIndexTests:
     def setup_method(self, method):
         self.counter = Counter()
 
-        def setup_method(self, method):
-            self.counter = Counter()
-
     def test_simple(self, tmpdir):
         db = self._db(os.path.join(str(tmpdir), 'db'))
-        #db.set_indexes([UniqueHashIndex(db.path, 'id')])
+        # db.set_indexes([UniqueHashIndex(db.path, 'id')])
         # db.initialize()
         db.add_index(UniqueHashIndex(db.path, 'id'), False)
         db.create()
@@ -129,7 +126,7 @@ class HashIndexTests:
 
     def test_insert_with_id(self, tmpdir):
         db = self._db(os.path.join(str(tmpdir), 'db'))
-        #db.set_indexes([UniqueHashIndex(db.path, 'id')])
+        # db.set_indexes([UniqueHashIndex(db.path, 'id')])
         # db.initialize()
         db.add_index(UniqueHashIndex(db.path, 'id'), False)
         db.create()
@@ -673,6 +670,6 @@ class HashIndexTests:
         assert real_inserts - offset == db.count(db.all, 'id', offset=offset)
         assert real_inserts - offset == db.count(db.all, 'custom',
                                                  offset=offset)
-        assert 1 == db.count(db.get_many, 'custom', 1, offset=offset)
+        assert 1 == db.count(db.get_many, 'custom', 1, limit=1, offset=offset)
 
         db.close()

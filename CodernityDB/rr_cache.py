@@ -33,7 +33,7 @@ def cache1lvl(maxsize=100):
                         del cache1lvl[choice(cache1lvl.keys())]
                 cache1lvl[key] = user_function(key, *args, **kwargs)
                 result = cache1lvl[key]
-                # result = user_function(obj, key, *args, **kwargs)
+#                result = user_function(obj, key, *args, **kwargs)
             return result
 
         def clear():

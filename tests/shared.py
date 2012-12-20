@@ -44,7 +44,7 @@ except ImportError:
 class CustomHashIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<32sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 1
         super(CustomHashIndex, self).__init__(*args, **kwargs)
@@ -66,7 +66,7 @@ class CustomHashIndex(HashIndex):
 class Md5Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<32s32sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(Md5Index, self).__init__(*args, **kwargs)
@@ -81,7 +81,7 @@ class Md5Index(HashIndex):
 class WithAIndex2(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<32s32sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
@@ -103,7 +103,7 @@ class WithAIndex2(HashIndex):
 class WithAIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<32s32sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
@@ -142,7 +142,7 @@ class Simple_TreeIndex(TreeBasedIndex):
 class WithRun_Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<32sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 4 * 1024
         super(WithRun_Index, self).__init__(*args, **kwargs)
@@ -174,7 +174,7 @@ class WithRun_Index(HashIndex):
 class WithRunEdit_Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<32sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 4 * 1024
         super(WithRunEdit_Index, self).__init__(*args, **kwargs)
@@ -222,12 +222,12 @@ from itertools import izip"""
             m = (name, )
             for y in xrange(0, x):
                 m += (name[y + 1:],)
-            out.update(set(''.join(x).rjust(16, '_').lower() for x in izip(*m)))  #ignore import error
+            out.update(set(''.join(x).rjust(
+                16, '_').lower() for x in izip(*m)))  # ignore import error
         return out, dict(name=name)
 
     def make_key(self, key):
         return key.rjust(16, '_').lower()
-
 
 
 class DB_Tests:
@@ -979,7 +979,8 @@ class DB_Tests:
     def test_multi_index(self, tmpdir):
         with open('tests/misc/words.txt', 'r') as f:
             data = f.read().split()
-        words = map(lambda x: x.strip().replace('.', "").replace(',', ""), data)
+        words = map(
+            lambda x: x.strip().replace('.', "").replace(',', ""), data)
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.create()
         db.add_index(TreeMultiTest(db.path, 'words'))
@@ -1004,7 +1005,7 @@ class DB_Tests:
         class IndentedMd5Index(HashIndex):
 
             def __init__(self, *args, **kwargs):
-                #kwargs['entry_line_format'] = '<32s32sIIcI'
+                # kwargs['entry_line_format'] = '<32s32sIIcI'
                 kwargs['key_format'] = '16s'
                 kwargs['hash_lim'] = 4 * 1024
                 super(IndentedMd5Index, self).__init__(*args, **kwargs)
