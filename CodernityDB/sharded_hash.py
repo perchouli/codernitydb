@@ -35,7 +35,8 @@ from CodernityDB.sharded_index import ShardedIndex
         if kwargs.get('sh_nums', 0) > 255:
             raise IndexPreconditionsException("Too many shards")
         kwargs['ind_class'] = UniqueHashIndex
-        super(IU_ShardedUniqueHashIndex, self).__init__(db_path, name, *args, **kwargs)
+        super(IU_ShardedUniqueHashIndex, self).__init__(db_path,
+                                                        name, *args, **kwargs)
         self.patchers.append(ShardedUniqueHashIndex.wrap_insert_id_index)
 
     @staticmethod
@@ -52,7 +53,8 @@ from CodernityDB.sharded_index import ShardedIndex
             return _id
         if not clean:
             if hasattr(db_obj, '_insert_id_index_orig'):
-                raise IndexPreconditionsException("Already patched, something went wrong")
+                raise IndexPreconditionsException(
+                    "Already patched, something went wrong")
             setattr(db_obj, "_insert_id_index_orig", db_obj._insert_id_index)
             setattr(db_obj, "_insert_id_index", _insert_id_index)
         else:
@@ -106,7 +108,8 @@ class IU_ShardedHashIndex(ShardedIndex):
 
     def __init__(self, db_path, name, *args, **kwargs):
         kwargs['ind_class'] = HashIndex
-        super(IU_ShardedHashIndex, self).__init__(db_path, name, *args, **kwargs)
+        super(IU_ShardedHashIndex, self).__init__(db_path, name, *
+                                                  args, **kwargs)
 
     def calculate_shard(self, key):
         """

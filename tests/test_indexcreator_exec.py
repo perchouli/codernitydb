@@ -17,7 +17,8 @@
 
 
 # This test are for checking Parser only, using simple exec isn't exactly what database does with simple index code,
-# they are used only because they allow handy check of correctness of generated code
+# they are used only because they allow handy check of correctness of
+# generated code
 
 from CodernityDB.indexcreator import Parser, IndexCreatorValueException, IndexCreatorFunctionException
 from CodernityDB.database import Database, RecordNotFound
@@ -118,16 +119,16 @@ class TestIndexCreatorRightInput:
         make_key_value:
         md5(b),a"""
 
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), {'a':'a'})),
+        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), {'a': 'a'})),
                            ({'a': 'qwerty'}, (
-                            md5('qwerty').digest(), {'a':'qwerty'}))
+                            md5('qwerty').digest(), {'a': 'qwerty'}))
                            ],
                        [
                        ({'a': 'e'}, md5('e').digest()),
                        ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
-        simple_compare(s2, [({'a': 'a'}, ('a', {'a':'a'})),
-                            ({'a': 'qwerty'}, ('qwerty', {'a':'qwerty'}))
+        simple_compare(s2, [({'a': 'a'}, ('a', {'a': 'a'})),
+                            ({'a': 'qwerty'}, ('qwerty', {'a': 'qwerty'}))
                             ],
                        [
                        ({'a': 'e'}, md5('e').digest()),

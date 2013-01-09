@@ -64,7 +64,7 @@ def cache2lvl(maxsize=100):
                 result = cache[args[0]][args[1]]
             except KeyError:
 #                print wrapper.cache_size
-                if  wrapper.cache_size == maxsize:
+                if wrapper.cache_size == maxsize:
                     to_delete = maxsize // 10 or 1
                     for i in xrange(to_delete):
                         key1 = choice(cache.keys())

@@ -341,9 +341,9 @@ class Parser(object):
                 if i not in self.allowed_props[self.index_type]:
                     raise IndexCreatorValueException("Properity %s is not allowed for index type: %s" % (i, self.index_type))
 
-        #print "".join(self.tokens_head)
-        #print "----------"
-        #print (" ".join(self.tokens))
+        # print "".join(self.tokens_head)
+        # print "----------"
+        # print (" ".join(self.tokens))
         return "".join(self.custom_header), "".join(self.tokens_head) + (" ".join(self.tokens))
 
     # has to be run BEFORE tokenize
