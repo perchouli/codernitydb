@@ -168,7 +168,7 @@ implementation. After each write, internals and file buffers are flushed, and th
 
 
 .. warning::
-    CodernityDB does no sync kernel buffers with disk itself. To be sure that data is written to disk please call :py:meth:`~CodernityDB.database.Database.fsync`
+    CodernityDB does no sync kernel buffers with disk itself. To be sure that data is written to disk please call :py:meth:`~CodernityDB.database.Database.fsync`, or use :py:meth:`CodernityDB.patch.patch_flush_fsync` to call fsync always when flush is called (after data modification).
 
 
 

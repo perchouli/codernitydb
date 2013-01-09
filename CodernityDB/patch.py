@@ -30,6 +30,14 @@ def __patch(obj, name, new):
 
 
 def patch_cache_lfu(lock_obj):
+    """
+    Patnches cache mechanizm to be thread safe (gevent ones also)
+
+    .. note::
+
+       It's internal CodernityDB mechanizm, it will be called when needed
+
+    """
     import lfu_cache
     import lfu_cache_with_lock
     lfu_lock1lvl = lfu_cache_with_lock.create_cache1lvl(lock_obj)
@@ -39,7 +47,20 @@ def patch_cache_lfu(lock_obj):
 
 
 def patch_cache_rr(lock_obj):
+    """
+    Patches cache mechanizm to be thread safe (gevent ones also)
+
+    .. note::
+
+       It's internal CodernityDB mechanizm, it will be called when needed
+
+    """
     import rr_cache
+    import rr_cache_with_lock
+    rr_lock1lvl = rr_cache_with_lock.create_cache1lvl(lock_obj)
+    rr_lock2lvl = rr_cache_with_lock.create_cache2lvl(lock_obj)
+    __patch(rr_cache, 'cache1lvl', rr_lock1lvl)
+    __patch(rr_cache, 'cache2lvl', rr_lock2lvl)
 
 
 def patch_flush_fsync(db_obj):
@@ -76,8 +97,3 @@ def patch_flush_fsync(db_obj):
     setattr(db_obj, 'flush', always_fsync(db_obj))
 
     return
-    import rr_cache_with_lock
-    rr_lock1lvl = rr_cache_with_lock.create_cache1lvl(lock_obj)
-    rr_lock2lvl = rr_cache_with_lock.create_cache2lvl(lock_obj)
-    __patch(rr_cache, 'cache1lvl', rr_lock1lvl)
-    __patch(rr_cache, 'cache2lvl', rr_lock2lvl)

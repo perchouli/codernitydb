@@ -106,3 +106,12 @@ Storage
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+Patches
+-------
+
+.. automodule:: CodernityDB.patch
+    :members:
+    :show-inheritance:
+    :undoc-members:
