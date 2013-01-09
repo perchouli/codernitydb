@@ -40,6 +40,42 @@ def patch_cache_lfu(lock_obj):
 
 def patch_cache_rr(lock_obj):
     import rr_cache
+
+
+def patch_flush_fsync(db_obj):
+    """
+    Will always execute index.fsync after index.flush.
+
+    .. note::
+
+       It's for advanced users, use when you understand difference between `flush` and `fsync`, and when you definitely need that.
+
+    It's important to call it **AFTER** database has all indexes etc (after db.create or db.open)
+
+    Example usage::
+
+        ...
+        db = Database('/tmp/patch_demo')
+        db.create()
+        patch_flush_fsync(db)
+        ...
+
+    """
+
+    def always_fsync(ind_obj):
+        def _inner():
+            ind_obj.orig_flush()
+            ind_obj.fsync()
+        return _inner
+
+    for index in db_obj.indexes:
+        setattr(index, 'orig_flush', index.flush)
+        setattr(index, 'flush', always_fsync(index))
+
+    setattr(db_obj, 'orig_flush', db_obj.flush)
+    setattr(db_obj, 'flush', always_fsync(db_obj))
+
+    return
     import rr_cache_with_lock
     rr_lock1lvl = rr_cache_with_lock.create_cache1lvl(lock_obj)
     rr_lock2lvl = rr_cache_with_lock.create_cache2lvl(lock_obj)

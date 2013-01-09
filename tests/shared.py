@@ -1022,3 +1022,12 @@ class DB_Tests:
 
         db.insert(dict(name='a'))
         assert db.get('ind', 'a', with_doc=True)['doc']['name'] == 'a'
+
+    def test_patch_flush_fsync(self, tmpdir):
+        from CodernityDB.patch import patch_flush_fsync
+        db = self._db(os.path.join(str(tmpdir), 'db'))
+        db.create()
+        patch_flush_fsync(db)  # patch it
+        for x in xrange(100):
+            db.insert(dict(x=x))
+        db.close()
