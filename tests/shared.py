@@ -1031,3 +1031,41 @@ class DB_Tests:
         for x in xrange(100):
             db.insert(dict(x=x))
         db.close()
+
+    def test_revert_index(self, tmpdir):
+        db = self._db(os.path.join(str(tmpdir), 'db'))
+        db.create()
+
+        ok = """name: test_revert
+type: HashIndex
+key_format: I
+make_key_value:
+x, None
+"""
+
+        ok2 = """name: test_revert
+type: HashIndex
+key_format: I
+make_key_value:
+x * 10, None
+"""
+        db.add_index(ok)
+
+        for x in xrange(10):
+            db.insert(dict(x=x))
+
+        a = sum(map(lambda x: x['key'], db.all('test_revert')))
+        assert a == 45
+
+        db.edit_index(ok2, reindex=True)
+
+        a = sum(map(lambda x: x['key'], db.all('test_revert')))
+        assert a == 450
+
+        db.revert_index('test_revert', reindex=True)
+
+        a = sum(map(lambda x: x['key'], db.all('test_revert')))
+        assert a == 45
+
+        with pytest.raises(DatabaseException):
+            db.revert_index('test_revert', reindex=True)  # second restore

@@ -201,7 +201,10 @@ class Database(object):
             ind_obj = globals()[_class](self.path, name, **ind_kwargs)
             ind_obj._order = int(ind[:2])
         except:
-            os.unlink(os.path.join(p, ind))
+            ind_path = os.path.join(p, ind)
+            os.rename(ind_path, ind_path + '_broken')  # rename it instead of removing
+#            os.unlink(os.path.join(p, ind))
+            warnings.warn("Fatal error in index, saved as %s" % (ind_path + '_broken', ))
             raise
         else:
             return ind_obj
@@ -251,7 +254,10 @@ class Database(object):
             if not edit:
                 self.__check_if_index_unique(name, number)
 
-            with io.FileIO(os.path.join(p, ind_path + '.py'), 'w') as f:
+            ind_path_f = os.path.join(p, ind_path + '.py')
+            if os.path.exists(ind_path_f):
+                os.rename(ind_path_f, ind_path_f + '_last')  # save last working index code
+            with io.FileIO(ind_path_f, 'w') as f:
                 f.write(new_index)
 
             ind_obj = self._read_index_single(p, ind_path + '.py')
@@ -354,6 +360,31 @@ class Database(object):
         if reindex:
             self.reindex_index(name)
         return name
+
+    def revert_index(self, index_name, reindex=False, ind_kwargs=None):
+        """
+        Tries to revert index code from copy.
+        It calls :py:meth:`.edit_index` with previous working.
+
+        :param string index_name: index name to restore
+        """
+        ind_path = os.path.join(self.path, '_indexes')
+        if index_name in self.indexes_names:  # then it's working index.
+            ind = self.indexes_names[index_name]
+            full_name = '%.2d%s.py' % (ind._order, index_name)
+        else:
+            indexes = os.listdir(ind_path)
+            full_name = next((x for x in indexes if x[2:-3] == index_name))
+        if not full_name:
+            raise DatabaseException("%s index not found" % index_name)
+        last_path = os.path.join(ind_path, full_name + "_last")
+        if not os.path.exists(last_path):
+            raise DatabaseException("No previous copy found for %s" % index_name)
+        correct_last_path = last_path[:-5]  # remove _last from name
+        os.rename(last_path, correct_last_path)
+#        ind_data = open(last_path, 'r')
+        p = 'path:%s' % os.path.split(correct_last_path)[1]
+        return self.edit_index(p, reindex, ind_kwargs)
 
     def get_index_code(self, index_name, code_switch='All'):
         """
