@@ -187,6 +187,8 @@ class Database(object):
         It will read single index from index file (ie. generated in :py:meth:`._add_single_index`).
         Then it will perform ``exec`` on that code
 
+        If error will occur the index file will be saved with ``_broken`` suffix
+
         :param p: path
         :param ind: index name (will be joined with *p*)
         :returns: new index object
@@ -343,8 +345,9 @@ class Database(object):
     def edit_index(self, index, reindex=False, ind_kwargs=None):
         """
         Allows to edit existing index.
+        Previous working version will be saved with ``_last`` suffix (see :py:meth:`.revert_index`
 
-        :param bool redindex: should be the index reindexed after change
+        :param bool reindex: should be the index reindexed after change
 
         :returns: index name
         """

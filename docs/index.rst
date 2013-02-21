@@ -1,7 +1,7 @@
 CodernityDB pure python, fast, NoSQL database
 =============================================
 
-CodernityDB is opensource, pure Python (no 3rd party dependency), fast (50 000 insert and 100 000 get operations per second, check :ref:`speed` if you don't believe in words), multi platform, schema-less, NoSQL_ database. 
+CodernityDB is opensource, pure Python (no 3rd party dependency), fast (even 100 000 insert and more than 100 000 get operations per second, check :ref:`speed` if you don't believe in words), multi platform, schema-less, NoSQL_ database.
 
 .. image:: CodernityDB.png
     :align: center
@@ -96,4 +96,3 @@ Indices and tables
 .. _NoSQL: http://en.wikipedia.org/wiki/NoSQL
 .. _KnockoutJS: http://knockoutjs.com/
 .. _Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
-

@@ -8,6 +8,9 @@ FAQ
 Here you will find some questions and answers
 
 
+Is it production ready ?
+    We already use it in several projects. Even currently we care about backwards compatible changes. It's **ready for production use**.
+
 What about JOINs (known from SQL databases) ?
     You can write database function. Please see :ref:`join_like1`. Just remember CodernityDB is *not* relational database.
 
