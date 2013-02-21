@@ -35,10 +35,13 @@ with open('README') as f:
     L_DESCR = f.read()
 
 
+keywords = ' '.join(('database', 'python', 'nosql', 'key-value', 'key/value', 'db'))
+
 setup(name='CodernityDB',
       version=__version__,
       description="Pure python, fast, schema-less, NoSQL database",
       long_description=L_DESCR,
+      keywords=keywords,
       author='Codernity',
       author_email='contact@codernity.com',
       url='http://labs.codernity.com/codernitydb',
@@ -47,11 +50,9 @@ setup(name='CodernityDB',
       license=__license__,
       classifiers=[
       "License :: OSI Approved :: Apache Software License",
+      "Programming Language :: Python",
       "Programming Language :: Python :: 2.6",
       "Programming Language :: Python :: 2.7",
-      "Operating System :: MacOS :: MacOS X",
-      "Operating System :: POSIX",
-      "Operating System :: Microsoft :: Windows",
       "Operating System :: OS Independent",
       "Topic :: Internet",
       "Topic :: Database",
