@@ -37,7 +37,7 @@ from CodernityDB.sharded_index import ShardedIndex
         kwargs['ind_class'] = UniqueHashIndex
         super(IU_ShardedUniqueHashIndex, self).__init__(db_path,
                                                         name, *args, **kwargs)
-        self.patchers.append(ShardedUniqueHashIndex.wrap_insert_id_index)
+        self.patchers.append(self.wrap_insert_id_index)
 
     @staticmethod
     def wrap_insert_id_index(db_obj, clean=False):
