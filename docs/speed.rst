@@ -72,6 +72,18 @@ Hash Index only
 
 As you can see it's possible to reach near 100 000 per second insert operations per second (when single record has 13 bytes).
 
+Why we did choose from 13 to 1524 bytes for tests ? When using marshal storage (the default one), 13 bytes is enough to keep a dictionary with one long integer (2**31) - 1 key. So it's equivalent of other database tests (many Redis ones, or other key/value based). But still keep in mind that in CodernityDB whole dictionary that contains one key with integer value is stored. 44 bytes is enough to keep an long integer and 20 letters string. Enough to store some text based statistics.
+
+The script for that performance test looks like:
+
+.. code-block:: python
+
+    y = 'y' * 20
+    for i in xrange(1000000):
+        db.insert(dict(i=i, y=y))
+
+    db.close()
+
 
 Hash + BPlusTree Index
 ----------------------

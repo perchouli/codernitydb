@@ -23,6 +23,7 @@ import uuid
 
 
 class IndexCreatorException(Exception):
+
     def __init__(self, ex, line=None):
         self.ex = ex
         self.line = line
@@ -42,6 +43,7 @@ class IndexCreatorValueException(IndexCreatorException):
 
 
 class Parser(object):
+
     def __init__(self):
         pass
 

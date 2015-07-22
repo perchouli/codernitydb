@@ -26,7 +26,9 @@ try:
     from collections import Counter
 except ImportError:
     class Counter(dict):
+
         'Mapping where default values are zero'
+
         def __missing__(self, key):
             return 0
 

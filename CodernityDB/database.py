@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import os
 import io
 from inspect import getsource
@@ -108,6 +107,7 @@ class DatabaseIsNotOpened(PreconditionsException):
 
 
 class Database(object):
+
     """
     A default single thread database object.
     """
@@ -339,7 +339,7 @@ class Database(object):
             self.__set_main_storage()
             self.__compat_things()
         for patch in getattr(ind_obj, 'patchers', ()):  # index can patch db object
-            patch(self)
+            patch(self, ind_obj)
         return name
 
     def edit_index(self, index, reindex=False, ind_kwargs=None):

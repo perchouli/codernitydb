@@ -15,7 +15,7 @@ What about JOINs (known from SQL databases) ?
     You can write database function. Please see :ref:`join_like1`. Just remember CodernityDB is *not* relational database.
 
 Will it work on Jython ?
-    On 2.5 no, on 2.7 it should but currently it will not because of bug in Jython IO implementation. But currently Jython 2.7 is in alpha stage, so it will change in future.
+    On 2.5 no, on 2.7 it will work pretty fine.
 
 How fast is CodernityDB ?
     It's pretty fast. It can be said that you can insert even more than 55 000 records to Hash Index every second (see :ref:`speed` for more details)
@@ -30,10 +30,10 @@ What about tables or collections ?
     Everything can be done through our Index mechanism see :ref:`tables_collections_q`.
 
 How does it compare to MongoDB, CouchDB and other "big" NoSQL databases ?
-    Different purposes + different design. CodernityDB doesn't have yet any replication engine (yet?). However we are sure that there is a place for CodernityDB. Nothing is impossible in CodernityDB, because Index IS a Python class where you can do anything (if you're not a Python user we created :ref:`simple_index`). Don't try make CodernityDB relational database, it will work but its not *that*. It can act as a simple key-value database or as a database with secondary indexes (ordering / selecting etc). You can optimize IO performance by moving indexes data on different partitions. Generally the CodernityDB index mechanism is really powerful, its much more than in other databases (it's more similar to CouchDB views).
+    Different purposes + different design. CodernityDB doesn't have yet any replication engine (yet?). However we are sure that there is a place for CodernityDB. Nothing is impossible in CodernityDB, because Index IS a Python class where you can do anything (if you're not a Python user we created :ref:`simple_index`). Don't try make CodernityDB relational database, it will work but its not *that*. It can act as a simple key-value database or as a database with secondary indexes (ordering / selecting etc). You can optimize IO performance by moving indexes data on different partitions. Generally the CodernityDB index mechanism is really powerful, its much more than in other databases (it's more similar to CouchDB views). Index is python class, so the sky is the limit.
 
 How does it compare to Redis, Kyoto Cabinet and other Key/Value databases ?
-    First of all it has to be said, CodernityDB is **NOT** typical Key/Value database. It's much more. CodernityDB has support for multiple indexes, can perform range queries, it can index more than one value per incoming record. It's much more than typical Key/Value database.
+    First of all it has to be said, CodernityDB is **NOT** typical Key/Value database. It's much more. CodernityDB has support for multiple indexes, can perform range queries, it can index more than one value per incoming record. It's much more than typical Key/Value database. And CodernityDB index is a python class, so the sky is the limit there. Please keep in mind that you can easily embed CodernityDB (which you can't do with Redis)
 
 Is it daybreak (Ruby Simple Key/Value database) but for Python ?
     Not really, CodernityDB is much more. CodernityDB always store Python dict type as data value. CodernityDB has multiple index support, it can use TreeIndex and HashIndex. CodernityDB can work as daybreak but by default it's designed to be something more than "simple key/value". They are generally as you can see not the same things.

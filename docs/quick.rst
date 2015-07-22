@@ -1,11 +1,15 @@
 .. _quick_tutorial:
 
 ====================
-Quick tutorial 
+Quick tutorial
 ====================
 
 Every single part of code block will be full example, so you can copy &
 paste it to play with it
+
+.. note::
+
+   If you are windows user, you should keep separate index codes from __main__ (see https://bitbucket.org/codernity/codernitydb/issue/12/error-in-tutorial-sample) because CodernityDB uses inspect module, which doesn't work as expected on windows.
 
 
 Insert / Save / Store

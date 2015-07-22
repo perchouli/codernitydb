@@ -33,6 +33,7 @@ class StorageException(Exception):
 
 
 class DummyStorage(object):
+
     """
     Storage mostly used to fake real storage
     """
@@ -135,6 +136,7 @@ class IU_Storage(object):
         if status == 'd':
             return None
         else:
+            print locals()
             self._f.seek(start)
             return self.data_from(self._f.read(size))
 

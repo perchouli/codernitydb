@@ -67,6 +67,7 @@ class SuperLock(type):
 
 
 class SuperThreadSafeDatabase(Database):
+
     """
     Thread safe version that always allows single thread to use db.
     It adds the same lock for all methods, so only one operation can be

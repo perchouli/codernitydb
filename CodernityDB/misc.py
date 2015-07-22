@@ -20,6 +20,7 @@ import uuid
 
 
 class NONE:
+
     """
     It's inteded to be None but different,
     for internal use only!

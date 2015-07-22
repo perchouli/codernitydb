@@ -63,6 +63,7 @@ def compare_for_multi_index(db, name, s, key_name, data, keys):
 
 
 class TestIndexCreatorWithDatabase:
+
     def test_output_check(self, db, tmpdir):
         s = """
         type = HashIndex
@@ -91,6 +92,7 @@ class TestIndexCreatorWithDatabase:
 
 
 class TestMultiIndexCreatorWithInternalImports:
+
     def test_infix(self, db):
         s = """
         name = s

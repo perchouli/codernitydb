@@ -49,6 +49,7 @@ except ImportError:
 
 
 class IU_HashIndex(Index):
+
     """
     That class is for Internal Use only, if you want to use HashIndex just subclass the :py:class:`HashIndex` instead this one.
 
@@ -517,6 +518,7 @@ class IU_HashIndex(Index):
 
 
 class IU_UniqueHashIndex(IU_HashIndex):
+
     """
     Index for *unique* keys! Designed to be a **id** index.
 
@@ -766,6 +768,7 @@ class IU_UniqueHashIndex(IU_HashIndex):
 
 
 class DummyHashIndex(IU_HashIndex):
+
     def __init__(self, db_path, name, entry_line_format="<32s4sIIcI", *args, **kwargs):
         super(DummyHashIndex, self).__init__(db_path, name,
                                              entry_line_format, *args, **kwargs)
@@ -811,6 +814,7 @@ class DummyHashIndex(IU_HashIndex):
 
 
 class IU_MultiHashIndex(IU_HashIndex):
+
     """
     Class that allows to index more than one key per database record.
 
@@ -861,6 +865,7 @@ class IU_MultiHashIndex(IU_HashIndex):
 
 
 class HashIndex(IU_HashIndex):
+
     """
     That class is designed to be used in custom indexes.
     """
@@ -868,6 +873,7 @@ class HashIndex(IU_HashIndex):
 
 
 class UniqueHashIndex(IU_UniqueHashIndex):
+
     """
     That class is designed to be used in custom indexes. It's designed to be **id** index.
     """
@@ -875,6 +881,7 @@ class UniqueHashIndex(IU_UniqueHashIndex):
 
 
 class MultiHashIndex(IU_MultiHashIndex):
+
     """
     That class is designed to be used in custom indexes.
     """

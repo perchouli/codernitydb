@@ -16,6 +16,6 @@ dist/
 .*\.swp
 htmlcov_.*
 coverage.*\.xml
-docs/_build/*
 junit-.*\.xml
 .*\.orig
+docs/_build/*

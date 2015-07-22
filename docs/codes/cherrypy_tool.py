@@ -6,6 +6,7 @@ from CodernityDB.database_thread_safe import ThreadSafeDatabase as Database
 
 
 class CodernityDBPlugin(plugins.SimplePlugin):
+
     def __init__(self, bus):
         plugins.SimplePlugin.__init__(self, bus)
         self.db = None

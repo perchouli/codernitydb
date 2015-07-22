@@ -27,6 +27,7 @@ from database_safe_shared import SafeDatabase
 
 
 class ThreadSafeDatabase(SafeDatabase):
+
     """
     Thread safe version of CodernityDB that uses several lock objects,
     on different methods / different indexes etc. It's completely different

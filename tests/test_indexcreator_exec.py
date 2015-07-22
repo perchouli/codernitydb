@@ -124,23 +124,23 @@ class TestIndexCreatorRightInput:
                             md5('qwerty').digest(), {'a': 'qwerty'}))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
         simple_compare(s2, [({'a': 'a'}, ('a', {'a': 'a'})),
                             ({'a': 'qwerty'}, ('qwerty', {'a': 'qwerty'}))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
         simple_compare(s3, [({'a': 'a', 'b': 'b'}, ('a', 'a')),
                             ({'a': 'qwerty', 'b': 'b'}, ('qwerty', 'qwerty'))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
         simple_compare(s4, [({'a': 'a', 'b': 'b'}, (md5('b').digest(), 'a')),
@@ -148,8 +148,8 @@ class TestIndexCreatorRightInput:
                               'b'}, (md5('b').digest(), 'qwerty'))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
     def test_name_or_type_as_string(self):
@@ -178,16 +178,16 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
         simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
                             ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, (md5('e').digest())),
-                       ({'a': 'qwerty'}, (md5('qwerty').digest()))
+                           ({'a': 'e'}, (md5('e').digest())),
+                           ({'a': 'qwerty'}, (md5('qwerty').digest()))
                        ])
 
     def test_fliped_definitions(self):
@@ -216,16 +216,16 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
         simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
                             ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
     def test_None_equivalents(self):
@@ -243,8 +243,8 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, None)
                            ],
                        [
-                       ({'a': 'e'}, None),
-                       ({'a': 'qwerty'}, None)
+                           ({'a': 'e'}, None),
+                           ({'a': 'qwerty'}, None)
                        ])
 
     def test_assign_prop_equivalents(self):
@@ -273,15 +273,15 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
         simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
                             ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                           ({'a': 'e'}, md5('e').digest()),
+                           ({'a': 'qwerty'}, md5('qwerty').digest())
                        ])
 
     def test_automatic_generated_class_name(self, p):
@@ -305,7 +305,7 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, 'e')
+                           ({'a': 'e'}, 'e')
                        ])
 
     def test_md5(self):
@@ -325,8 +325,8 @@ class TestIndexCreatorRightInput:
                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, 'e'),
-                       ({'a': 'eeee'}, md5('eeee').digest())
+                           ({'a': 'e'}, 'e'),
+                           ({'a': 'eeee'}, md5('eeee').digest())
                        ])
 
         s2 = """
@@ -346,8 +346,8 @@ class TestIndexCreatorRightInput:
                              md5('qwertyaaa').digest() + 'a', None))
                             ],
                        [
-                       ({'a': 'e'}, 'e'),
-                       ({'a': 'eeee'}, md5('eeee').digest() + 'eeee')
+                           ({'a': 'e'}, 'e'),
+                           ({'a': 'eeee'}, md5('eeee').digest() + 'eeee')
                        ])
 
     def test_no_conditionals_return_dicts(self):
@@ -618,9 +618,9 @@ class TestIndexCreatorRightInput:
         simple_compare(s, [({'a': 3, 'b': 4}, (0, None))
                            ],
                        [(5, 5),
-                      ("aaa", "aaa"),
+                        ("aaa", "aaa"),
                            ({'a': 3, 'b': 4}, {'a': 3, 'b': 4})
-                       ])
+                        ])
 
     def test_functions(self, p):
         s = """
@@ -635,9 +635,9 @@ class TestIndexCreatorRightInput:
         simple_compare(s, [({'a': 'a', 'b': 4}, (md5(str(md5('a').digest())).digest(), None))
                            ],
                        [(5, 5),
-                      ("aaa", "aaa"),
+                        ("aaa", "aaa"),
                            ({'a': 3, 'b': 4}, {'a': 3, 'b': 4})
-                       ])
+                        ])
 
         s2 = """
         name = s2
@@ -657,7 +657,7 @@ class TestIndexCreatorRightInput:
                    1}, (md5(str(1)).digest(), None)),
                  ({'a': 'eee', 'b':
                    3}, (md5('eee').digest(), None))
-                         ],
+                 ],
             [(5, 5),
              ("aaa", "aaa"),
              ({'a': 3, 'b': 4}, {'a': 3, 'b': 4})
@@ -1541,6 +1541,7 @@ class TestIndexCreatorExceptions():
 
 
 class TestMultiIndexCreator:
+
     def test_prefix(self):
         s = """
         name = s

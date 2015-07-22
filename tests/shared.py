@@ -36,7 +36,9 @@ try:
     from collections import Counter
 except ImportError:
     class Counter(dict):
+
         'Mapping where default values are zero'
+
         def __missing__(self, key):
             return 0
 
@@ -228,6 +230,28 @@ from itertools import izip"""
 
     def make_key(self, key):
         return key.rjust(16, '_').lower()
+
+
+class MajorIndexTest(TreeBasedIndex):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['key_format'] = '50s'
+        super(MajorIndexTest, self).__init__(*args, **kwargs)
+
+    def make_key_value(self, data):
+        return self.make_key(data['a']), None
+
+    def make_key(self, key):
+        return key.rjust(50, '_').lower()
+
+
+class MinorIndexTest(MajorIndexTest):
+
+    custom_header = 'from tests.shared import MajorIndexTest'
+
+    def __init__(self, *args, **kwargs):
+        kwargs['pointer_format'] = 'Q'
+        super(MinorIndexTest, self).__init__(*args, **kwargs)
 
 
 class DB_Tests:
@@ -1069,3 +1093,21 @@ x * 10, None
 
         with pytest.raises(DatabaseException):
             db.revert_index('test_revert', reindex=True)  # second restore
+
+    def test_index_maj_min(self, tmpdir):
+        db = self._db(os.path.join(str(tmpdir), 'db'))
+        db.create()
+        db.add_index(MinorIndexTest(db.path, 'minor'))
+        db.close()
+        db2 = self._db(os.path.join(str(tmpdir), 'db'))
+        db2.open()
+
+        ind = db2.indexes_names['minor']
+        assert ind.key_format == '50s'
+
+        for y in xrange(5):
+            for x in xrange(1, 10):
+                for l in 'abcd':
+                    db2.insert({'a': l * x})
+
+        db2.count(db2.get_many, 'minor', 'a') == 5
